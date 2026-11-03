@@ -1,9 +1,8 @@
 // Verificación del webhook de Hotmart — 18-VENTA-HOTMART.md, sección "SEGURIDAD DEL WEBHOOK".
-// Fail-secure: sin HOTMART_HOTTOK configurado, el módulo revienta al cargar (nunca un default inseguro).
+// Fail-secure PERO AISLADO: sin HOTMART_HOTTOK, el WEBHOOK rechaza todo (nunca un default inseguro),
+// pero el chequeo vive dentro de la función (no al importar el módulo) para que la falta de esta
+// clave nunca pueda derribar el build/arranque de TODA la app por una pieza que aún no se configuró.
 import crypto from 'node:crypto';
-
-const HOTTOK = process.env.HOTMART_HOTTOK;
-if (!HOTTOK) throw new Error('FALTA HOTMART_HOTTOK — el webhook no puede operar de forma segura');
 
 function timingSafeEqualStr(a: string, b: string): boolean {
   const ba = Buffer.from(a, 'utf8');
@@ -14,8 +13,9 @@ function timingSafeEqualStr(a: string, b: string): boolean {
 
 /** Camino principal y único salvo que Hotmart documente una firma propia para tu cuenta. */
 export function verifyHotmart(hottokRecibido?: string): boolean {
-  if (!hottokRecibido) return false;
-  return timingSafeEqualStr(hottokRecibido, HOTTOK!);
+  const HOTTOK = process.env.HOTMART_HOTTOK;
+  if (!HOTTOK || !hottokRecibido) return false;
+  return timingSafeEqualStr(hottokRecibido, HOTTOK);
 }
 
 const REPLAY_WINDOW_MS = 5 * 60 * 1000; // 5 minutos
