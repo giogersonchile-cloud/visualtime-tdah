@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-02 | Sesión actual: 2
 
-⏸️ CHECKPOINT — Última acción completada: landing construida en código (Next.js, 10 secciones del kit, tokens de FICHA-ARTE aplicados), auditoría automática en 0 críticos, revisor-visual independiente corrido → NO LISTA (27/40 usabilidad, 13/20 craft) por placeholders honestos sin screenshot real del producto (la app aún no existe — Sesión 5) + 2 defectos menores ya corregidos (CTA mensual, dato sin fuente). El usuario pidió pausar la sesión aquí. / Siguiente acción exacta: al retomar, preguntar si arranca Sesión 4 (onboarding, paywall y login) — todo lo de hoy ya está guardado y commiteado.
+⏸️ CHECKPOINT — Última acción completada: Sesión 4 construida de punta a punta y probada en navegador — onboarding (4 preguntas + loading personalizado), paywall (headline dinámico con la respuesta real del usuario, timeline del trial, planes, CTA) y login (magic link con estados enviando/enviado/reenvío) — flujo completo /onboarding → /paywall → /login funcionando. Auditoría automática en 0 críticos. Revisor-visual independiente corriendo en segundo plano para onboarding y paywall. / Siguiente acción exacta: leer los veredictos en docs/revisiones/onboarding-veredicto.md y paywall-veredicto.md cuando terminen, corregir si hace falta, y decidir con el usuario el siguiente paso (Sesión 5: app interna).
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -41,27 +41,28 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Primera victoria que celebra el onboarding (<5 min, del resumen): elegir plantilla "Rutina de Mañana Exitosa" → línea de tiempo lista con 1 toque, sin escribir nada
 
 ## Secuencia maestra de construcción (NO saltar)
-- Estado de la secuencia: dirección visual elegida (B), ninguna pantalla REAL construida en código todavía
+- Estado de la secuencia: dirección visual aprobada (Opción B) · landing, onboarding, paywall y login con su código escrito y funcionando en local, cada uno a la espera de su veredicto final del revisor (ver Problemas conocidos) · ninguno con veredicto "LISTA" cerrado todavía
 - Ruta aprobada: `/` → `/onboarding` → `/paywall` → `/login` → `/app`
-- Landing: código escrito y auditoría técnica en verde, pero el revisor-visual la marcó NO LISTA (ver Problemas conocidos) — pendiente screenshots reales para su veredicto final
-- Onboarding: pendiente (Sesión 4)
-- Paywall: pendiente (Sesión 4) — el mockup de ejemplo en el tour NO cuenta como construida
-- Login/Auth: pendiente — decidir en Sesión 1 (hecho): sí hace falta cuenta mínima para atar la licencia/compra de Hotmart a un dispositivo, aunque los datos vivan localmente
-- App interna: pendiente (Sesión 5)
-- Servicios externos: pendiente — GitHub/Vercel/Hotmart (Sesión 6). Supabase probablemente NO se usa para datos (sin nube en el MVP); solo si hace falta verificar licencia
+- Landing: código hecho, auditoría técnica en verde — su pantalla principal del carrusel sigue con placeholders honestos (pendiente de las capturas reales de la app en Sesión 5)
+- Onboarding: código hecho (4 preguntas + loading personalizado), probado en navegador de punta a punta, auditoría técnica en verde — revisor-visual corriendo
+- Paywall: código hecho (headline dinámico, timeline del trial, planes, CTA), probado en navegador, auditoría técnica en verde — revisor-visual corriendo
+- Login/Auth: código hecho (magic link con estados enviando/enviado/reenvío + botón Google), probado en navegador — el envío real (Supabase Auth) NO está conectado todavía, es estado local simulado; se conecta en Sesión 6
+- App interna: por construir (Sesión 5)
+- Servicios externos: por construir — GitHub/Vercel/Hotmart/Supabase Auth (Sesión 6)
 
-## Puertas de etapa (aprobación antes de avanzar)
-- Dirección de arte: no aprobada todavía (esperando respuesta del usuario al tour)
-- Landing: no iniciada
-- Onboarding: no iniciada
-- Paywall: no iniciada
-- Login/Auth: no iniciada
-- App interna: no iniciada
-- Servicios externos: bloqueados
+## Puertas de etapa (aprobación final antes de dar cada pantalla por terminada)
+- Dirección de arte: aprobada por el usuario — 2026-11-02
+- Landing: código hecho, revisor-visual NO LISTA (placeholders del producto real pendientes)
+- Onboarding: código hecho, revisor-visual en curso
+- Paywall: código hecho, revisor-visual en curso
+- Login/Auth: código hecho, pendiente de revisor-visual (pantalla secundaria del funnel)
+- App interna: por construir
+- Servicios externos: bloqueados hasta Sesión 6
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
 - Framework: Next.js App Router — decidido 2026-11-02. Razón: landing con SEO (tráfico orgánico vía TikTok/Reels + búsqueda) integrada con onboarding/paywall/login/app en un solo proyecto desplegable; regla del stack del SO ("landing integrada/SEO → Next.js; en duda → Next.js").
-- Stack: Next.js + almacenamiento local (IndexedDB/localStorage) para el MVP offline-first; sin Supabase para datos (no hay sync en la nube todavía, por decisión explícita del propio resumen del usuario); Supabase (o equivalente mínimo) solo si hace falta para auth + verificar licencia de Hotmart
+- Stack: Next.js + almacenamiento local (IndexedDB/localStorage) para el MVP offline-first; sin Supabase para datos (no hay sync en la nube todavía, por decisión explícita del propio resumen del usuario)
+- Auth: magic link por email (passwordless), modelo "Hotmart-first" de 26-AUTH-MODERNO.md — el webhook de Hotmart crea el usuario, el primer login es por correo. Google OAuth como secundario. UI construida en Sesión 4 con estado local simulado; Supabase Auth se conecta recién en Sesión 6
 - Features del MVP (del resumen, ya priorizadas):
   1. Línea de tiempo visual vertical 24h
   2. Tareas y rutinas recurrentes gratis desde el día uno
@@ -73,21 +74,22 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Sesión 2 — Identidad visual: comparativa A/B/C, elección del usuario (Opción B "Calma Clara"), tour aprobado, FICHA-ARTE.md cerrada
 
 ## Sesión en progreso 🔧
-(ninguna — esperando permiso del usuario para arrancar Sesión 3)
+- Sesión 4 — Onboarding, paywall y login: código de las 3 pantallas hecho y probado en navegador de punta a punta, auditoría técnica en verde. Falta leer el veredicto del revisor-visual (corriendo en segundo plano) para onboarding y paywall, y corregir si hace falta.
 
 ## Próximas sesiones 📋
-- Sesión 3: Página de ventas (landing) — escalar proyecto Next.js, tokens a app/globals.css, estructura canónica de 10 secciones del 19
-- Sesión 4: Onboarding, paywall y login
+- Sesión 5: App interna (línea de tiempo + rutinas) — y de paso, volver a la landing a montar sus screenshots reales
+- Sesión 6: Integraciones reales (GitHub, Vercel, Supabase Auth, Hotmart, dominio) y seguridad
 
 ## Problemas conocidos ⚠️
-- El mockup HTML del tour (`vista-previa-app.html`) incluye una maqueta de planes de precio de ejemplo, solo de referencia visual — NO es la pantalla de pago real. Esa pantalla (la del dinero) se construye recién en Sesión 4, en código, y recién ahí obtiene su veredicto del subagente revisor-visual con usabilidad/craft verificados antes de marcarse como hecha.
-- Veredicto de la pantalla "landing" (docs/revisiones/landing-veredicto.md, 2026-11-02): NO LISTA — Usabilidad 27/40, Craft 13/20, Copy 16/20. Causa raíz principal: el hero y el carrusel "La app por dentro" usan placeholders honestos (cámara + texto) porque la app real todavía NO existe (se construye en Sesión 5) — no hay screenshot real que montar todavía. Defectos menores ya corregidos tras el veredicto: CTA del plan mensual ahora repite el mismo verbo que el resto de la página, se quitó la estadística "58%" por no tener fuente verificable en pantalla, y se añadió el tratamiento duotone a los chips de ícono (dispositivo ownable de FICHA-ARTE.md). Pendiente: al cerrar Sesión 5 (app interna), volver a esta landing, montar los screenshots reales en el carrusel y el hero, y relanzar el revisor-visual para el veredicto final antes de dar la landing por terminada.
+- Veredicto de la pantalla "landing" (docs/revisiones/landing-veredicto.md, 2026-11-02): NO LISTA — Usabilidad 27/40, Craft 13/20, Copy 16/20. Causa raíz principal: el hero y el carrusel "La app por dentro" usan placeholders honestos (cámara + texto) porque la app real todavía NO existe (se construye en Sesión 5). Defectos menores ya corregidos: CTA del plan mensual, estadística sin fuente, duotone en chips. Pendiente: al cerrar Sesión 5, montar screenshots reales y relanzar el revisor para el veredicto final.
+- Veredictos de "onboarding" y "paywall": pendientes de leer (revisor-visual corriendo en segundo plano al cerrar esta sesión).
+- Login: la pantalla está construida pero el envío real del magic link (Supabase Auth) es un mock local — se conecta de verdad en Sesión 6. No declarar el login "funcional de punta a punta" hasta esa sesión.
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy (instalaciones estimadas + volumen de reseñas, con fuente y fecha). No bloquea el arranque porque la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Dar el OK para arrancar Sesión 3 (landing)
-- [ ] Más adelante (no ahora): crear cuentas de Hotmart, Vercel, dominio — se le avisará cuando llegue el momento
+- [ ] Ninguna acción suya requerida ahora mismo
+- [ ] Más adelante (no ahora): crear cuentas de Hotmart, Vercel, dominio, Supabase — se le avisará cuando llegue el momento (Sesión 6)
 
 ## Notas para la próxima sesión
 - El usuario entregó un RESUMEN FINAL — IDEA VALIDADA PARA CONSTRUIR en PDF: NO se re-valida ni se buscan alternativas. Se usa como contexto base.
-- Pendiente decidir en Sesión 1 (implementación pura, no se le pregunta al usuario): si el login necesita backend mínimo (p.ej. Supabase solo para auth + verificación de licencia Hotmart) o si se resuelve con un código de licencia local — se resuelve al llegar a la Sesión 4/6.
+- Al retomar: leer los veredictos de onboarding/paywall si no se leyeron en esta sesión, y luego preguntar si arranca Sesión 5 (app interna).
