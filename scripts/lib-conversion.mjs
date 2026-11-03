@@ -487,8 +487,21 @@ const uiTsx = tsxAll.filter((f) => UI_DIR_RE.test(rel(f))) .length ? tsxAll.filt
 
 const esSuperficie = (f) => {
   const r = rel(f).replace(/\\/g, '/');
+  if (/^plantillas-codigo\//.test(r)) return false; // kit sin tematizar: no es la app real
   if (/(landing|onboarding|paywall)/i.test(r)) return true;
   return r === 'app/page.tsx' || r === 'src/app/page.tsx' || r === 'pages/index.tsx' || r === 'pages/index.jsx';
+};
+// Subconjunto para checks de TEXTO/COPY (1, 15): solo la página compuesta, donde
+// vive el copy real vía props (*Marked, docs/copy/*.md). components/landing/**
+// son plantilla genérica y reutilizable (sin copy propio) — incluirla en los
+// checks de copy produce falsos positivos (JSDoc, className, destructuring
+// leídos como si fueran párrafos de venta). Los checks TÉCNICOS (hairline, mesh,
+// sticky, animaciones, emoji) sí deben ver el kit: ahí vive la implementación.
+const esPaginaCompuesta = (f) => {
+  const r = rel(f).replace(/\\/g, '/');
+  if (/^plantillas-codigo\//.test(r)) return false;
+  if (/(^|\/)components\//.test(r)) return false;
+  return esSuperficie(f);
 };
 const convFiles = uiTsx.filter(esSuperficie);
 const hayLanding = convFiles.some((f) => /landing/i.test(rel(f)) || /(^|\/)app\/page\.tsx$/.test(rel(f).replace(/\\/g, '/')) || /(^|\/)pages\/index\./.test(rel(f).replace(/\\/g, '/')));
@@ -497,6 +510,9 @@ const analisis = convFiles.map((f) => {
   const src = read(f);
   return src === null ? null : analizarTsx(f, src);
 }).filter(Boolean);
+
+// Solo la(s) página(s) compuesta(s) — ver esPaginaCompuesta arriba.
+const analisisCopy = analisis.filter((a) => esPaginaCompuesta(a.file));
 
 const cssParsed = cssFiles.map((f) => {
   const src = read(f);
@@ -567,7 +583,7 @@ function check1() {
     if (critico) crits.push(msg); else warns.push(msg);
   };
 
-  for (const a of analisis) {
+  for (const a of analisisCopy) {
     for (const el of a.elements) {
       const texto = textoJsx(el.inner);
       evaluar(a.file, el.line, el.name, el.cls || '', texto, false);
@@ -656,6 +672,11 @@ function check3() {
   for (const f of tsxAll) {
     const src = read(f); if (!src) continue;
     if (/GradientBorder/i.test(src)) { gbc++; hallazgos.push(`${rel(f)} — usa <GradientBorder…>`); }
+    // Técnica padding-box/border-box también vía inline style en .tsx (no solo CSS):
+    // ambas cadenas pueden caer en líneas distintas de un mismo style={{ background: ... }}.
+    if (/padding-box/.test(src) && /border-box/.test(src)) {
+      hallazgos.push(`${rel(f)} — hairline inline (padding-box/border-box)`);
+    }
   }
   const crits = []; const warns = []; const infos = [];
   if (!hallazgos.length) {
@@ -747,9 +768,14 @@ function check5() {
   if (SIN_SUP) return reporte(5, 'EMOJIS como elemento visual (55/CLAUDE.md — prohibidos en conversión)', { skip: SIN_SUP });
   const crits = [];
   for (const a of analisis) {
-    const lines = a.src.split('\n');
+    // Un emoji dentro de un comentario de código (// ... o bloque /* ... */)
+    // documenta una prohibición, no es un ícono renderizado — se excluye del scan.
+    // Se reemplaza por espacios (no se borran líneas) para conservar los números de línea.
+    const sinBloque = a.src.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '));
+    const lines = sinBloque.split('\n');
     lines.forEach((ln, i) => {
-      const m = ln.match(EMOJI_RE);
+      const sinLinea = ln.replace(/\/\/.*$/, '');
+      const m = sinLinea.match(EMOJI_RE);
       if (m) crits.push(`${rel(a.file)}:${i + 1} — ${[...new Set(m)].join(' ')} (todo ícono es SVG de librería con chip, jamás un carácter emoji/dingbat — incluye ✓/✔ del sistema)`);
     });
   }
@@ -830,10 +856,15 @@ function check7() {
       }
     }
   }
-  // gradientes inline en tsx de conversión sobre elementos no-botón
+  // gradientes inline en tsx de conversión sobre elementos no-botón (ventana de
+  // 3 líneas: `background:` y el valor del gradiente pueden caer en líneas
+  // distintas dentro de un mismo style={{ ... }} formateado con prettier).
   for (const a of analisis) {
-    a.src.split('\n').forEach((ln, i) => {
-      if (/(radial|linear|conic)-gradient\(/.test(ln) && /background/i.test(ln) && !/btn|button/i.test(ln)) {
+    const lineas = a.src.split('\n');
+    lineas.forEach((ln, i) => {
+      if (!/(radial|linear|conic)-gradient\(/.test(ln) || /btn|button/i.test(ln)) return;
+      const ventana = lineas.slice(Math.max(0, i - 2), i + 1).join('\n');
+      if (/background/i.test(ventana)) {
         gradientesSeccion++;
         infos.push(`Gradiente inline: ${rel(a.file)}:${i + 1}`);
       }
@@ -950,6 +981,13 @@ function check10() {
         voseoRe.lastIndex = 0;
         let m;
         while ((m = voseoRe.exec(ln)) !== null) {
+          // Excluir identificadores de código (prop/atributo/clave), no prosa en
+          // español: `animate={`, `animate:`, `.animate(` — "animate" (motion/react)
+          // coincide por accidente con la forma voseante "animate" (de "animarte").
+          const resto = ln.slice(m.index + m[1].length).trimStart();
+          const antes = ln.slice(0, m.index).trimEnd();
+          const esIdentificador = /^[=:(]/.test(resto) || antes.endsWith('.') || antes.endsWith('<motion');
+          if (esIdentificador) continue;
           voseoHits.push(`${rel(a.file)}:${i + 1} — voseo "${m[1]}" con registro=${registro} declarado en la ficha`);
         }
       });
@@ -1115,8 +1153,11 @@ function check14() {
   if (familias.length && !familias.some((f) => /monospace/i.test(f))) {
     warns.push('Ninguna declaración font-family usa el fallback-trampa monospace — si una fuente no carga, el fallo no "grita" (54: fallback-trampa).');
   }
+  // Un emoji dentro de un comentario HTML (<!-- ... -->, p.ej. la cabecera de
+  // instrucciones del propio kit) documenta la regla — no es un ícono renderizado.
+  const htmlSinComentarios = html.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/[^\n]/g, ' '));
   const emojiLines = [];
-  html.split('\n').forEach((ln, i) => {
+  htmlSinComentarios.split('\n').forEach((ln, i) => {
     const m = ln.match(EMOJI_RE);
     if (m) emojiLines.push(`${rel(compPath)}:${i + 1} — ${[...new Set(m)].join(' ')}`);
   });
@@ -1140,8 +1181,19 @@ function check14() {
       }
     }
   }
+  // El chasis (statusbar/tabbar/home-indicator) se COMPARTE a propósito entre
+  // las 3 opciones (54: "las 3 variantes comparten los datos semilla y el frame
+  // comparativo") — incluirlo en la medida de similitud infla el % con markup
+  // que nunca diverge por diseño. Se compara solo la composición única de cada
+  // opción (el contenido de .pantalla, sin su statusbar/tabbar/home-indicator).
+  const quitarChasis = (f) =>
+    f
+      .replace(/<div class="statusbar">[\s\S]*?<\/div>/, '')
+      .replace(/<nav class="tabbar"[\s\S]*?<\/nav>/, '')
+      .replace(/<div class="home-indicator"><\/div>/, '');
+
   if (frames.length >= 2) {
-    const seqs = frames.slice(0, 3).map((f) => scanTags(f).filter((t) => t.type !== 'close' && t.name).map((t) => t.name.toLowerCase()));
+    const seqs = frames.slice(0, 3).map((f) => scanTags(quitarChasis(f)).filter((t) => t.type !== 'close' && t.name).map((t) => t.name.toLowerCase()));
     let similares = 0; let pares = 0;
     for (let i = 0; i < seqs.length; i++) {
       for (let j = i + 1; j < seqs.length; j++) {
