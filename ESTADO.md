@@ -80,7 +80,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Sesión 4: Onboarding, paywall y login
 
 ## Problemas conocidos ⚠️
-- El mockup HTML del tour (`vista-previa-app.html`) incluye una vista de planes de precio de ejemplo — NO es la pantalla de paywall real construida en código; esa pantalla se construye en Sesión 4 y pasará su propio veredicto del revisor-visual (docs/revisiones/paywall-veredicto.md) antes de declararse lista.
+- El mockup HTML del tour (`vista-previa-app.html`) incluye una maqueta de planes de precio de ejemplo, solo de referencia visual — NO es la pantalla de pago real. Esa pantalla (la del dinero) se construye recién en Sesión 4, en código, y recién ahí obtiene su veredicto del subagente revisor-visual con usabilidad/craft verificados antes de marcarse como hecha.
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy (instalaciones estimadas + volumen de reseñas, con fuente y fecha). No bloquea el arranque porque la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
