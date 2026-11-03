@@ -30,16 +30,16 @@ const variantesItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
-function Toast({ mensaje, onCerrar }: { mensaje: string; onCerrar: () => void }) {
+function Toast({ mensaje, onCerrar, reducedMotion }: { mensaje: string; onCerrar: () => void; reducedMotion: boolean }) {
   useEffect(() => {
     const t = window.setTimeout(onCerrar, 3200);
     return () => clearTimeout(t);
   }, [onCerrar]);
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: 16 }}
+      exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
       role="alert"
       className="fixed inset-x-4 bottom-20 z-30 mx-auto max-w-[480px] rounded-[var(--radius-button)] bg-[var(--text-primary)] px-4 py-3 text-center text-[13px] font-medium text-[var(--bg)] shadow-[0_8px_24px_-6px_rgb(0_0_0_/_0.3)]"
     >
@@ -48,7 +48,7 @@ function Toast({ mensaje, onCerrar }: { mensaje: string; onCerrar: () => void })
   );
 }
 
-function CelebracionRacha({ dias, onCerrar }: { dias: number; onCerrar: () => void }) {
+function CelebracionRacha({ dias, onCerrar, reducedMotion }: { dias: number; onCerrar: () => void; reducedMotion: boolean }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -58,9 +58,9 @@ function CelebracionRacha({ dias, onCerrar }: { dias: number; onCerrar: () => vo
       onClick={onCerrar}
     >
       <motion.div
-        initial={{ scale: 0.6, opacity: 0 }}
+        initial={reducedMotion ? { opacity: 0 } : { scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 260, damping: 16 }}
+        transition={reducedMotion ? { duration: 0.2 } : { type: 'spring', stiffness: 260, damping: 16 }}
         className="relative isolate flex size-24 items-center justify-center overflow-hidden rounded-full bg-[var(--accent-2)]"
       >
         <span
@@ -90,15 +90,18 @@ function FormularioBloque({
   onCerrar,
   onGuardado,
   onError,
+  reducedMotion,
 }: {
   inicial: Bloque | null;
   onCerrar: () => void;
   onGuardado: () => void;
   onError: () => void;
+  reducedMotion: boolean;
 }) {
   const [titulo, setTitulo] = useState(inicial?.titulo ?? '');
   const [hora, setHora] = useState(inicial?.hora ?? '09:00');
   const [duracion, setDuracion] = useState(inicial?.duracionMin ?? 30);
+  const [confirmarEliminar, setConfirmarEliminar] = useState(false);
   const esEdicion = Boolean(inicial);
 
   const guardar = () => {
@@ -112,6 +115,12 @@ function FormularioBloque({
 
   const eliminar = () => {
     if (!inicial) return;
+    // Control y libertad (50/15): una acción destructiva SIEMPRE pide confirmación —
+    // el primer tap solo revela el botón de confirmar, nunca borra de una.
+    if (!confirmarEliminar) {
+      setConfirmarEliminar(true);
+      return;
+    }
     const resultado = eliminarBloque(inicial.id);
     if (!resultado.ok) return onError();
     onGuardado();
@@ -126,9 +135,9 @@ function FormularioBloque({
       onClick={onCerrar}
     >
       <motion.div
-        initial={{ y: 24, opacity: 0 }}
+        initial={reducedMotion ? { opacity: 0 } : { y: 24, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        exit={{ y: 24, opacity: 0 }}
+        exit={reducedMotion ? { opacity: 0 } : { y: 24, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[520px] rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 shadow-[0_12px_40px_-10px_rgb(15_118_110_/_0.35)]"
       >
@@ -177,9 +186,12 @@ function FormularioBloque({
             <button
               type="button"
               onClick={eliminar}
-              className="flex h-11 items-center justify-center gap-2 text-[14px] font-semibold text-[var(--error)]"
+              className={`flex h-11 items-center justify-center gap-2 text-[14px] font-semibold text-[var(--error)] ${
+                confirmarEliminar ? 'rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--error)_10%,transparent)]' : ''
+              }`}
             >
-              <Trash2 size={15} aria-hidden="true" /> Eliminar bloque
+              <Trash2 size={15} aria-hidden="true" />
+              {confirmarEliminar ? 'Toca de nuevo para confirmar' : 'Eliminar bloque'}
             </button>
           )}
         </div>
@@ -188,10 +200,14 @@ function FormularioBloque({
   );
 }
 
-function PorcentajeAnimado({ valor }: { valor: number }) {
-  const [mostrado, setMostrado] = useState(0);
+function PorcentajeAnimado({ valor, reducedMotion }: { valor: number; reducedMotion: boolean }) {
+  const [mostrado, setMostrado] = useState(reducedMotion ? valor : 0);
   const previo = useRef(0);
   useEffect(() => {
+    if (reducedMotion) {
+      setMostrado(valor);
+      return;
+    }
     const desde = previo.current;
     const hasta = valor;
     previo.current = valor;
@@ -206,7 +222,7 @@ function PorcentajeAnimado({ valor }: { valor: number }) {
     raf = requestAnimationFrame(paso);
     return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [valor]);
+  }, [valor, reducedMotion]);
   return <>{mostrado}%</>;
 }
 
@@ -299,7 +315,12 @@ export default function Hoy() {
           </h1>
         </div>
         {racha > 0 && (
-          <span className="relative isolate flex items-center gap-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent-2)_14%,transparent)] px-3 py-1.5 text-[13px] font-bold text-[var(--accent-2)]">
+          <span
+            role="status"
+            aria-live="polite"
+            aria-label={`Racha de ${racha} ${racha === 1 ? 'día' : 'días'}`}
+            className="relative isolate flex items-center gap-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent-2)_14%,transparent)] px-3 py-1.5 text-[13px] font-bold text-[var(--accent-2)]"
+          >
             <span
               aria-hidden="true"
               className="absolute inset-0"
@@ -336,7 +357,7 @@ export default function Hoy() {
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-              <PorcentajeAnimado valor={pct} />
+              <PorcentajeAnimado valor={pct} reducedMotion={Boolean(reducedMotion)} />
             </span>
             <span className="text-[10px] font-semibold text-[var(--text-secondary)]">de hoy</span>
           </div>
@@ -374,7 +395,8 @@ export default function Hoy() {
                   type="button"
                   whileTap={{ scale: 0.98 }}
                   onClick={() => marcar(b.id)}
-                  className={`flex flex-1 items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-8px_rgb(15_118_110_/_0.25)] transition-colors ${
+                  aria-pressed={hecho}
+                  className={`flex flex-1 items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-8px_rgb(15_118_110_/_0.25)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
                     hecho
                       ? 'border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface-2)]'
                       : 'border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]'
@@ -417,8 +439,11 @@ export default function Hoy() {
           variants={variantesItem}
           className="mt-6 rounded-[var(--radius-card)] border border-transparent p-4"
           style={{
+            // Superficie HUNDIDA (3er nivel de profundidad de FICHA-ARTE): --surface-2 +
+            // sombra interior, para que se distinga de las cards ELEVADAS de arriba.
             background:
-              'linear-gradient(var(--surface), var(--surface)) padding-box, linear-gradient(135deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent 60%) border-box',
+              'linear-gradient(var(--surface-2), var(--surface-2)) padding-box, linear-gradient(135deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent 60%) border-box',
+            boxShadow: 'inset 0 1px 4px rgb(15 118 110 / 0.14)',
             borderWidth: 1,
           }}
         >
@@ -436,15 +461,18 @@ export default function Hoy() {
               setVersion((v) => v + 1);
             }}
             onError={() => setToast('No se pudo guardar. Intenta de nuevo.')}
+            reducedMotion={Boolean(reducedMotion)}
           />
         )}
       </AnimatePresence>
 
-      <AnimatePresence>{toast && <Toast mensaje={toast} onCerrar={() => setToast(null)} />}</AnimatePresence>
+      <AnimatePresence>
+        {toast && <Toast mensaje={toast} onCerrar={() => setToast(null)} reducedMotion={Boolean(reducedMotion)} />}
+      </AnimatePresence>
 
       <AnimatePresence>
         {celebracion !== null && (
-          <CelebracionRacha dias={celebracion} onCerrar={() => setCelebracion(null)} />
+          <CelebracionRacha dias={celebracion} onCerrar={() => setCelebracion(null)} reducedMotion={Boolean(reducedMotion)} />
         )}
       </AnimatePresence>
     </motion.div>

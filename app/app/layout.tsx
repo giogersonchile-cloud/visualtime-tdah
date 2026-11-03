@@ -9,7 +9,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(760px 420px at 90% -10%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 60%), radial-gradient(620px 420px at -5% 40%, color-mix(in oklab, var(--accent-2) 10%, transparent) 0%, transparent 55%)',
+            'radial-gradient(820px 460px at 92% -10%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 62%), radial-gradient(660px 460px at -8% 42%, color-mix(in oklab, var(--accent-2) 13%, transparent) 0%, transparent 56%)',
         }}
       />
       <main className="mx-auto w-full max-w-[520px] flex-1 px-4 pb-6 pt-5">{children}</main>
