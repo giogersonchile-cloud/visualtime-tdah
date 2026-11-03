@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, Check } from 'lucide-react';
 import { PREGUNTAS, guardarRespuestas, type Respuestas } from '@/lib/onboarding';
+import { rutinaDesdeRespuesta, guardarRutina } from '@/lib/rutina';
 import { Hairline } from '@/components/landing/ui';
 
 const PAUSA_SELECCION_MS = 320;
@@ -302,6 +303,7 @@ export default function Onboarding() {
       setIndice(indice + 1);
     } else {
       guardarRespuestas(respuestas.current as Respuestas);
+      guardarRutina(rutinaDesdeRespuesta(respuestas.current.p3));
       setPaso('loading');
     }
   };

@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-03 | Sesión actual: 5
 
-⏸️ CHECKPOINT — Última acción completada: Sesión 4 cerrada. Onboarding, paywall y login construidos, probados en navegador de punta a punta, con 3 rondas de revisor-visual (cada una corrigió defectos reales: profundidad/sombras, "Restaurar compra" con estado final, garantía junto al CTA, botón X del paywall que navegaba mal). Craft visual sigue por debajo del gate (13-14/20) — se documenta como pendiente, mismo criterio que la landing, y se avanza a Sesión 5 por decisión del agente (rendimientos decrecientes tras 3 rondas; nada roto, es pulido fino). / Siguiente acción exacta: pedir el OK del usuario para arrancar Sesión 5 (app interna) y, al cerrarla, volver a landing/onboarding/paywall con screenshots reales de la app para la pasada final del revisor.
+⏸️ CHECKPOINT — Última acción completada: Sesión 5 (app interna) construida y probada en navegador de punta a punta — 4 secciones (Hoy/ritual diario, Progreso, Semana, Perfil), todas sobre localStorage, el onboarding ahora siembra la rutina real al terminar el quiz. Probado en vivo: marcar bloques, racha que sube, insight del patrón, agregar un bloque nuevo — todo funciona con datos reales, no simulados. Auditoría técnica en verde. Revisor-visual de la pantalla principal (Hoy) corriendo en segundo plano. / Siguiente acción exacta: leer docs/revisiones/pantalla-principal-veredicto.md cuando esté, corregir si hace falta, actualizar ESTADO.md, y luego volver a landing/onboarding/paywall con screenshots reales de esta app ya construida para su veredicto final (pendiente documentado en Sesión 3/4).
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -30,9 +30,10 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Modelo: Hard paywall tras onboarding, con 7 días de prueba gratuita (dato del usuario: trials de 7 días convierten 70% mejor que de 3 días)
 - Trial: 7 días · Pricing: US$4.99/mes · US$29.99/año (mostrado como ~US$2.49/mes) · Garantía: 15 días (FICHA-MERCADO.md)
 
-## Gamificación y retención (pendiente — Sesión 5)
-- Mecánicas elegidas (del propio resumen del usuario): rachas, medallas de logro, % de progreso diario/mensual, ciclos de planificación de 90 días (reinicios)
-- Primera victoria que celebra el onboarding (<5 min, del resumen): elegir plantilla "Rutina de Mañana Exitosa" → línea de tiempo lista con 1 toque, sin escribir nada
+## Gamificación y retención (Sesión 5 — loop implementado)
+- Loop (24, Regla de Oro 6): GATILLO = la hora del bloque (alarma nativa, fuera de alcance web) o abrir la app · ACCIÓN = marcar un bloque hecho (1 tap) · RECOMPENSA = check visual + anillo de hoy + insight del patrón · INVERSIÓN = cada marca alimenta la racha y el insight de mañana (test superado: sin historial, la app de mañana vuelve a ser genérica)
+- Mecánicas implementadas: racha (días consecutivos con ≥1 bloque hecho, calculada en `lib/rutina.ts`), medallas en 7/14/30/90 días (pantalla Progreso), % de hoy (anillo), insight semanal honesto (solo afirma lo que los datos muestran)
+- Primera victoria del onboarding: la rutina elegida en la pregunta 3 se siembra automáticamente al terminar el quiz (ver `rutinaDesdeRespuesta` en `lib/onboarding.ts` → `app/onboarding/page.tsx`)
 
 ## Secuencia maestra de construcción (NO saltar)
 - Ruta aprobada: `/` → `/onboarding` → `/paywall` → `/login` → `/app`
@@ -40,7 +41,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Onboarding: código hecho (4 preguntas + loading personalizado), probado en navegador — revisor-visual NO LISTA (ver Problemas conocidos)
 - Paywall: código hecho (headline dinámico, timeline del trial, planes, CTA), probado en navegador — revisor-visual NO LISTA (ver Problemas conocidos)
 - Login/Auth: código hecho (magic link con estados enviando/enviado/reenvío + botón Google), probado en navegador — el envío real (Supabase Auth) es mock local, se conecta en Sesión 6
-- App interna: EN CONSTRUCCIÓN (Sesión 5, arrancando ahora)
+- App interna: código hecho — Hoy (ritual diario), Progreso, Semana, Perfil — probada de punta a punta en navegador, revisor-visual de la pantalla principal en curso
 - Servicios externos: por construir — GitHub/Vercel/Hotmart/Supabase Auth (Sesión 6)
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
@@ -56,7 +57,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Sesión 4 — Onboarding, paywall y login construidos y probados de punta a punta, 3 rondas de revisor-visual, craft pendiente (ver Problemas conocidos)
 
 ## Sesión en progreso 🔧
-- Sesión 5 — App interna: arrancando. Construir la línea de tiempo (pantalla principal/M0), la creación de rutinas recurrentes, y los momentos emocionales del loop (racha, medallas) sobre el estilo ya fijado.
+- Sesión 5 — App interna: código de las 4 secciones hecho y probado de punta a punta (marcar bloques, racha, agregar bloque, insight). Falta leer el veredicto del revisor sobre el ritual diario y corregir si hace falta.
 
 ## Próximas sesiones 📋
 - Sesión 6: Integraciones reales (GitHub, Vercel, Supabase Auth, Hotmart, dominio) y seguridad
