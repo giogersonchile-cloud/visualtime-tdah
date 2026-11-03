@@ -81,8 +81,11 @@ function leer<T>(key: string, fallback: T): T {
 function escribir<T>(key: string, valor: T) {
   try {
     localStorage.setItem(key, JSON.stringify(valor));
+    return true;
   } catch {
-    // almacenamiento no disponible (modo privado, cuota) — el flujo sigue sin persistir
+    // almacenamiento no disponible (modo privado, cuota): se PROPAGA el fallo — la UI
+    // avisa, nunca falla en silencio (el usuario creería que guardó y no fue así).
+    return false;
   }
 }
 
@@ -90,16 +93,34 @@ export function obtenerRutina(): Rutina | null {
   return leer<Rutina | null>(KEY_RUTINA, null);
 }
 
-export function guardarRutina(r: Rutina) {
-  escribir(KEY_RUTINA, r);
+export function guardarRutina(r: Rutina): boolean {
+  return escribir(KEY_RUTINA, r);
 }
 
-export function agregarBloque(bloque: Omit<Bloque, 'id'>) {
+export function agregarBloque(bloque: Omit<Bloque, 'id'>): { rutina: Rutina; ok: boolean } {
   const rutina = obtenerRutina() ?? { nombre: 'Mi rutina', bloques: [] };
   const nuevo: Bloque = { ...bloque, id: `b${Date.now()}` };
   rutina.bloques = [...rutina.bloques, nuevo].sort((a, b) => a.hora.localeCompare(b.hora));
-  guardarRutina(rutina);
-  return rutina;
+  const ok = guardarRutina(rutina);
+  return { rutina, ok };
+}
+
+export function editarBloque(id: string, cambios: Partial<Omit<Bloque, 'id'>>): { rutina: Rutina | null; ok: boolean } {
+  const rutina = obtenerRutina();
+  if (!rutina) return { rutina: null, ok: false };
+  rutina.bloques = rutina.bloques
+    .map((b) => (b.id === id ? { ...b, ...cambios } : b))
+    .sort((a, b) => a.hora.localeCompare(b.hora));
+  const ok = guardarRutina(rutina);
+  return { rutina, ok };
+}
+
+export function eliminarBloque(id: string): { rutina: Rutina | null; ok: boolean } {
+  const rutina = obtenerRutina();
+  if (!rutina) return { rutina: null, ok: false };
+  rutina.bloques = rutina.bloques.filter((b) => b.id !== id);
+  const ok = guardarRutina(rutina);
+  return { rutina, ok };
 }
 
 function fechaISO(d: Date): string {
@@ -120,13 +141,13 @@ export function estaCompletado(fecha: Date, bloqueId: string): boolean {
   return completadosDe(fechaISO(fecha)).includes(bloqueId);
 }
 
-export function alternarCompletado(fecha: Date, bloqueId: string): string[] {
+export function alternarCompletado(fecha: Date, bloqueId: string): { completados: string[]; ok: boolean } {
   const key = fechaISO(fecha);
   const todos = leer<Record<string, string[]>>(KEY_COMPLETADOS, {});
   const actuales = todos[key] ?? [];
   todos[key] = actuales.includes(bloqueId) ? actuales.filter((id) => id !== bloqueId) : [...actuales, bloqueId];
-  escribir(KEY_COMPLETADOS, todos);
-  return todos[key];
+  const ok = escribir(KEY_COMPLETADOS, todos);
+  return { completados: todos[key], ok };
 }
 
 /** Racha = días consecutivos (terminando hoy o ayer) con ≥1 bloque completado,
