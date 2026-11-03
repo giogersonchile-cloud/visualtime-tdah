@@ -1,7 +1,15 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-02 | Sesión actual: 1
 
-⏸️ CHECKPOINT — Última acción completada: Sistema instalado, RESUMEN FINAL del usuario leído y guardado, FICHA-AVATAR y FICHA-MODELO creadas con evidencia real / Siguiente acción exacta: hacer la pregunta de referencia visual (B4) y presentar el Plan Maestro (B5) para aprobación del usuario.
+⏸️ CHECKPOINT — Última acción completada: construidas y verificadas las 3 opciones de dirección de arte (direcciones-abc.html, fusión de líderes: Structured + Tiimo + banco 54) / Siguiente acción exacta: esperar que el usuario elija A, B, C, combine, pida otras 3 o ajuste un detalle; luego construir el Tour de la app (vista-previa-app.html) antes de cerrar FICHA-ARTE.md.
+
+## Dirección de arte — Sesión 2 (en curso)
+- Ruta de diseño: propuesta propia (RUTA 1 del 54) — el usuario eligió "Propón tú el estilo"
+- Comparativa: `direcciones-abc.html` en la raíz — 3 fusiones de líderes (Structured #1 + Tiimo + banco 54), verificada: fuentes cargando por clase, sin emojis, mockups llenos, color valiente presente
+- Opción A — "Rutina Regalada": Cítrica utilitaria (banco 54 dir. 11) — Unbounded + Familjen Grotesk, acento mandarina #D97E00, dispositivo: pastilla de dato
+- Opción B — "Calma Clara": Clínica humana (banco 54 dir. 5), adaptada — Gantari + Atkinson Hyperlegible (legibilidad TDAH/dislexia), acento teal #0F766E, dispositivo: duotone
+- Opción C — "Tu Día en Capítulos": Editorial cálida (banco 54 dir. 1) — Newsreader + Mulish, acento óxido #7A3E2E, dispositivo: subrayado marcador
+- Pendiente: elección del usuario → Tour de la app → FICHA-ARTE.md
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
