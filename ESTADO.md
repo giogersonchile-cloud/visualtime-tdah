@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-02 | Sesión actual: 2
 
-⏸️ CHECKPOINT — Última acción completada: landing construida en código (Next.js, 10 secciones del kit, tokens de FICHA-ARTE aplicados), auditoría automática en 0 críticos, revisor-visual independiente corrido → NO LISTA (27/40 usabilidad, 13/20 craft) por placeholders honestos sin screenshot real del producto (la app aún no existe — Sesión 5) + 2 defectos menores ya corregidos (CTA mensual, dato sin fuente) / Siguiente acción exacta: decidir con el usuario si se avanza a Sesión 4 (onboarding/paywall/login) dejando la landing pendiente de su veredicto final hasta tener screenshots reales, o si se pausa aquí.
+⏸️ CHECKPOINT — Última acción completada: landing construida en código (Next.js, 10 secciones del kit, tokens de FICHA-ARTE aplicados), auditoría automática en 0 críticos, revisor-visual independiente corrido → NO LISTA (27/40 usabilidad, 13/20 craft) por placeholders honestos sin screenshot real del producto (la app aún no existe — Sesión 5) + 2 defectos menores ya corregidos (CTA mensual, dato sin fuente). El usuario pidió pausar la sesión aquí. / Siguiente acción exacta: al retomar, preguntar si arranca Sesión 4 (onboarding, paywall y login) — todo lo de hoy ya está guardado y commiteado.
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
