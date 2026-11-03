@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-03 | Sesión actual: 5
 
-⏸️ CHECKPOINT — Sesión 5 cerrada: app interna (Hoy/Progreso/Semana/Perfil) construida y probada de punta a punta. La pantalla principal pasó 3 rondas de revisor-visual con defectos reales corregidos en cada una (bug de hooks, badge de dev contaminando screenshots, edición/eliminación con confirmación, reducedMotion completo, aria-live, superficie hundida) pero quedó en plateau (29/40·12/20 → 30/40·15/20 → 29/40·14/20), siempre bajo el gate (≥36/40·≥16/20) — causa de fondo: falta un dispositivo ownable visible y gestos/atajos (h7), no bugs. Decisión del agente: aceptar NO LISTA como pendiente documentado y no seguir iterando a ciegas (mismo criterio aplicado a onboarding/paywall). / Siguiente acción exacta: preguntarle al usuario si se avanza a Sesión 6 (servicios externos) dejando el pulido de craft de las 4 pantallas de venta como pendiente agrupado, o si prefiere una sesión de pulido visual antes.
+⏸️ CHECKPOINT — Sesión 5 cerrada: app interna (Hoy/Progreso/Semana/Perfil) probada de punta a punta. Craft visual pendiente en la pantalla principal: 3 rondas de revisor-visual con defectos reales corregidos (bug de hooks, badge de dev contaminando screenshots, edición/eliminación con confirmación, reducedMotion completo, aria-live, superficie hundida) pero en plateau bajo el gate (29/40·12/20 → 30/40·15/20 → 29/40·14/20 vs ≥36/40·≥16/20 exigido) — causa de fondo pendiente de resolver: falta un dispositivo ownable visible y gestos/atajos (h7), no bugs. Decisión del agente: documentar como pendiente y no seguir iterando a ciegas (mismo criterio aplicado a onboarding/paywall). / Siguiente acción exacta: preguntarle al usuario si se avanza a Sesión 6 (servicios externos) dejando el pulido de craft de las 4 pantallas de venta como pendiente agrupado, o si prefiere una sesión de pulido visual antes.
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -41,7 +41,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Onboarding: código hecho (4 preguntas + loading personalizado), probado en navegador — revisor-visual NO LISTA (ver Problemas conocidos)
 - Paywall: código hecho (headline dinámico, timeline del trial, planes, CTA), probado en navegador — revisor-visual NO LISTA (ver Problemas conocidos)
 - Login/Auth: código hecho (magic link con estados enviando/enviado/reenvío + botón Google), probado en navegador — el envío real (Supabase Auth) es mock local, se conecta en Sesión 6
-- App interna: código hecho — Hoy (ritual diario), Progreso, Semana, Perfil — probada de punta a punta en navegador, revisor-visual de la pantalla principal: NO LISTA tras 3 rondas (ver Problemas conocidos)
+- App interna: código hecho — Hoy (ritual diario), Progreso, Semana, Perfil — probada de punta a punta en navegador; craft visual de la pantalla principal pendiente (revisor-visual NO LISTA tras 3 rondas, ver Problemas conocidos)
 - Servicios externos: por construir — GitHub/Vercel/Hotmart/Supabase Auth (Sesión 6)
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
