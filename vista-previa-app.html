@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="es" data-kit="abc-v2">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tu app por dentro — VisualTime TDAH (estilo Calma Clara)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gantari:wght@400;500;600;700&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+
+<!-- vista-previa-app.html — TOUR de la app (54, sección final).
+     Nace del frame YA tematizado de direcciones-abc.html, opción B elegida
+     ("Calma Clara" — Clínica humana adaptada, banco 54 dir. 5).
+     Marcador data-kit="abc-v2" conservado (Regla Dura #0). -->
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  :root {
+    --bg: #f4f7f6; --surface: #fdfefd; --text-1: #22302c; --text-2: #5b6d67;
+    --accent: #0f766e; --radius-card: 16px; --radius-btn: 12px;
+    --font-display: 'Gantari', monospace;
+    --font-body: 'Atkinson Hyperlegible', monospace;
+    --shadow-tinta: 15 118 110;
+  }
+  body {
+    background:
+      radial-gradient(1100px 520px at 12% -6%, #f7f7f9, transparent 62%),
+      radial-gradient(900px 460px at 92% 4%, #e2e2e9, transparent 58%),
+      linear-gradient(180deg, #ededf0, #e4e4e9);
+    color: #1c1c1f; font-family: 'Segoe UI', system-ui, sans-serif;
+    padding: 32px 20px 64px;
+  }
+  .cabecera { max-width: 1320px; margin: 0 auto 28px; }
+  .cabecera h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.01em; }
+  .cabecera p { margin-top: 6px; font-size: 14px; color: #55555c; max-width: 70ch; }
+
+  .tour { max-width: 1320px; margin: 0 auto; display: grid; gap: 28px;
+          grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); }
+  .frame-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .rotulo { font-size: 12.5px; font-weight: 700; color: #3a3a40; text-align: center; }
+
+  .telefono {
+    width: 270px; aspect-ratio: 9 / 19.5; border: 9px solid #101014; border-radius: 40px;
+    box-shadow: 0 20px 50px rgb(20 18 24 / 0.26); overflow: hidden; position: relative;
+    display: flex; flex-direction: column; background: var(--bg);
+  }
+  .statusbar { display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 18px 4px; font-size: 12px; font-weight: 600; color: var(--text-1);
+    font-family: var(--font-body); font-variant-numeric: tabular-nums; }
+  .home-indicator { position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 4px; border-radius: 999px; background: var(--text-1); opacity: 0.85; }
+  .pantalla { flex: 1; display: flex; flex-direction: column; overflow: hidden;
+    font-family: var(--font-body); color: var(--text-1); padding: 0 16px; }
+
+  .chip-icono { display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; flex-shrink: 0; border-radius: var(--radius-btn);
+    background: color-mix(in oklab, var(--accent) 12%, transparent); }
+  .cta { display: flex; align-items: center; justify-content: center; height: 44px;
+    font-size: 14px; font-weight: 700; letter-spacing: 0.01em; margin-top: auto; margin-bottom: 0;
+    border-radius: var(--radius-btn); background: var(--accent); color: var(--bg);
+    box-shadow: 0 8px 22px color-mix(in oklab, var(--accent) 28%, transparent); }
+  .cta.secundario { background: var(--surface); color: var(--text-1);
+    border: 1.5px solid color-mix(in oklab, var(--text-2) 30%, transparent); box-shadow: none; margin-top: 8px; }
+
+  .tabbar { display: flex; align-items: stretch; justify-content: space-around;
+    margin: 10px -16px 0; padding: 7px 8px 14px;
+    border-top: 1px solid color-mix(in oklab, var(--text-2) 18%, transparent);
+    background: color-mix(in oklab, var(--surface) 88%, transparent); }
+  .tabbar a { display: flex; flex-direction: column; align-items: center; gap: 3px;
+    font-size: 9px; font-weight: 600; color: var(--text-2); text-decoration: none; }
+  .tabbar .tab-chip { display: flex; align-items: center; justify-content: center;
+    width: 32px; height: 24px; border-radius: 8px; }
+  .tabbar a.activa { color: var(--accent); }
+  .tabbar a.activa .tab-chip { background: color-mix(in oklab, var(--accent) 14%, transparent); }
+
+  /* ── FRAME 1: HOY (home / ritual diario) ── */
+  .encabezado-b { margin-top: 10px; text-align: center; }
+  .encabezado-b .periodo { font-size: 10.5px; font-weight: 600; color: var(--text-2); }
+  h3.titulo-b { font-family: var(--font-display); font-size: 19px; font-weight: 700;
+    letter-spacing: -0.02em; margin-top: 2px; }
+  .anillo-wrap { margin: 12px auto 0; position: relative; width: 112px; height: 112px; }
+  .anillo-wrap .centro { position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; }
+  .anillo-wrap .pct { font-family: var(--font-display); font-size: 25px; font-weight: 700;
+    font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .anillo-wrap .pct-label { font-size: 9.5px; color: var(--text-2); font-weight: 600; }
+  .grid2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .tile { background: var(--surface); border-radius: var(--radius-card);
+    border: 1px solid rgb(0 0 0 / 0.06); padding: 10px; }
+  .tile.destacada { border: 1.5px solid transparent;
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+      linear-gradient(135deg, color-mix(in oklab, var(--accent) 50%, transparent), transparent 60%) border-box; }
+  .tile .t-label { display: flex; align-items: center; gap: 5px; font-size: 9.5px;
+    font-weight: 600; color: var(--text-2); }
+  .tile .t-dato { margin-top: 5px; font-family: var(--font-display); font-size: 18px;
+    font-weight: 700; font-variant-numeric: tabular-nums; }
+  .tile .t-dato small { font-size: 11px; color: var(--text-2); font-weight: 600; }
+
+  /* ── FRAME 2: ONBOARDING (pregunta del quiz) ── */
+  .barra-progreso { display: flex; gap: 5px; margin-top: 14px; }
+  .barra-progreso span { flex: 1; height: 4px; border-radius: 999px;
+    background: color-mix(in oklab, var(--text-2) 22%, transparent); }
+  .barra-progreso span.hecha { background: var(--accent); }
+  .pregunta-num { margin-top: 14px; font-size: 10.5px; font-weight: 600; color: var(--text-2); }
+  h3.titulo-pregunta { font-family: var(--font-display); font-size: 19px; font-weight: 700;
+    line-height: 1.25; margin-top: 4px; }
+  .opciones-quiz { margin-top: 16px; display: flex; flex-direction: column; gap: 9px; }
+  .opcion-quiz { display: flex; align-items: center; gap: 10px; padding: 11px 13px;
+    border-radius: var(--radius-card); background: var(--surface);
+    border: 1.5px solid color-mix(in oklab, var(--text-2) 20%, transparent); font-size: 13px; font-weight: 600; }
+  .opcion-quiz.activa { border-color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 7%, var(--surface)); color: var(--accent); }
+  .opcion-quiz .marca { width: 18px; height: 18px; border-radius: 999px; flex-shrink: 0;
+    border: 2px solid color-mix(in oklab, var(--text-2) 40%, transparent); }
+  .opcion-quiz.activa .marca { border-color: var(--accent); background: var(--accent); }
+
+  /* ── FRAME 3: PAYWALL ── */
+  .paywall-badge { margin-top: 14px; display: inline-flex; align-self: center;
+    font-size: 10.5px; font-weight: 700; color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in oklab, var(--accent) 25%, transparent);
+    border-radius: 999px; padding: 4px 11px; }
+  h3.titulo-paywall { font-family: var(--font-display); font-size: 21px; font-weight: 700;
+    text-align: center; margin-top: 10px; line-height: 1.2; }
+  .paywall-sub { text-align: center; font-size: 12px; color: var(--text-2); margin-top: 6px; }
+  .planes { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .plan { border-radius: var(--radius-card); padding: 12px 14px; display: flex;
+    justify-content: space-between; align-items: center;
+    border: 1.5px solid color-mix(in oklab, var(--text-2) 20%, transparent); background: var(--surface); }
+  .plan.recomendado { border-color: var(--accent); position: relative;
+    background: linear-gradient(var(--surface), var(--surface)) padding-box,
+      linear-gradient(135deg, color-mix(in oklab, var(--accent) 50%, transparent), transparent 60%) border-box; }
+  .plan .etiqueta-ahorro { position: absolute; top: -9px; right: 12px; font-size: 9px; font-weight: 700;
+    background: var(--accent); color: var(--bg); border-radius: 999px; padding: 2px 8px; }
+  .plan .p-nombre { font-size: 13px; font-weight: 700; }
+  .plan .p-precio { font-size: 11px; color: var(--text-2); margin-top: 2px; }
+  .plan .p-dato { font-family: var(--font-display); font-size: 17px; font-weight: 700; }
+
+  /* ── FRAME 4: RUTINA LISTA (mecanismo en acción) ── */
+  .lista-rutina { margin-top: 14px; display: flex; flex-direction: column; gap: 9px; }
+  .fila-rutina { display: flex; align-items: center; gap: 10px; padding: 11px 12px;
+    border-radius: var(--radius-card); background: var(--surface);
+    border: 1px solid rgb(0 0 0 / 0.06); }
+  .fila-rutina.hecha { opacity: 0.6; }
+  .fila-rutina .hora-r { font-size: 11px; font-weight: 700; color: var(--text-2);
+    font-variant-numeric: tabular-nums; width: 38px; flex-shrink: 0; }
+  .fila-rutina .check { width: 22px; height: 22px; border-radius: 999px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; }
+  .fila-rutina.hecha .check { background: var(--accent); }
+  .fila-rutina:not(.hecha) .check { border: 2px solid color-mix(in oklab, var(--text-2) 35%, transparent); }
+  .fila-rutina h4 { font-size: 12.5px; font-weight: 700; }
+  .fila-rutina.hecha h4 { text-decoration: line-through; color: var(--text-2); }
+  .fila-rutina p { font-size: 10.5px; color: var(--text-2); margin-top: 1px; }
+
+  .pie { max-width: 1320px; margin: 36px auto 0; font-size: 12px; color: #6a6a72;
+    border-top: 1px solid #d0d0d6; padding-top: 14px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<header class="cabecera">
+  <h1>Así se vería tu app por dentro — estilo Calma Clara</h1>
+  <p>4 vistas clave de VisualTime TDAH con el estilo que elegiste ya aplicado: tu pantalla de cada día, el onboarding, el paywall y tu rutina ya armada.</p>
+</header>
+
+<div class="tour">
+
+  <!-- FRAME 1 — Tu pantalla de cada día -->
+  <div class="frame-wrap">
+    <p class="rotulo">Tu pantalla de cada día</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+      <div class="pantalla">
+        <div class="encabezado-b">
+          <p class="periodo">Martes 6 de agosto</p>
+          <h3 class="titulo-b">Tu rutina de hoy</h3>
+        </div>
+        <div class="anillo-wrap">
+          <svg width="112" height="112" viewBox="0 0 112 112" role="img" aria-label="Rutina al 72 por ciento">
+            <circle cx="56" cy="56" r="48" fill="none" stroke-width="9" stroke="rgba(15,118,110,0.14)"/>
+            <circle cx="56" cy="56" r="48" fill="none" stroke-width="9" stroke="#0f766e" stroke-linecap="round"
+                    stroke-dasharray="301.6" stroke-dashoffset="84.4" transform="rotate(-90 56 56)"/>
+          </svg>
+          <div class="centro"><span class="pct">72%</span><span class="pct-label">de tu rutina</span></div>
+        </div>
+        <div class="grid2x2">
+          <div class="tile destacada"><p class="t-label">Tareas hechas</p><p class="t-dato">5<small>/7</small></p></div>
+          <div class="tile"><p class="t-label">Alarmas hoy</p><p class="t-dato">4</p></div>
+          <div class="tile"><p class="t-label">Ajustes hoy</p><p class="t-dato">1</p></div>
+          <div class="tile"><p class="t-label">Racha</p><p class="t-dato">12<small> días</small></p></div>
+        </div>
+        <div class="cta">Ver el detalle de mi rutina</div>
+        <nav class="tabbar" aria-label="Navegación">
+          <a class="activa" href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></span>Hoy</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>Progreso</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></span>Semana</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>Perfil</a>
+        </nav>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- FRAME 2 — Así te pregunta al empezar -->
+  <div class="frame-wrap">
+    <p class="rotulo">Así te pregunta al empezar</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+      <div class="pantalla">
+        <div class="barra-progreso">
+          <span class="hecha"></span><span class="hecha"></span><span></span><span></span>
+        </div>
+        <p class="pregunta-num">Pregunta 2 de 4</p>
+        <h3 class="titulo-pregunta">¿A qué hora te cuesta más arrancar el día?</h3>
+        <div class="opciones-quiz">
+          <div class="opcion-quiz activa"><span class="marca"></span>Apenas me despierto</div>
+          <div class="opcion-quiz"><span class="marca"></span>A media mañana</div>
+          <div class="opcion-quiz"><span class="marca"></span>Después del almuerzo</div>
+          <div class="opcion-quiz"><span class="marca"></span>Varía mucho día a día</div>
+        </div>
+        <div class="cta">Siguiente</div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- FRAME 3 — Aquí eliges tu plan -->
+  <div class="frame-wrap">
+    <p class="rotulo">Aquí eliges tu plan</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+      <div class="pantalla">
+        <span class="paywall-badge">7 días gratis</span>
+        <h3 class="titulo-paywall">Tus rutinas, para siempre gratis</h3>
+        <p class="paywall-sub">Cancela cuando quieras, sin preguntas</p>
+        <div class="planes">
+          <div class="plan recomendado">
+            <span class="etiqueta-ahorro">Ahorra 50%</span>
+            <div><p class="p-nombre">Anual</p><p class="p-precio">US$29.99/año</p></div>
+            <p class="p-dato">$2.49<small>/mes</small></p>
+          </div>
+          <div class="plan">
+            <div><p class="p-nombre">Mensual</p><p class="p-precio">Se renueva cada mes</p></div>
+            <p class="p-dato">$4.99<small>/mes</small></p>
+          </div>
+        </div>
+        <div class="cta">Empezar mi prueba gratis</div>
+        <div class="cta secundario">Ver todas las funciones</div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- FRAME 4 — Así ves tu rutina lista -->
+  <div class="frame-wrap">
+    <p class="rotulo">Así ves tu rutina lista</p>
+    <div class="telefono">
+      <div class="statusbar"><span>9:41</span><span>●●●●</span></div>
+      <div class="pantalla">
+        <div class="encabezado-b">
+          <p class="periodo">Rutina de Mañana Exitosa</p>
+          <h3 class="titulo-b">Lista en 1 toque</h3>
+        </div>
+        <div class="lista-rutina">
+          <div class="fila-rutina hecha">
+            <span class="hora-r">7:00</span>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div><h4>Despertar y estirar</h4><p>10 minutos</p></div>
+          </div>
+          <div class="fila-rutina hecha">
+            <span class="hora-r">7:20</span>
+            <span class="check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <div><h4>Desayuno sin pantallas</h4><p>20 minutos</p></div>
+          </div>
+          <div class="fila-rutina">
+            <span class="hora-r">8:15</span>
+            <span class="check"></span>
+            <div><h4>Bloque de estudio</h4><p>45 minutos · se repite todos los días hábiles</p></div>
+          </div>
+          <div class="fila-rutina">
+            <span class="hora-r">18:00</span>
+            <span class="check"></span>
+            <div><h4>Gimnasio</h4><p>Alarma visual · se repite lunes y jueves</p></div>
+          </div>
+        </div>
+        <div class="cta">Agregar un bloque</div>
+        <nav class="tabbar" aria-label="Navegación">
+          <a class="activa" href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></span>Hoy</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></span>Progreso</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 2v4M16 2v4M3 9h18"/></svg></span>Semana</a>
+          <a href="#"><span class="tab-chip"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg></span>Perfil</a>
+        </nav>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="pie">
+  Tour construido a partir de la opción B ya tematizada en direcciones-abc.html — mismo sistema (tokens, fuentes, radios, dispositivo). Marcador data-kit="abc-v2" conservado. Gates verificados: fuentes cargando (Gantari/Atkinson Hyperlegible, sin fallback monospace), cero emojis (chips SVG), mockups llenos con tab bar donde corresponde.
+</footer>
+
+</body>
+</html>
