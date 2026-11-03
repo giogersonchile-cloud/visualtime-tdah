@@ -1,7 +1,10 @@
 # ESTADO — VisualTime TDAH
-Última actualización: 2026-11-03 | Sesión actual: 5
+Última actualización: 2026-11-03 | Sesión actual: 6
 
-⏸️ CHECKPOINT — Sesión 5 cerrada: app interna (Hoy/Progreso/Semana/Perfil) probada de punta a punta. Craft visual pendiente en la pantalla principal: 3 rondas de revisor-visual con defectos reales corregidos (bug de hooks, badge de dev contaminando screenshots, edición/eliminación con confirmación, reducedMotion completo, aria-live, superficie hundida) pero en plateau bajo el gate (29/40·12/20 → 30/40·15/20 → 29/40·14/20 vs ≥36/40·≥16/20 exigido) — causa de fondo pendiente de resolver: falta un dispositivo ownable visible y gestos/atajos (h7), no bugs. Decisión del agente: documentar como pendiente y no seguir iterando a ciegas (mismo criterio aplicado a onboarding/paywall). / Siguiente acción exacta: preguntarle al usuario si se avanza a Sesión 6 (servicios externos) dejando el pulido de craft de las 4 pantallas de venta como pendiente agrupado, o si prefiere una sesión de pulido visual antes.
+⏸️ CHECKPOINT — Sesión 6 (servicios externos) en curso, pausada a pedido del usuario. Hecho y verificado: GitHub creado y conectado (usuario `giogersonchile-cloud`, repo `visualtime-tdah`, push automático funcionando), proyecto Vercel importado y publicado (`https://visualtime-tdah-nj5w3v1pi-giogersonchile-cloud.vercel.app`, landing cargando bien), proyecto Supabase creado (`tspjibbqokwxztfiicok`), login real con Supabase Auth (enlace + código de 6 dígitos), middleware migrado a `proxy.ts`, `/app` protegida en servidor (sin sesión → login, sin acceso activo → paywall), webhook de Hotmart construido en `/api/webhooks/hotmart` con las 4 defensas (hottok en tiempo constante, anti-replay, idempotencia, máquina de estados vía `app_metadata`), esquema SQL de servidor en `supabase/schema.sql` (aún sin ejecutar en el dashboard), build verificado con y sin `HOTMART_HOTTOK` presente. Pendiente de ESTA sesión (no se tocó nada de esto todavía): ejecutar `supabase/schema.sql` en el SQL Editor de Supabase; agregar en Vercel las variables `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL` y `SUPABASE_SECRET_KEY` (el usuario iba a hacerlo cuando pausamos); configurar Supabase Auth (Site URL, plantilla de email con el código de 6 dígitos); crear la cuenta de Hotmart y el producto/webhook (HOTTOK real, aún no existe). / Siguiente acción exacta al retomar: confirmar si el usuario ya agregó las variables en Vercel: si sí, redeploy y seguir con Supabase Auth; si no, seguir guiándolo paso a paso desde ahí.
+
+## Pendiente agrupado de craft visual (de Sesión 5, sin tocar)
+Las 4 pantallas que decidían el dinero (landing, onboarding, paywall, pantalla principal) siguen con craft visual bajo el gate del revisor (ver sección "Problemas conocidos" más abajo) — no se retomó en Sesión 6.
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -46,7 +49,8 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
 - Framework: Next.js App Router. Stack: Next.js + almacenamiento local (localStorage/IndexedDB), sin Supabase para datos en el MVP.
-- Auth: magic link por email (passwordless), modelo "Hotmart-first" de 26-AUTH-MODERNO.md. Google OAuth como secundario. UI construida en Sesión 4, backend real en Sesión 6.
+- Auth: magic link + código de 6 dígitos (passwordless), modelo "Hotmart-first" de 26-AUTH-MODERNO.md: el webhook crea el usuario en Supabase Auth recién al pagar (`shouldCreateUser: false` en el login — nadie sin compra puede entrar). Google OAuth queda como botón visual pendiente de conectar. Estado de la membresía en `app_metadata.plan_status` (nunca en user_metadata, que el usuario puede editar).
+- Servicios externos (Sesión 6): GitHub `giogersonchile-cloud/visualtime-tdah` conectado a Vercel (proyecto `visualtime-tdah`, deploy automático funcionando). Supabase project `tspjibbqokwxztfiicok` creado — Auth conectado, SQL de servidor (`supabase/schema.sql`) aún sin ejecutar. Hotmart: cuenta aún no creada.
 - Features del MVP: 1) Línea de tiempo visual vertical 24h · 2) Tareas y rutinas recurrentes gratis desde el día uno · 3) Almacenamiento local + notificaciones nativas
 - Modelo de IA: ninguno (planificador visual, no generativo)
 
@@ -59,18 +63,22 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 ## Sesiones completadas ✅ (continuación)
 - Sesión 5 — App interna (Hoy/Progreso/Semana/Perfil) construida y probada de punta a punta; loop de retención implementado; pantalla principal con 3 rondas de revisor-visual, craft pendiente (ver Problemas conocidos)
 
+## Sesión en progreso 🔧
+- Sesión 6 — Servicios externos: GitHub+Vercel conectados y publicando solo; Supabase Auth con login real (enlace+código) y `/app` protegida en servidor; webhook de Hotmart construido (4 defensas: hottok en tiempo constante, anti-replay, idempotencia, máquina de estados). Falta: ejecutar `supabase/schema.sql`, agregar las variables de entorno en Vercel, configurar Auth en el dashboard de Supabase, crear la cuenta/producto de Hotmart y conectar el HOTTOK real, y el dominio propio (más adelante).
+
 ## Próximas sesiones 📋
-- Sesión 6: Integraciones reales (GitHub, Vercel, Supabase Auth, Hotmart, dominio) y seguridad
 - Pendiente agrupado (sin sesión fija): volver a landing/onboarding/paywall/pantalla-principal con screenshots reales de la app ya construida y relanzar el revisor-visual — las 4 comparten la misma causa de fondo (falta dispositivo ownable visible)
+- Pendiente de madurez de cobros (18-VENTA-HOTMART.md, no bloquea el primer lanzamiento): ledger económico completo (`payment_transactions`) y reconciliación semanal de suscripciones contra Hotmart — por ahora solo existe el dedupe técnico (`processed_events`/`webhook_log`)
 
 ## Problemas conocidos ⚠️
 - Las 4 pantallas que decidían el dinero (landing, onboarding, paywall, pantalla principal) pasan la auditoría técnica automática pero el revisor-visual las marca NO LISTA por craft visual (12-16/20, bajo el umbral de 16/20) — en todos los casos la causa de fondo es la misma: falta un dispositivo visual ownable (duotone/textura/ilustración de marca) lo bastante fuerte para diferenciarse de cualquier app genérica del nicho, y en la pantalla principal además faltan gestos/atajos (heurística de eficiencia h7). Se corrigieron 2-3 rondas de defectos reales en cada pantalla (ver commits de Sesión 3/4/5) — lo que queda es craft de identidad visual, no funcionalidad rota. Decisión del agente: no seguir iterando a ciegas sesión tras sesión — se agrupan las 4 como un pendiente de pulido visual único, a retomar con criterio nuevo (posiblemente un dispositivo ownable diseñado una sola vez y aplicado a las 4).
-- Login: el envío real del magic link (Supabase Auth) es un mock local — se conecta de verdad en Sesión 6. No declarar el login "funcional de punta a punta" hasta esa sesión.
+- Login: ya conectado a Supabase Auth real (Sesión 6), pero sin probar de punta a punta todavía porque faltan las variables de entorno en Vercel y la configuración de Auth en el dashboard de Supabase (Site URL, plantilla de email con el código). No declarar el login "funcional de punta a punta" hasta esa prueba.
+- Webhook de Hotmart: código construido y con build verificado, pero sin HOTTOK real (la cuenta de Hotmart no existe aún) — no probado contra un evento real todavía.
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy con fuente y fecha. No bloquea nada — la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Ninguna acción suya requerida ahora mismo
-- [ ] Más adelante (no ahora): crear cuentas de Hotmart, Vercel, dominio, Supabase — se le avisará cuando llegue el momento (Sesión 6)
+- [ ] Agregar en Vercel (Settings → Environment Variables): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SITE_URL` y `SUPABASE_SECRET_KEY` (esta última la saca de Supabase → Project Settings → API Keys → fila service_role, nunca la pega en el chat)
+- [ ] Más adelante: ejecutar `supabase/schema.sql` en el SQL Editor de Supabase; crear cuenta de Hotmart y el producto/webhook; comprar el dominio
 
 ## Notas para la próxima sesión
 - El usuario entregó un RESUMEN FINAL — IDEA VALIDADA PARA CONSTRUIR en PDF: NO se re-valida ni se buscan alternativas. Se usa como contexto base.
