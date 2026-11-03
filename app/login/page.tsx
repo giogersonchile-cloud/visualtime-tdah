@@ -1,34 +1,69 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { Lock } from 'lucide-react';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
-type Estado = 'idle' | 'enviando' | 'enviado' | 'error';
+type Estado = 'idle' | 'enviando' | 'enviado' | 'verificando' | 'error';
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
+  const [codigo, setCodigo] = useState('');
   const [estado, setEstado] = useState<Estado>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
   const [segundos, setSegundos] = useState(0);
   const reducedMotion = useReducedMotion();
 
-  const enviar = (e: React.FormEvent) => {
+  const iniciarCuenta = () => {
+    setSegundos(60);
+    const tick = () =>
+      setSegundos((s) => {
+        if (s <= 1) return 0;
+        window.setTimeout(tick, 1000);
+        return s - 1;
+      });
+    window.setTimeout(tick, 1000);
+  };
+
+  const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes('@') || estado === 'enviando') return;
     setEstado('enviando');
-    // El envío real de magic link (Supabase Auth) se conecta en Sesión 6 —
-    // por ahora el estado es local, nunca se finge una verificación real.
-    window.setTimeout(() => {
+    setErrorMsg('');
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: { shouldCreateUser: false },
+    });
+    if (error) {
+      setEstado('error');
+      setErrorMsg(
+        error.message.includes('Signups not allowed')
+          ? 'Ese correo todavía no tiene una compra activa. Revisa que sea el mismo que usaste al comprar.'
+          : 'No pudimos enviar el código. Intenta de nuevo en un momento.',
+      );
+      return;
+    }
+    setEstado('enviado');
+    iniciarCuenta();
+  };
+
+  const verificar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (codigo.trim().length < 6 || estado === 'verificando') return;
+    setEstado('verificando');
+    setErrorMsg('');
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.verifyOtp({ email, token: codigo.trim(), type: 'email' });
+    if (error) {
       setEstado('enviado');
-      setSegundos(60);
-      const tick = () =>
-        setSegundos((s) => {
-          if (s <= 1) return 0;
-          window.setTimeout(tick, 1000);
-          return s - 1;
-        });
-      window.setTimeout(tick, 1000);
-    }, 900);
+      setErrorMsg('Ese código no es válido o ya venció. Pide uno nuevo o revisa el enlace del correo.');
+      return;
+    }
+    router.push('/app');
   };
 
   return (
@@ -64,13 +99,13 @@ export default function Login() {
           transition={{ duration: 0.3 }}
           className="mt-8"
         >
-          {estado !== 'enviado' ? (
+          {estado !== 'enviado' && estado !== 'verificando' ? (
             <>
               <h1 className="text-[26px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)]">
                 Entra a tu rutina
               </h1>
               <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
-                Para guardarla y verla en cualquier dispositivo
+                Usa el mismo correo con el que compraste
               </p>
 
               <form onSubmit={enviar} className="mt-6 flex flex-col gap-3">
@@ -88,7 +123,7 @@ export default function Login() {
                   disabled={estado === 'enviando' || !email.includes('@')}
                   className="flex h-14 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] disabled:opacity-60"
                 >
-                  {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi enlace de acceso'}
+                  {estado === 'enviando' ? 'Enviando…' : 'Enviarme mi código de acceso'}
                 </button>
                 <button
                   type="button"
@@ -99,9 +134,15 @@ export default function Login() {
                 </button>
               </form>
 
+              {estado === 'error' && errorMsg && (
+                <p role="alert" className="mt-3 text-[13px] text-[var(--error)]">
+                  {errorMsg}
+                </p>
+              )}
+
               <p className="mt-4 flex items-center gap-2 text-[13px] text-[var(--text-secondary)]">
                 <Lock size={14} aria-hidden="true" />
-                Sin contraseñas: te llegará un enlace de un solo uso
+                Sin contraseñas: te llegará un enlace y un código de un solo uso
               </p>
             </>
           ) : (
@@ -110,15 +151,47 @@ export default function Login() {
                 Revisa tu correo
               </h1>
               <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
-                Te enviamos el enlace a <span className="font-semibold text-[var(--text-primary)]">{email}</span>
+                Te enviamos un enlace y un código a{' '}
+                <span className="font-semibold text-[var(--text-primary)]">{email}</span>
               </p>
+
+              <form onSubmit={verificar} className="mt-6 flex flex-col gap-3">
+                <label htmlFor="codigo" className="text-[13px] font-medium text-[var(--text-secondary)]">
+                  ¿Recibiste un código? Escríbelo aquí
+                </label>
+                <input
+                  id="codigo"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={codigo}
+                  onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
+                  placeholder="000000"
+                  className="h-14 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-center text-[20px] font-semibold tracking-[0.3em] text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
+                />
+                <button
+                  type="submit"
+                  disabled={estado === 'verificando' || codigo.length < 6}
+                  className="flex h-14 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[16px] font-semibold text-[var(--bg)] disabled:opacity-60"
+                >
+                  {estado === 'verificando' ? 'Entrando…' : 'Entrar'}
+                </button>
+              </form>
+
+              {errorMsg && (
+                <p role="alert" className="mt-3 text-[13px] text-[var(--error)]">
+                  {errorMsg}
+                </p>
+              )}
+
               <button
                 type="button"
                 disabled={segundos > 0}
-                onClick={enviar}
-                className="mt-6 text-[14px] font-medium text-[var(--accent)] disabled:text-[var(--text-secondary)]"
+                onClick={(e) => enviar(e as unknown as React.FormEvent)}
+                className="mt-4 text-[14px] font-medium text-[var(--accent)] disabled:text-[var(--text-secondary)]"
               >
-                {segundos > 0 ? `Reenviar en ${segundos}s` : 'Reenviar enlace'}
+                {segundos > 0 ? `Reenviar en ${segundos}s` : 'Reenviar código'}
               </button>
             </>
           )}

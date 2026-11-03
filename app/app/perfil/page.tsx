@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Bell, Shield, FileText, LogOut, ChevronRight } from 'lucide-react';
+import { crearClienteSupabase } from '@/lib/supabase/client';
 
 const OPCIONES = [
   { icon: Bell, label: 'Notificaciones y alarmas', href: '#' },
@@ -39,7 +40,10 @@ export default function Perfil() {
 
       <button
         type="button"
-        onClick={() => router.push('/')}
+        onClick={async () => {
+          await crearClienteSupabase().auth.signOut();
+          router.push('/');
+        }}
         className="mt-6 flex items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_25%,transparent)] py-3 text-[14px] font-semibold text-[var(--text-secondary)]"
       >
         <LogOut size={16} aria-hidden="true" />

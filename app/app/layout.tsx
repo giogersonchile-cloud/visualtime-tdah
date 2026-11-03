@@ -1,6 +1,17 @@
+import { redirect } from 'next/navigation';
 import { TabBar } from '@/components/app/TabBar';
+import { crearClienteSupabaseServidor } from '@/lib/supabase/server';
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+const ESTADOS_SIN_ACCESO = ['refunded', 'chargeback'];
+
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const supabase = await crearClienteSupabaseServidor();
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) redirect('/login');
+
+  const planStatus = (data.user.app_metadata as { plan_status?: string })?.plan_status;
+  if (!planStatus || ESTADOS_SIN_ACCESO.includes(planStatus)) redirect('/paywall');
+
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
       {/* Fondo con profundidad (mesh del acento) — consistente con el resto del funnel */}
