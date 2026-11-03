@@ -13,7 +13,7 @@ export default function Paywall() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<Respuestas | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
-  const [restaurando, setRestaurando] = useState(false);
+  const [restauro, setRestauro] = useState<'idle' | 'buscando' | 'sin-compra'>('idle');
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -31,20 +31,22 @@ export default function Paywall() {
 
   const restaurarCompra = () => {
     // Verificación real contra Hotmart/Supabase llega en Sesión 6 — por ahora
-    // el botón SÍ responde (nunca un botón muerto, 50 → anti-patrones).
-    setRestaurando(true);
-    window.setTimeout(() => setRestaurando(false), 2200);
+    // el botón SÍ responde y SIEMPRE cierra con un resultado (nunca se queda
+    // "Buscando…" sin decir qué pasó — 50 → heurística de estado del sistema).
+    setRestauro('buscando');
+    window.setTimeout(() => setRestauro('sin-compra'), 1800);
   };
 
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
-      {/* Fondo con profundidad (mesh sutil del acento) — nunca fill plano, 55 gate G */}
+      {/* Fondo con profundidad (mesh del acento, dispositivo ownable) — nunca fill
+          plano, 55 gate G. Intensidad subida tras veredicto: al 7% no se notaba. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(780px 460px at 10% -10%, color-mix(in oklab, var(--accent) 7%, transparent) 0%, transparent 60%), radial-gradient(640px 420px at 100% 10%, color-mix(in oklab, var(--accent-2) 5%, transparent) 0%, transparent 55%)',
+            'radial-gradient(820px 480px at 8% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 62%), radial-gradient(680px 440px at 102% 12%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 58%)',
         }}
       />
       <div className="relative mx-auto w-full max-w-[520px] flex-1 px-4 pb-10 pt-5">
@@ -95,7 +97,7 @@ export default function Paywall() {
           transition={{ duration: 0.3, delay: reducedMotion ? 0 : 0.08 }}
           className="mt-6"
         >
-          <Hairline className="flex flex-col gap-3 p-4 shadow-[0_6px_20px_-8px_rgb(15_118_110_/_0.2)]">
+          <Hairline className="flex flex-col gap-3 p-4 shadow-[0_8px_26px_-8px_rgb(15_118_110_/_0.32)]">
             {[
               'Línea de tiempo visual de tu día',
               'Rutinas recurrentes incluidas, sin límite',
@@ -152,7 +154,7 @@ export default function Paywall() {
           <button
             type="button"
             onClick={() => setPlan('anual')}
-            className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-6px_rgb(15_118_110_/_0.2)] transition-colors ${
+            className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_6px_20px_-6px_rgb(15_118_110_/_0.3)] transition-colors ${
               plan === 'anual'
                 ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))]'
                 : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)]'
@@ -173,7 +175,7 @@ export default function Paywall() {
           <button
             type="button"
             onClick={() => setPlan('mensual')}
-            className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-6px_rgb(15_118_110_/_0.2)] transition-colors ${
+            className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_6px_20px_-6px_rgb(15_118_110_/_0.3)] transition-colors ${
               plan === 'mensual'
                 ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))]'
                 : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)]'
@@ -199,8 +201,10 @@ export default function Paywall() {
         >
           Empezar mis 7 días gratis
         </motion.button>
-        <p className="mt-2 text-center text-[13px] text-[var(--text-secondary)]">
-          Cancela cuando quieras · Te avisamos antes del cobro
+        {/* Garantía nombrada CERCA del CTA (52 §4 / 50 C2-7): no solo al fondo de la pantalla. */}
+        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[13px] text-[var(--text-secondary)]">
+          <ShieldCheck size={14} aria-hidden="true" className="shrink-0" />
+          Cancela cuando quieras · Garantía de 15 días
         </p>
 
         <div className="mt-4 flex items-center justify-center gap-4 text-[14px] font-medium text-[var(--text-secondary)]">
@@ -208,17 +212,23 @@ export default function Paywall() {
             Ahora no
           </button>
           <span aria-hidden="true">·</span>
-          <button type="button" onClick={restaurarCompra} disabled={restaurando} className="py-2 disabled:opacity-60">
-            {restaurando ? 'Buscando tu compra…' : 'Restaurar compra'}
+          <button type="button" onClick={restaurarCompra} disabled={restauro === 'buscando'} className="py-2 disabled:opacity-60">
+            {restauro === 'buscando' ? 'Buscando tu compra…' : 'Restaurar compra'}
           </button>
         </div>
+        {restauro === 'sin-compra' && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-2 text-center text-[13px] text-[var(--text-secondary)]"
+          >
+            No encontramos una compra para este dispositivo todavía.
+          </motion.p>
+        )}
 
         <div className="mt-6 flex items-center justify-center gap-2 text-[12px] text-[var(--text-secondary)]">
           <Lock size={14} aria-hidden="true" />
-          <span>Pago seguro</span>
-          <span aria-hidden="true">·</span>
-          <ShieldCheck size={14} aria-hidden="true" />
-          <span>Garantía de 15 días</span>
+          <span>Pago seguro con Hotmart</span>
         </div>
       </div>
     </main>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { ChevronLeft, Check } from 'lucide-react';
 import { PREGUNTAS, guardarRespuestas, type Respuestas } from '@/lib/onboarding';
+import { Hairline } from '@/components/landing/ui';
 
 const PAUSA_SELECCION_MS = 320;
 const DURACION_LOADING_MS = 5200;
@@ -24,7 +25,12 @@ function TituloConAcento({ texto, acento }: { texto: string; acento: string }) {
 
 function ProgresoBar({ pct }: { pct: number }) {
   return (
-    <div className="h-[3px] w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
+    // Surco "hundido" (tercer nivel de profundidad, --surface-2 + sombra interior) —
+    // el track era un fill plano sin relación con el sistema de 3 niveles de 55.
+    <div
+      className="h-[3px] w-full overflow-hidden rounded-full bg-[var(--surface-2)]"
+      style={{ boxShadow: 'inset 0 1px 2px rgb(15 118 110 / 0.18)' }}
+    >
       <motion.div
         className="h-full rounded-full bg-[var(--accent)]"
         initial={false}
@@ -113,7 +119,7 @@ function PantallaPregunta({
               initial={reducedMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reducedMotion ? 0 : i * 0.05, duration: 0.2 }}
-              className={`flex min-h-14 items-center justify-between rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium shadow-[0_2px_10px_-4px_rgb(15_118_110_/_0.16)] transition-colors ${
+              className={`flex min-h-14 items-center justify-between rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium shadow-[0_6px_18px_-4px_rgb(15_118_110_/_0.32)] transition-colors ${
                 activo
                   ? 'border-[var(--accent)] border-[1.5px] bg-[color-mix(in_oklab,var(--accent)_10%,var(--surface))] text-[var(--text-primary)]'
                   : 'border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'
@@ -164,6 +170,22 @@ function PantallaPregunta({
           </div>
         )}
       </div>
+
+      {/* Tarjeta de contexto (Hairline degradé — dispositivo ownable, 55 gate G).
+          Llena el espacio vacío bajo las opciones con ayuda real, no relleno. */}
+      <motion.div
+        initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, delay: 0.2 }}
+        className="mt-8"
+      >
+        <Hairline className="p-4 shadow-[0_6px_18px_-6px_rgb(15_118_110_/_0.22)]">
+          <p className="text-[13px] leading-relaxed text-[var(--text-secondary)]">
+            <span className="font-semibold text-[var(--text-primary)]">Con tus respuestas</span> armamos tu
+            línea de tiempo al instante — nada se comparte ni se publica sin que tú lo decidas.
+          </p>
+        </Hairline>
+      </motion.div>
     </motion.div>
   );
 }
@@ -288,13 +310,15 @@ export default function Onboarding() {
 
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
-      {/* Fondo con profundidad (mesh sutil del acento) — nunca fill plano, 55 gate G */}
+      {/* Fondo con profundidad (mesh del acento, dispositivo ownable de FICHA-ARTE) —
+          nunca fill plano, 55 gate G. Intensidad subida tras veredicto del revisor:
+          al 7% era imperceptible en el screenshot real. */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(760px 420px at 85% -8%, color-mix(in oklab, var(--accent) 7%, transparent) 0%, transparent 60%), radial-gradient(620px 420px at 0% 30%, color-mix(in oklab, var(--accent-2) 5%, transparent) 0%, transparent 55%)',
+            'radial-gradient(820px 460px at 88% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 62%), radial-gradient(680px 460px at -5% 35%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 58%)',
         }}
       />
       <header className="mx-auto w-full max-w-[520px] px-4 pt-5">

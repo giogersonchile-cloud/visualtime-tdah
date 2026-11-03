@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — paywall
 Fecha: 2026-11-02 00:00
 Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 27/40
-Craft: 12/20
-Copy (si vende): 14/20
+Usabilidad: 30/40
+Craft: 13/20
+Copy (si vende): 16/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Fila inferior "Restaurar compra"] Botón sin onClick ni handler en app/paywall/page.tsx (línea ~175) — se ve interactivo pero no hace absolutamente nada al tocarlo → implementar la lógica real de restauración o quitarlo del flujo hasta tenerla, con feedback de estado al tocar.
-2. [Toda la pantalla] Fondo y tarjetas (value stack, planes) sin sombra ni gradiente, solo bordes — contradice "sombras sutiles tintadas" de FICHA-ARTE.md → aplicar shadow/gradient sutil al bloque de beneficios y a las tarjetas de plan.
-3. [Toda la pantalla] Cero dispositivo ownable (duotone de marca) visible pese a estar definido en FICHA-ARTE.md y ya implementado como componente IconChip en components/landing/ui.tsx pero no usado aquí → aplicar IconChip duotone al menos en el value stack de 3 beneficios.
-4. [Tarjeta "Anual" / bloque garantía] No se usa el componente Hairline (ya existe en ui.tsx) en ningún elemento clave del paywall, pese a que la ficha pide máx 1-3 hairlines degradé para señalar "esto importa" → aplicar Hairline al plan recomendado o al bloque de garantía.
-5. [Titular "Tu Rutina de Mañana Exitosa está lista"] Big idea genérica de "tu plan está listo", no explota el ángulo diferenciador de FICHA-AVATAR.md ("la agenda que no te cobra por repetir tus tareas" / dolor de injusticia de cobros) → reforzar el headline o el copy inmediato con ese mecanismo específico.
+1. [value-stack, plan cards, fondo] Igual que en onboarding, las sombras tintadas y el mesh de fondo son demasiado sutiles para leerse como profundidad real en el screenshot — todo el bloque se percibe casi plano → subir el contraste de sombra/mesh.
+2. [identidad ownable] El código marca el borde Hairline del value-stack como "el dispositivo ownable", pero FICHA-ARTE define el dispositivo ownable como el duotone de marca, no el hairline — y ese duotone solo vive en el logo de 24px, invisible a este tamaño → corregir la atribución y hacer visible el duotone en algún elemento de mayor tamaño (chip de ícono, ilustración).
+3. [Restaurar compra, código línea 32-37] El botón da feedback de carga ("Buscando tu compra…") pero tras los 2.2s no muestra ningún resultado (éxito/fallo) — el usuario se queda sin saber qué pasó → agregar mensaje de cierre (toast o texto) tras restaurar.
+4. [garantía, abajo de la pantalla] "Garantía de 15 días" queda lejos del CTA principal (debajo de "Ahora no / Restaurar compra"), rompiendo el sub-check de copy que pide el plazo de garantía cerca del CTA → mover el bloque de confianza justo debajo del botón "Empezar mis 7 días gratis".
+5. [longitud de pantalla] La pantalla apila headline + value-stack + timeline + 2 tarjetas de plan + CTA + 2 filas de links + trust row — mucho scroll en 375px, carga cognitiva alta para un paywall → compactar value-stack o timeline.
