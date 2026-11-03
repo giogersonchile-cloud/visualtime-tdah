@@ -241,7 +241,12 @@ function contarPalabras(text) {
 const INTERES = new Set(['h1', 'h2', 'h3', 'p', 'li', 'blockquote']);
 const ICON_RE = /^(svg|[A-Z][\w]*Icon)$/;
 const ICON_EXENTO_RE = /chevron|arrow|caret|close|^XIcon$/i;
-const LIST_CTX_RE = /(^|[\s_-])(list|items?|features?|benefits?|beneficios?|pain|bullets?|checklist|stack)([\s_-]|$)/i;
+// "items" NO debe capturar las utilidades de alineación de Tailwind (items-center,
+// items-start, items-end, items-stretch, items-baseline) — "items-center" es un
+// flexbox align-items, no una lista de beneficios; sin el lookahead negativo,
+// CUALQUIER contenedor flex centrado con un <svg> (p.ej. un anillo de progreso)
+// se leía como "lista sin chip" (falso positivo real, visto en producción).
+const LIST_CTX_RE = /(^|[\s_-])(list|items?(?!-(center|start|end|stretch|baseline))|features?|benefits?|beneficios?|pain|bullets?|checklist|stack)([\s_-]|$)/i;
 const TW_CHIP_RE = /\b(size-(10|11|12)|w-(10|11|12)\b[\s\S]*\bh-(10|11|12))\b/;
 
 function analizarTsx(file, src) {
@@ -298,7 +303,10 @@ function analizarTsx(file, src) {
 
   // literales largos (≥80 chars) fuera de elementos ya extraídos
   const literals = [];
-  const litRe = /"((?:[^"\\\n]|\\.){80,})"|'((?:[^'\\\n]|\\.){80,})'|`((?:[^`\\]|\\.){80,})`/g;
+  // Las 3 comillas excluyen \n: un literal de copy real es de una línea. Sin esto,
+  // un template literal con un ${ternario multilínea} (className condicional, común
+  // en Tailwind) se lee entero como "una frase" de cientos de palabras — falso positivo.
+  const litRe = /"((?:[^"\\\n]|\\.){80,})"|'((?:[^'\\\n]|\\.){80,})'|`((?:[^`\\\n]|\\.){80,})`/g;
   let lm;
   while ((lm = litRe.exec(src)) !== null) {
     const val = (lm[1] ?? lm[2] ?? lm[3] ?? '').replace(/\s+/g, ' ').trim();
