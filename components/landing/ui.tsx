@@ -34,12 +34,24 @@ export function IconChip({ icon: Icono, tone = 'accent' }: { icon: LucideIcon; t
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex size-11 shrink-0 items-center justify-center rounded-[var(--radius-button)] border ${
+      className={`relative isolate inline-flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[var(--radius-button)] border ${
         acento
           ? 'border-[color-mix(in_oklab,var(--accent)_22%,transparent)] bg-[var(--chip-bg)]'
           : 'border-[color-mix(in_oklab,var(--text-tertiary)_35%,transparent)] bg-[color-mix(in_oklab,var(--text-tertiary)_12%,transparent)]'
       }`}
     >
+      {/* Dispositivo ownable de FICHA-ARTE.md: duotone de marca — velo de acento
+          con mix-blend-mode sobre el chip (misma receta que las ilustraciones,
+          aplicada a los íconos porque el MVP no usa fotografía). */}
+      <span
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background: `radial-gradient(120% 120% at 20% 10%, var(--${acento ? 'accent' : 'accent-2'}) 0%, transparent 70%)`,
+          mixBlendMode: 'soft-light',
+          opacity: 0.55,
+        }}
+      />
       <Icono size={22} strokeWidth={2} color={acento ? 'var(--accent)' : 'var(--text-secondary)'} aria-hidden="true" />
     </span>
   );

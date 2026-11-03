@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-02 | Sesión actual: 2
 
-⏸️ CHECKPOINT — Última acción completada: usuario aprobó el tour ("Me encanta, sigamos") → FICHA-ARTE.md cerrada y APROBADA (cosa juzgada) + comparativa y tour archivados en docs/revisiones/ / Siguiente acción exacta: pedir permiso para arrancar Sesión 3 (landing) — ahí se escaloda el proyecto Next.js y se materializan los tokens de FICHA-ARTE.md en app/globals.css (10-DESIGN-TOKENS.md).
+⏸️ CHECKPOINT — Última acción completada: landing construida en código (Next.js, 10 secciones del kit, tokens de FICHA-ARTE aplicados), auditoría automática en 0 críticos, revisor-visual independiente corrido → NO LISTA (27/40 usabilidad, 13/20 craft) por placeholders honestos sin screenshot real del producto (la app aún no existe — Sesión 5) + 2 defectos menores ya corregidos (CTA mensual, dato sin fuente) / Siguiente acción exacta: decidir con el usuario si se avanza a Sesión 4 (onboarding/paywall/login) dejando la landing pendiente de su veredicto final hasta tener screenshots reales, o si se pausa aquí.
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -43,7 +43,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 ## Secuencia maestra de construcción (NO saltar)
 - Estado de la secuencia: dirección visual elegida (B), ninguna pantalla REAL construida en código todavía
 - Ruta aprobada: `/` → `/onboarding` → `/paywall` → `/login` → `/app`
-- Landing: pendiente (Sesión 3)
+- Landing: código escrito y auditoría técnica en verde, pero el revisor-visual la marcó NO LISTA (ver Problemas conocidos) — pendiente screenshots reales para su veredicto final
 - Onboarding: pendiente (Sesión 4)
 - Paywall: pendiente (Sesión 4) — el mockup de ejemplo en el tour NO cuenta como construida
 - Login/Auth: pendiente — decidir en Sesión 1 (hecho): sí hace falta cuenta mínima para atar la licencia/compra de Hotmart a un dispositivo, aunque los datos vivan localmente
@@ -81,6 +81,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 
 ## Problemas conocidos ⚠️
 - El mockup HTML del tour (`vista-previa-app.html`) incluye una maqueta de planes de precio de ejemplo, solo de referencia visual — NO es la pantalla de pago real. Esa pantalla (la del dinero) se construye recién en Sesión 4, en código, y recién ahí obtiene su veredicto del subagente revisor-visual con usabilidad/craft verificados antes de marcarse como hecha.
+- Veredicto de la pantalla "landing" (docs/revisiones/landing-veredicto.md, 2026-11-02): NO LISTA — Usabilidad 27/40, Craft 13/20, Copy 16/20. Causa raíz principal: el hero y el carrusel "La app por dentro" usan placeholders honestos (cámara + texto) porque la app real todavía NO existe (se construye en Sesión 5) — no hay screenshot real que montar todavía. Defectos menores ya corregidos tras el veredicto: CTA del plan mensual ahora repite el mismo verbo que el resto de la página, se quitó la estadística "58%" por no tener fuente verificable en pantalla, y se añadió el tratamiento duotone a los chips de ícono (dispositivo ownable de FICHA-ARTE.md). Pendiente: al cerrar Sesión 5 (app interna), volver a esta landing, montar los screenshots reales en el carrusel y el hero, y relanzar el revisor-visual para el veredicto final antes de dar la landing por terminada.
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy (instalaciones estimadas + volumen de reseñas, con fuente y fecha). No bloquea el arranque porque la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)

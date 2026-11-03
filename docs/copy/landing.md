@@ -31,7 +31,7 @@ Big Idea / mecanismo bautizado: **Rutina Regalada** — tus bloques recurrentes 
 
 - Headline: "Cada app que [acento]abandonas[/acento] te cuesta más que dinero"
 - Párrafo (2 líneas máx): "Pagas suscripciones que no usas. Y cada reinicio se siente más difícil que el anterior."
-- Dato de respaldo (de la ficha): "58% de las personas con TDAH describen agotamiento por la planificación diaria."
+- Frase de respaldo (sin cifra sin fuente verificable en pantalla, ajustado tras revisión): "El agotamiento de planificar tu día desde cero se acumula, semana tras semana."
 
 ## 4. SOLUCIÓN (mecanismo bautizado)
 **Trazo:** Big Idea + mecanismo — objeción "¿por qué fallarían los otros intentos?" + deseo.

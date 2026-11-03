@@ -54,7 +54,7 @@ export default function LandingVisualTimeTDAH() {
         frases={[
           'Pagas suscripciones que [b]no terminas usando[/b].',
           'Cada reinicio se siente [acento]más difícil[/acento] que el anterior.',
-          '58% de las personas con TDAH describen agotamiento por la planificación diaria.',
+          'El agotamiento de planificar tu día desde cero [b]se acumula[/b], semana tras semana.',
         ]}
         contraste={{
           labelHoy: 'Hoy',
@@ -126,7 +126,7 @@ export default function LandingVisualTimeTDAH() {
         mensual={{
           nombre: 'Mensual',
           precioMes: '$4.99',
-          ctaLabel: 'Elegir mensual',
+          ctaLabel: CTA_LABEL,
           ctaHref: CTA_HREF,
           features: [
             'Línea de tiempo visual de tu día',
