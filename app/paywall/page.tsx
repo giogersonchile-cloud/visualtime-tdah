@@ -67,7 +67,7 @@ export default function Paywall() {
           </a>
           <button
             type="button"
-            onClick={() => router.push('/onboarding')}
+            onClick={() => router.push('/')}
             aria-label="Cerrar"
             className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
           >
