@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — pantalla-principal
 Fecha: 2026-11-03 00:00
 Screenshot: docs/revisiones/pantalla-principal-375.png
-Usabilidad: 30/40
-Craft: 15/20
+Usabilidad: 29/40
+Craft: 14/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Formulario de edición de bloque, botón "Eliminar bloque"] eliminarBloque() se ejecuta al primer tap, sin confirmación ni opción de deshacer (page.tsx líneas 113-118) → agregar confirmación (doble-tap/diálogo) o un toast con "Deshacer" tras borrar.
-2. [Todo el código, animaciones] useReducedMotion() solo se usa en el anillo de progreso (línea 334); PorcentajeAnimado, Toast, FormularioBloque y CelebracionRacha ignoran la preferencia del sistema → condicionar sus animate/transition a reducedMotion en los 4 componentes.
-3. [Fondo general y cards de la lista] la profundidad es débil: solo 2 tonos planos (bg y surface/surface-2), el nivel "hundido" que define FICHA-ARTE.md no aparece en esta pantalla → dar más presencia a la sombra tintada de las cards o usar superficie hundida para separar el insight del resto.
-4. [Heurística 7 — flexibilidad] sin atajos de teclado ni gesto alternativo para completar un bloque (solo tap en el botón completo); el experto no tiene vía rápida → agregar soporte de teclado (Enter/Espacio con foco) o swipe-to-complete.
-5. [Header, chip de racha] el contador de racha cambia de valor tras marcar un bloque pero no tiene aria-live, y cada fila de rutina obliga a distinguir entre tocar la card completa vs. el lápiz (dos hit-areas contiguas) → agregar aria-live="polite" al chip de racha y aumentar la separación visual entre la acción de completar y la de editar.
+1. [Identidad visual, toda la pantalla] Sin dispositivo ownable visible (duotone/textura/ilustración de marca) — el acento teal + checks + chip mandarina no alcanza a diferenciarla de cualquier app de productividad genérica → aplicar el duotone de marca prometido en FICHA-ARTE (íconos duotone por bloque o en el header).
+2. [Lista de bloques] Cero atajos/gestos para el usuario frecuente (sin swipe-to-complete, sin acciones en lote); cada bloque exige 1 tap y editar/borrar exige abrir un modal completo → agregar gesto swipe con fallback de tap.
+3. [Modal Editar bloque → Eliminar] Tras el 2do tap de confirmación el bloque se borra sin opción de deshacer real (solo hubo confirmación previa, no reversión posterior) → mostrar toast con "Deshacer" ~5s antes de persistir el borrado.
+4. [Toast de error "No se pudo guardar. Intenta de nuevo."] Mensaje genérico que no dice la causa (¿sin conexión?, ¿storage lleno?) → diferenciar el mensaje según el motivo real del fallo.
+5. [Tarjeta de insight, debajo de la lista] La superficie "hundida" (surface-2 + inset shadow) es casi imperceptible junto a las cards blancas de arriba a 375px → subir el contraste de --surface-2 o reforzar la sombra inset.

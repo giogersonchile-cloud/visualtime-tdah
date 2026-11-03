@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-03 | Sesión actual: 5
 
-⏸️ CHECKPOINT — Última acción completada: Sesión 5 (app interna) construida, probada de punta a punta y corregida tras la primera revisión (29/40·12/20 → se arregló un bug real de orden de hooks, se apagó el badge de desarrollo de Next.js que contaminaba los screenshots, se agregaron edición/eliminación de bloques, animaciones baseline — stagger, conteo del %, celebración de racha al cruzar un hito —, duotone en el chip de racha, y manejo de error de guardado). Segunda pasada del revisor corriendo en segundo plano. / Siguiente acción exacta: leer docs/revisiones/pantalla-principal-veredicto.md, corregir si hace falta, y luego volver a landing/onboarding/paywall con screenshots reales de esta app ya construida para su veredicto final (pendiente documentado en Sesión 3/4).
+⏸️ CHECKPOINT — Sesión 5 cerrada: app interna (Hoy/Progreso/Semana/Perfil) construida y probada de punta a punta. La pantalla principal pasó 3 rondas de revisor-visual con defectos reales corregidos en cada una (bug de hooks, badge de dev contaminando screenshots, edición/eliminación con confirmación, reducedMotion completo, aria-live, superficie hundida) pero quedó en plateau (29/40·12/20 → 30/40·15/20 → 29/40·14/20), siempre bajo el gate (≥36/40·≥16/20) — causa de fondo: falta un dispositivo ownable visible y gestos/atajos (h7), no bugs. Decisión del agente: aceptar NO LISTA como pendiente documentado y no seguir iterando a ciegas (mismo criterio aplicado a onboarding/paywall). / Siguiente acción exacta: preguntarle al usuario si se avanza a Sesión 6 (servicios externos) dejando el pulido de craft de las 4 pantallas de venta como pendiente agrupado, o si prefiere una sesión de pulido visual antes.
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -41,7 +41,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Onboarding: código hecho (4 preguntas + loading personalizado), probado en navegador — revisor-visual NO LISTA (ver Problemas conocidos)
 - Paywall: código hecho (headline dinámico, timeline del trial, planes, CTA), probado en navegador — revisor-visual NO LISTA (ver Problemas conocidos)
 - Login/Auth: código hecho (magic link con estados enviando/enviado/reenvío + botón Google), probado en navegador — el envío real (Supabase Auth) es mock local, se conecta en Sesión 6
-- App interna: código hecho — Hoy (ritual diario), Progreso, Semana, Perfil — probada de punta a punta en navegador, revisor-visual de la pantalla principal en curso
+- App interna: código hecho — Hoy (ritual diario), Progreso, Semana, Perfil — probada de punta a punta en navegador, revisor-visual de la pantalla principal: NO LISTA tras 3 rondas (ver Problemas conocidos)
 - Servicios externos: por construir — GitHub/Vercel/Hotmart/Supabase Auth (Sesión 6)
 
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
@@ -56,15 +56,15 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Sesión 3 — Landing construida en Next.js (10 secciones), código en verde técnico, craft pendiente (placeholders del producto)
 - Sesión 4 — Onboarding, paywall y login construidos y probados de punta a punta, 3 rondas de revisor-visual, craft pendiente (ver Problemas conocidos)
 
-## Sesión en progreso 🔧
-- Sesión 5 — App interna: código de las 4 secciones hecho y probado de punta a punta (marcar bloques, racha, agregar bloque, insight). Falta leer el veredicto del revisor sobre el ritual diario y corregir si hace falta.
+## Sesiones completadas ✅ (continuación)
+- Sesión 5 — App interna (Hoy/Progreso/Semana/Perfil) construida y probada de punta a punta; loop de retención implementado; pantalla principal con 3 rondas de revisor-visual, craft pendiente (ver Problemas conocidos)
 
 ## Próximas sesiones 📋
 - Sesión 6: Integraciones reales (GitHub, Vercel, Supabase Auth, Hotmart, dominio) y seguridad
-- Al cerrar Sesión 5: volver a landing/onboarding/paywall con screenshots reales de la app y relanzar el revisor-visual para su veredicto final
+- Pendiente agrupado (sin sesión fija): volver a landing/onboarding/paywall/pantalla-principal con screenshots reales de la app ya construida y relanzar el revisor-visual — las 4 comparten la misma causa de fondo (falta dispositivo ownable visible)
 
 ## Problemas conocidos ⚠️
-- Las 3 pantallas de venta (landing, onboarding, paywall) pasan la auditoría técnica automática pero el revisor-visual las marca NO LISTA por craft visual (13-16/20, bajo el umbral de 16/20) — en todos los casos la causa es la misma: profundidad/identidad visual que existe en el código pero el revisor la percibe débil en el screenshot. Se corrigieron 2-3 rondas de defectos reales en cada una (ver commits de Sesión 3/4); lo que queda es pulido fino de percepción visual, no funcionalidad rota. Decisión del agente: no seguir iterando a ciegas — se retoma con criterio nuevo (quizás con capturas reales de la app ya construida, que dan más contexto) al cerrar Sesión 5.
+- Las 4 pantallas que decidían el dinero (landing, onboarding, paywall, pantalla principal) pasan la auditoría técnica automática pero el revisor-visual las marca NO LISTA por craft visual (12-16/20, bajo el umbral de 16/20) — en todos los casos la causa de fondo es la misma: falta un dispositivo visual ownable (duotone/textura/ilustración de marca) lo bastante fuerte para diferenciarse de cualquier app genérica del nicho, y en la pantalla principal además faltan gestos/atajos (heurística de eficiencia h7). Se corrigieron 2-3 rondas de defectos reales en cada pantalla (ver commits de Sesión 3/4/5) — lo que queda es craft de identidad visual, no funcionalidad rota. Decisión del agente: no seguir iterando a ciegas sesión tras sesión — se agrupan las 4 como un pendiente de pulido visual único, a retomar con criterio nuevo (posiblemente un dispositivo ownable diseñado una sola vez y aplicado a las 4).
 - Login: el envío real del magic link (Supabase Auth) es un mock local — se conecta de verdad en Sesión 6. No declarar el login "funcional de punta a punta" hasta esa sesión.
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy con fuente y fecha. No bloquea nada — la categoría ya está validada por el propio usuario.
 
