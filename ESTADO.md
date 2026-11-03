@@ -1,7 +1,7 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-02 | Sesión actual: 2
 
-⏸️ CHECKPOINT — Última acción completada: Tour de la app construido con la Opción B ("Calma Clara") y entregado al usuario / Siguiente acción exacta: esperar su respuesta (1 me encanta / 2 ajustar / 3 repensar); si aprueba, cerrar FICHA-ARTE.md + tokens de 10-DESIGN-TOKENS.md y pasar a Sesión 3 (landing).
+⏸️ CHECKPOINT — Última acción completada: usuario aprobó el tour ("Me encanta, sigamos") → FICHA-ARTE.md cerrada y APROBADA (cosa juzgada) + comparativa y tour archivados en docs/revisiones/ / Siguiente acción exacta: pedir permiso para arrancar Sesión 3 (landing) — ahí se escaloda el proyecto Next.js y se materializan los tokens de FICHA-ARTE.md en app/globals.css (10-DESIGN-TOKENS.md).
 
 ## Qué es esta app (3 líneas máximo)
 Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100% offline/local, con rutinas recurrentes incluidas gratis desde el día uno. Para estudiantes y profesionales jóvenes de LATAM con TDAH o dificultad de función ejecutiva. Monetización: suscripción mensual/anual con hard paywall tras 7 días de prueba gratis.
@@ -16,13 +16,14 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Brecha LATAM confirmada: sí — líderes caros (US$25-100), sin precios PPP, sin paridad Android
 - Precio de referencia del mercado: Structured US$6.99/mes · US$29.99/año · US$99.99 lifetime
 
-## Dirección de Arte (Sesión 2 — EN CURSO, pendiente de aprobación final del tour)
-- FICHA-ARTE.md: NO creada todavía — se crea cuando el usuario apruebe el tour (paso siguiente)
+## Dirección de Arte (Sesión 2 — CERRADA, cosa juzgada — NO se reabre sin pedirlo el usuario)
+- FICHA-ARTE.md: existe y APROBADA — 2026-11-02
 - Ruta de diseño: propuesta propia (RUTA 1 del 54) — el usuario eligió "Propón tú el estilo"
-- Comparativa: `direcciones-abc.html` en la raíz — 3 fusiones de líderes (Structured #1 + Tiimo + banco 54), verificada (fuentes por clase, sin emojis, mockups llenos)
-- ELEGIDA: Opción B — "Calma Clara" (Clínica humana, banco 54 dir. 5, adaptada) — Gantari (display) + Atkinson Hyperlegible (body, legibilidad TDAH/dislexia) · acento teal #0F766E · fondo #F4F7F6 · superficie #FDFEFD · texto #22302C/#5B6D67 · radius 16/12 · dispositivo: duotone
-- Tour (mockup HTML pre-código, NINGUNA pantalla real construida todavía): `vista-previa-app.html` — 4 vistas de ejemplo con el estilo B (Hoy, Onboarding, planes de precio, mecanismo) para que el usuario apruebe la dirección visual, nada más
-- Siguiente: con el tour aprobado → FICHA-ARTE.md + tokens de 10-DESIGN-TOKENS.md → recién ahí se construyen las pantallas REALES (landing/onboarding/paywall/app) en código, cada una con su propio veredicto del revisor-visual antes de declararse lista
+- Comparativa: `direcciones-abc.html` (raíz, archivada en docs/revisiones/direcciones-abc-375.png) — 3 fusiones de líderes (Structured #1 + Tiimo + banco 54), verificada
+- ELEGIDA: Opción B — "Calma Clara" (Clínica humana, banco 54 dir. 5, adaptada) — Gantari (display) + Atkinson Hyperlegible (body, legibilidad TDAH/dislexia) · acento teal #0F766E · 2ª nota mandarina #D97E00 solo en racha/medallas · fondo #F4F7F6 · superficie #FDFEFD · texto #22302C/#5B6D67 · radius 16/12 · dispositivo: duotone de marca
+- Tour (mockup HTML pre-código, NINGUNA pantalla real construida todavía): `vista-previa-app.html` (raíz, archivado en docs/revisiones/vista-previa-app-375.png) — 4 vistas de ejemplo con el estilo B, aprobadas por el usuario
+- Registro anti-repetición: paleta teal #0F766E + par Gantari/Atkinson Hyperlegible → vetados para el próximo proyecto del SO
+- Siguiente paso técnico (Sesión 3): escalar proyecto Next.js y materializar el brand kit de FICHA-ARTE.md en `app/globals.css` (10-DESIGN-TOKENS.md, @theme) ANTES de la primera pantalla real
 
 ## Avatar y venta (Sesión 1)
 - FICHA-AVATAR.md: existe — BORRADOR (≥10 frases VoC con fuente "reseñas aportadas por el usuario"; falta que el usuario la apruebe explícitamente)
@@ -69,12 +70,13 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 
 ## Sesiones completadas ✅
 - Sesión 1 — Validación (aportada por el usuario) + FICHA-AVATAR (borrador) + FICHA-MODELO (con evidencia web real) + monetización decidida + arquitectura decidida + Plan Maestro presentado y aceptado
+- Sesión 2 — Identidad visual: comparativa A/B/C, elección del usuario (Opción B "Calma Clara"), tour aprobado, FICHA-ARTE.md cerrada
 
 ## Sesión en progreso 🔧
-- Sesión 2 — Identidad visual: comparativa A/B/C construida y verificada, usuario eligió Opción B, tour de la app construido y entregado. Falta la aprobación final del usuario sobre el tour.
+(ninguna — esperando permiso del usuario para arrancar Sesión 3)
 
 ## Próximas sesiones 📋
-- Sesión 3: Página de ventas (landing) — usa la dirección B ya fijada
+- Sesión 3: Página de ventas (landing) — escalar proyecto Next.js, tokens a app/globals.css, estructura canónica de 10 secciones del 19
 - Sesión 4: Onboarding, paywall y login
 
 ## Problemas conocidos ⚠️
@@ -82,7 +84,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy (instalaciones estimadas + volumen de reseñas, con fuente y fecha). No bloquea el arranque porque la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Responder sobre el tour de la app: 1) me encanta, sigamos · 2) ajustar un detalle · 3) repensar el estilo
+- [ ] Dar el OK para arrancar Sesión 3 (landing)
 - [ ] Más adelante (no ahora): crear cuentas de Hotmart, Vercel, dominio — se le avisará cuando llegue el momento
 
 ## Notas para la próxima sesión
