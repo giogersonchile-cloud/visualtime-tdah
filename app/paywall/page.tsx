@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { X, Lock, ShieldCheck } from 'lucide-react';
 import { leerRespuestas, type Respuestas } from '@/lib/onboarding';
-import { CheckCustom } from '@/components/landing/ui';
+import { CheckCustom, Hairline } from '@/components/landing/ui';
 
 type PlanId = 'anual' | 'mensual';
 
@@ -13,6 +13,7 @@ export default function Paywall() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<Respuestas | null>(null);
   const [plan, setPlan] = useState<PlanId>('anual');
+  const [restaurando, setRestaurando] = useState(false);
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -28,17 +29,49 @@ export default function Paywall() {
     router.push('/login');
   };
 
+  const restaurarCompra = () => {
+    // Verificación real contra Hotmart/Supabase llega en Sesión 6 — por ahora
+    // el botón SÍ responde (nunca un botón muerto, 50 → anti-patrones).
+    setRestaurando(true);
+    window.setTimeout(() => setRestaurando(false), 2200);
+  };
+
   return (
-    <main className="flex min-h-dvh flex-col bg-[var(--bg)] [font-family:var(--font-body)]">
+    <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
+      {/* Fondo con profundidad (mesh sutil del acento) — nunca fill plano, 55 gate G */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(780px 460px at 10% -10%, color-mix(in oklab, var(--accent) 7%, transparent) 0%, transparent 60%), radial-gradient(640px 420px at 100% 10%, color-mix(in oklab, var(--accent-2) 5%, transparent) 0%, transparent 55%)',
+        }}
+      />
       <div className="relative mx-auto w-full max-w-[520px] flex-1 px-4 pb-10 pt-5">
-        <button
-          type="button"
-          onClick={() => router.push('/onboarding')}
-          aria-label="Cerrar"
-          className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
-        >
-          <X size={20} />
-        </button>
+        <div className="flex items-center justify-between">
+          <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
+            <span aria-hidden="true" className="relative isolate size-6 overflow-hidden rounded-[8px] bg-[var(--accent)]">
+              <span
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background: 'radial-gradient(120% 120% at 20% 10%, var(--accent-2) 0%, transparent 70%)',
+                  mixBlendMode: 'soft-light',
+                  opacity: 0.6,
+                }}
+              />
+            </span>
+            VisualTime TDAH
+          </a>
+          <button
+            type="button"
+            onClick={() => router.push('/onboarding')}
+            aria-label="Cerrar"
+            className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
         <motion.div
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
@@ -47,30 +80,33 @@ export default function Paywall() {
           className="mt-2"
         >
           <h1 className="text-balance text-[30px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]">
-            Tu <span className="text-[var(--accent)]">{rutina}</span> está lista
+            Tu <span className="text-[var(--accent)]">{rutina}</span> ya es tuya, gratis
           </h1>
           <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
             Hecho con tus {nRespuestas} respuestas
           </p>
         </motion.div>
 
-        {/* Visual del valor: value stack — checks con las respuestas reales */}
+        {/* Visual del valor: value stack — checks con las respuestas reales.
+            Hairline degradé (dispositivo ownable de FICHA-ARTE) en el mecanismo. */}
         <motion.div
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: reducedMotion ? 0 : 0.08 }}
-          className="mt-6 flex flex-col gap-3 rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-4"
+          className="mt-6"
         >
-          {[
-            'Línea de tiempo visual de tu día',
-            'Rutinas recurrentes incluidas, sin límite',
-            'Alarmas nativas de tu teléfono',
-          ].map((f) => (
-            <div key={f} className="flex items-center gap-3">
-              <CheckCustom />
-              <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
-            </div>
-          ))}
+          <Hairline className="flex flex-col gap-3 p-4 shadow-[0_6px_20px_-8px_rgb(15_118_110_/_0.2)]">
+            {[
+              'Línea de tiempo visual de tu día',
+              'Rutinas recurrentes incluidas, sin límite',
+              'Alarmas nativas de tu teléfono',
+            ].map((f) => (
+              <div key={f} className="flex items-center gap-3">
+                <CheckCustom />
+                <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
+              </div>
+            ))}
+          </Hairline>
         </motion.div>
 
         {/* Timeline del trial (50 → C4): el visual default de todo paywall con trial */}
@@ -116,7 +152,7 @@ export default function Paywall() {
           <button
             type="button"
             onClick={() => setPlan('anual')}
-            className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors ${
+            className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-6px_rgb(15_118_110_/_0.2)] transition-colors ${
               plan === 'anual'
                 ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))]'
                 : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)]'
@@ -137,7 +173,7 @@ export default function Paywall() {
           <button
             type="button"
             onClick={() => setPlan('mensual')}
-            className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors ${
+            className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-6px_rgb(15_118_110_/_0.2)] transition-colors ${
               plan === 'mensual'
                 ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))]'
                 : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)]'
@@ -172,8 +208,8 @@ export default function Paywall() {
             Ahora no
           </button>
           <span aria-hidden="true">·</span>
-          <button type="button" className="py-2">
-            Restaurar compra
+          <button type="button" onClick={restaurarCompra} disabled={restaurando} className="py-2 disabled:opacity-60">
+            {restaurando ? 'Buscando tu compra…' : 'Restaurar compra'}
           </button>
         </div>
 

@@ -9,6 +9,19 @@ import { PREGUNTAS, guardarRespuestas, type Respuestas } from '@/lib/onboarding'
 const PAUSA_SELECCION_MS = 320;
 const DURACION_LOADING_MS = 5200;
 
+/** JERARQUÍA DE ÉNFASIS (50/55): resalta la palabra clave de la pregunta en acento. */
+function TituloConAcento({ texto, acento }: { texto: string; acento: string }) {
+  const i = texto.toLowerCase().indexOf(acento.toLowerCase());
+  if (i === -1) return <>{texto}</>;
+  return (
+    <>
+      {texto.slice(0, i)}
+      <span className="text-[var(--accent)]">{texto.slice(i, i + acento.length)}</span>
+      {texto.slice(i + acento.length)}
+    </>
+  );
+}
+
 function ProgresoBar({ pct }: { pct: number }) {
   return (
     <div className="h-[3px] w-full overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)]">
@@ -82,7 +95,7 @@ function PantallaPregunta({
       </div>
 
       <h1 className="mt-6 text-balance text-[28px] font-bold leading-[1.1] tracking-[-0.02em] text-[var(--text-primary)] [font-family:var(--font-display)]">
-        {pregunta.pregunta}
+        <TituloConAcento texto={pregunta.pregunta} acento={pregunta.acento} />
       </h1>
       {pregunta.microcopy && (
         <p className="mt-2 text-[14px] text-[var(--text-secondary)]">{pregunta.microcopy}</p>
@@ -100,7 +113,7 @@ function PantallaPregunta({
               initial={reducedMotion ? false : { opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: reducedMotion ? 0 : i * 0.05, duration: 0.2 }}
-              className={`flex min-h-14 items-center justify-between rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium transition-colors ${
+              className={`flex min-h-14 items-center justify-between rounded-[var(--radius-button)] border px-4 py-3 text-left text-[16px] font-medium shadow-[0_2px_10px_-4px_rgb(15_118_110_/_0.16)] transition-colors ${
                 activo
                   ? 'border-[var(--accent)] border-[1.5px] bg-[color-mix(in_oklab,var(--accent)_10%,var(--surface))] text-[var(--text-primary)]'
                   : 'border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] text-[var(--text-primary)]'
@@ -274,10 +287,32 @@ export default function Onboarding() {
   const atras = () => setIndice((i) => Math.max(0, i - 1));
 
   return (
-    <main className="flex min-h-dvh flex-col bg-[var(--bg)] [font-family:var(--font-body)]">
+    <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
+      {/* Fondo con profundidad (mesh sutil del acento) — nunca fill plano, 55 gate G */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(760px 420px at 85% -8%, color-mix(in oklab, var(--accent) 7%, transparent) 0%, transparent 60%), radial-gradient(620px 420px at 0% 30%, color-mix(in oklab, var(--accent-2) 5%, transparent) 0%, transparent 55%)',
+        }}
+      />
       <header className="mx-auto w-full max-w-[520px] px-4 pt-5">
         <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
-          <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />
+          <span
+            aria-hidden="true"
+            className="relative isolate size-6 overflow-hidden rounded-[8px] bg-[var(--accent)]"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(120% 120% at 20% 10%, var(--accent-2) 0%, transparent 70%)',
+                mixBlendMode: 'soft-light',
+                opacity: 0.6,
+              }}
+            />
+          </span>
           VisualTime TDAH
         </a>
       </header>

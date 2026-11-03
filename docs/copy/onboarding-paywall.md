@@ -29,7 +29,7 @@ Chips: "3 días" · "5 días" · "Todos los días"
 
 ## C. Paywall
 
-- Headline: "Tu [acento]{P3}[/acento] está lista"
+- Headline: "Tu [acento]{P3}[/acento] ya es tuya, gratis" (ancla emocional de FICHA-AVATAR.md: "me cobran por algo básico, es una injusticia" → "tu rutina es gratis, sin trampas")
 - Subhead: "Hecho con tus 4 respuestas"
 - Timeline del trial (C4 del 50): Hoy — acceso completo · Día 6 — te avisamos por correo · Día 7 — primer cobro $29.99/año (plan anual) o $4.99 (mensual), cancela antes sin costo
 - Planes: Anual $2.49/mes ($29.99/año, MÁS POPULAR, 2 meses gratis) · Mensual $4.99/mes

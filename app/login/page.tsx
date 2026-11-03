@@ -32,10 +32,29 @@ export default function Login() {
   };
 
   return (
-    <main className="flex min-h-dvh flex-col items-center bg-[var(--bg)] px-4 pt-14 [font-family:var(--font-body)]">
+    <main className="relative flex min-h-dvh flex-col items-center overflow-hidden bg-[var(--bg)] px-4 pt-14 [font-family:var(--font-body)]">
+      {/* Fondo con profundidad (mesh sutil del acento) — nunca fill plano, 55 gate G */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            'radial-gradient(700px 420px at 50% -10%, color-mix(in oklab, var(--accent) 7%, transparent) 0%, transparent 60%)',
+        }}
+      />
       <div className="w-full max-w-[400px]">
         <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
-          <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />
+          <span aria-hidden="true" className="relative isolate size-6 overflow-hidden rounded-[8px] bg-[var(--accent)]">
+            <span
+              aria-hidden="true"
+              className="absolute inset-0"
+              style={{
+                background: 'radial-gradient(120% 120% at 20% 10%, var(--accent-2) 0%, transparent 70%)',
+                mixBlendMode: 'soft-light',
+                opacity: 0.6,
+              }}
+            />
+          </span>
           VisualTime TDAH
         </a>
 

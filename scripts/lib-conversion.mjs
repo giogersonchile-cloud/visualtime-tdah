@@ -311,8 +311,10 @@ function analizarTsx(file, src) {
   while ((lm = litRe.exec(src)) !== null) {
     const val = (lm[1] ?? lm[2] ?? lm[3] ?? '').replace(/\s+/g, ' ').trim();
     if (!val.includes(' ') || !/\p{L}{3}/u.test(val)) continue;
+    // Valor de CSS (gradiente de profundidad, box-shadow…), no copy visible al usuario.
+    if (/^(repeating-)?(radial|linear|conic)-gradient\(/.test(val)) continue;
     const ctx = src.slice(Math.max(0, lm.index - 45), lm.index);
-    if (/\b(import|from|require|href=|src=|url\(|class(Name)?\s*=)\s*$/.test(ctx)) continue;
+    if (/\b(import|from|require|href=|src=|url\(|class(Name)?\s*=|background(Image)?\s*:)\s*$/.test(ctx)) continue;
     if (/\b(import|from)\b/.test(ctx)) continue;
     const dentro = elements.some((e) => lm.index >= e.innerStart && lm.index < e.innerEnd);
     if (dentro) continue;
