@@ -50,7 +50,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 ## Decisiones técnicas (NO re-discutir sin pedirlo el usuario)
 - Framework: Next.js App Router. Stack: Next.js + almacenamiento local (localStorage/IndexedDB), sin Supabase para datos en el MVP.
 - Auth: magic link + código de 6 dígitos (passwordless), modelo "Hotmart-first" de 26-AUTH-MODERNO.md: el webhook crea el usuario en Supabase Auth recién al pagar (`shouldCreateUser: false` en el login — nadie sin compra puede entrar). Google OAuth queda como botón visual pendiente de conectar. Estado de la membresía en `app_metadata.plan_status` (nunca en user_metadata, que el usuario puede editar).
-- Servicios externos (Sesión 6): GitHub `giogersonchile-cloud/visualtime-tdah` conectado a Vercel (proyecto `visualtime-tdah`, deploy automático funcionando). Supabase project `tspjibbqokwxztfiicok` creado — Auth conectado, SQL de servidor (`supabase/schema.sql`) aún sin ejecutar. Hotmart: cuenta aún no creada.
+- Servicios externos (Sesión 6): GitHub `giogersonchile-cloud/visualtime-tdah` conectado a Vercel (proyecto `visualtime-tdah`, dominio `visualtime-tdah.vercel.app`, deploy automático funcionando). Supabase project `tspjibbqokwxztfiicok` — Auth conectado, las 4 variables de entorno agregadas en Vercel (las 3 públicas + `SUPABASE_SECRET_KEY`), SQL de servidor ejecutado con éxito (`processed_events`, `webhook_log`), login real probado en producción (rechaza correctamente un correo sin compra). Hotmart: cuenta aún no creada.
 - Features del MVP: 1) Línea de tiempo visual vertical 24h · 2) Tareas y rutinas recurrentes gratis desde el día uno · 3) Almacenamiento local + notificaciones nativas
 - Modelo de IA: ninguno (planificador visual, no generativo)
 
