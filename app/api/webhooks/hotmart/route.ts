@@ -18,7 +18,8 @@ type EventoHotmart = {
 
 async function registrarLog(eventId: string | undefined, type: string | undefined, result: string) {
   const admin = crearClienteSupabaseAdmin();
-  await admin.from('webhook_log').insert({ event_id: eventId, type, result });
+  const { error } = await admin.from('webhook_log').insert({ event_id: eventId, type, result });
+  if (error) console.error('[webhook hotmart] no se pudo escribir webhook_log:', error.message);
 }
 
 export async function POST(req: NextRequest) {
@@ -53,12 +54,20 @@ export async function POST(req: NextRequest) {
   }
 
   // 3) IDEMPOTENCIA — Hotmart reintenta el mismo evento; el PK de processed_events deduplica.
+  // Solo un choque de llave primaria (23505) significa "evento repetido" de verdad — cualquier
+  // otro error (permisos, tabla inexistente, clave mal configurada) debe fallar visiblemente,
+  // nunca disfrazarse de "duplicado" y dejar pasar la compra sin dar acceso.
   const { error: dupError } = await admin
     .from('processed_events')
     .insert({ event_id: eventId, event_type: body.event ?? 'desconocido' });
   if (dupError) {
-    await registrarLog(eventId, body.event, 'duplicate');
-    return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
+    if (dupError.code === '23505') {
+      await registrarLog(eventId, body.event, 'duplicate');
+      return NextResponse.json({ ok: true, duplicate: true }, { status: 200 });
+    }
+    console.error('[webhook hotmart] fallo real al escribir processed_events:', dupError.message, dupError.code);
+    await registrarLog(eventId, body.event, 'error');
+    return NextResponse.json({ error: 'fallo al registrar el evento' }, { status: 500 });
   }
 
   // 4) AUTORIZACIÓN — máquina de estados de la membresía (tabla de 18-VENTA-HOTMART.md).
@@ -89,7 +98,8 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ ok: true, ignored: body.event }, { status: 200 });
       }
     }
-  } catch {
+  } catch (err) {
+    console.error('[webhook hotmart] fallo interno procesando el evento:', err);
     await registrarLog(eventId, body.event, 'error');
     return NextResponse.json({ error: 'fallo interno' }, { status: 500 });
   }
@@ -100,7 +110,8 @@ export async function POST(req: NextRequest) {
 
 async function buscarUsuarioPorEmail(admin: ReturnType<typeof crearClienteSupabaseAdmin>, email: string) {
   // listUsers no filtra por email de forma nativa en todas las versiones; se pagina si hace falta.
-  const { data } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
+  if (error) throw new Error(`listUsers falló: ${error.message}`);
   return data.users.find((u) => u.email?.toLowerCase() === email) ?? null;
 }
 
@@ -108,14 +119,16 @@ async function otorgarAcceso(admin: ReturnType<typeof crearClienteSupabaseAdmin>
   const existente = await buscarUsuarioPorEmail(admin, email);
   const appMetadata = { plan_status: 'active', first_paid_at: new Date().toISOString() };
   if (existente) {
-    await admin.auth.admin.updateUserById(existente.id, { app_metadata: appMetadata });
+    const { error } = await admin.auth.admin.updateUserById(existente.id, { app_metadata: appMetadata });
+    if (error) throw new Error(`updateUserById falló: ${error.message}`);
   } else {
-    await admin.auth.admin.createUser({
+    const { error } = await admin.auth.admin.createUser({
       email,
       email_confirm: true,
       user_metadata: nombre ? { nombre } : undefined,
       app_metadata: appMetadata,
     });
+    if (error) throw new Error(`createUser falló: ${error.message}`);
   }
 }
 
@@ -126,7 +139,8 @@ async function revocarAcceso(
 ) {
   const existente = await buscarUsuarioPorEmail(admin, email);
   if (!existente) return; // nada que revocar — no es un error del webhook
-  await admin.auth.admin.updateUserById(existente.id, { app_metadata: { plan_status: motivo } });
+  const { error } = await admin.auth.admin.updateUserById(existente.id, { app_metadata: { plan_status: motivo } });
+  if (error) throw new Error(`updateUserById falló: ${error.message}`);
 }
 
 async function marcarCancelado(admin: ReturnType<typeof crearClienteSupabaseAdmin>, email: string) {
@@ -136,7 +150,8 @@ async function marcarCancelado(admin: ReturnType<typeof crearClienteSupabaseAdmi
   // El valor real de access_until depende del payload de tu cuenta (fecha de fin de ciclo);
   // sin ese dato fiable, se documenta como pendiente (ver ESTADO.md) y se deja el estado 'active'
   // hasta que llegue PURCHASE_EXPIRED o un reembolso.
-  await admin.auth.admin.updateUserById(existente.id, {
+  const { error } = await admin.auth.admin.updateUserById(existente.id, {
     app_metadata: { plan_status: 'active', cancel_at_period_end: true },
   });
+  if (error) throw new Error(`updateUserById falló: ${error.message}`);
 }
