@@ -128,7 +128,18 @@ async function otorgarAcceso(admin: ReturnType<typeof crearClienteSupabaseAdmin>
       user_metadata: nombre ? { nombre } : undefined,
       app_metadata: appMetadata,
     });
-    if (error) throw new Error(`createUser falló: ${error.message}`);
+    if (error) {
+      // Carrera de milisegundos: Hotmart puede mandar dos eventos casi a la vez (p.ej.
+      // PURCHASE_APPROVED y PURCHASE_COMPLETE) y ambos intentan crear el mismo usuario.
+      // Si ya existe (lo creó el otro evento mientras este corría), se actualiza en vez
+      // de fallar — solo se relanza el error si de verdad no hay usuario con ese correo.
+      const creadoPorOtroEvento = await buscarUsuarioPorEmail(admin, email);
+      if (!creadoPorOtroEvento) throw new Error(`createUser falló: ${error.message}`);
+      const { error: errorUpdate } = await admin.auth.admin.updateUserById(creadoPorOtroEvento.id, {
+        app_metadata: appMetadata,
+      });
+      if (errorUpdate) throw new Error(`updateUserById (tras carrera) falló: ${errorUpdate.message}`);
+    }
   }
 }
 
