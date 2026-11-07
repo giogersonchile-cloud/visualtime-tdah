@@ -50,7 +50,12 @@ export default function Login() {
     const supabase = crearClienteSupabase();
     const { error } = await supabase.auth.signInWithOtp({
       email,
-      options: { shouldCreateUser: false },
+      options: {
+        shouldCreateUser: false,
+        // Sin esto, el enlace del correo manda a la Site URL (la landing "/"), que no
+        // tiene ningún código para abrir la sesión — solo esta pantalla lo tiene.
+        emailRedirectTo: `${window.location.origin}/login`,
+      },
     });
     if (error) {
       setEstado('error');
