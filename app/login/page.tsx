@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { Lock } from 'lucide-react';
@@ -16,6 +16,20 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState('');
   const [segundos, setSegundos] = useState(0);
   const reducedMotion = useReducedMotion();
+
+  // El enlace del correo (a diferencia del código) no se "verifica" a mano: el cliente de
+  // Supabase lo detecta solo en la URL al cargar esta misma página y abre la sesión. Si ya
+  // quedó una sesión activa (porque la persona entró desde el enlace), la mandamos a /app.
+  useEffect(() => {
+    const supabase = crearClienteSupabase();
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) router.replace('/app');
+    });
+    const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) router.replace('/app');
+    });
+    return () => sub.subscription.unsubscribe();
+  }, [router]);
 
   const iniciarCuenta = () => {
     setSegundos(60);
