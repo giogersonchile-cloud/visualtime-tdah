@@ -79,7 +79,7 @@ export default function Login() {
 
   const verificar = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (codigo.trim().length < 6 || estado === 'verificando') return;
+    if (codigo.trim().length < 6 || codigo.trim().length > 8 || estado === 'verificando') return;
     setEstado('verificando');
     setErrorMsg('');
     const supabase = crearClienteSupabase();
@@ -190,10 +190,10 @@ export default function Login() {
                   type="text"
                   inputMode="numeric"
                   autoComplete="one-time-code"
-                  maxLength={6}
+                  maxLength={8}
                   value={codigo}
                   onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ''))}
-                  placeholder="000000"
+                  placeholder="00000000"
                   className="h-14 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-center text-[20px] font-semibold tracking-[0.3em] text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
                 />
                 <button
