@@ -17,11 +17,18 @@ export default function Login() {
   const [segundos, setSegundos] = useState(0);
   const reducedMotion = useReducedMotion();
 
-  // El enlace del correo (a diferencia del código) no se "verifica" a mano: el cliente de
-  // Supabase lo detecta solo en la URL al cargar esta misma página y abre la sesión. Si ya
-  // quedó una sesión activa (porque la persona entró desde el enlace), la mandamos a /app.
+  // El enlace del correo llega con "?code=..." (flujo PKCE) — el cliente de Supabase NO lo
+  // canjea solo, hay que llamarlo a mano con el código de la URL. Si ya quedó una sesión
+  // activa (porque la persona entró desde el enlace), la mandamos a /app.
   useEffect(() => {
     const supabase = crearClienteSupabase();
+    const code = new URLSearchParams(window.location.search).get('code');
+    if (code) {
+      supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+        if (!error && data.session) router.replace('/app');
+      });
+      return;
+    }
     supabase.auth.getSession().then(({ data }) => {
       if (data.session) router.replace('/app');
     });
