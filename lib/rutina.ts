@@ -123,6 +123,17 @@ export function eliminarBloque(id: string): { rutina: Rutina | null; ok: boolean
   return { rutina, ok };
 }
 
+/** Deshacer un borrado reciente (h9/control y libertad): reinserta el bloque con
+ * su MISMO id — así conserva su historial de "completado" si lo tenía. */
+export function restaurarBloque(bloque: Bloque): { rutina: Rutina; ok: boolean } {
+  const rutina = obtenerRutina() ?? { nombre: 'Mi rutina', bloques: [] };
+  if (!rutina.bloques.some((b) => b.id === bloque.id)) {
+    rutina.bloques = [...rutina.bloques, bloque].sort((a, b) => a.hora.localeCompare(b.hora));
+  }
+  const ok = guardarRutina(rutina);
+  return { rutina, ok };
+}
+
 function fechaISO(d: Date): string {
   return d.toISOString().slice(0, 10);
 }

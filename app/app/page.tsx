@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
-import { Check, Plus, Flame, X, Pencil, Trash2, Award } from 'lucide-react';
+import { Check, Plus, Flame, X, Pencil, Trash2, Award, TrendingUp } from 'lucide-react';
 import {
   obtenerRutina,
   bloquesDelDia,
@@ -14,9 +14,24 @@ import {
   agregarBloque,
   editarBloque,
   eliminarBloque,
+  restaurarBloque,
   type Rutina,
   type Bloque,
 } from '@/lib/rutina';
+import { EcoChip } from '@/components/ui/Marca';
+
+/** Diferencia la causa real del fallo (50/15 h9) — nunca el mismo mensaje genérico
+ * para todo: localStorage puede fallar por cuota llena o por modo privado/bloqueado. */
+function mensajeDeError(): string {
+  try {
+    const k = '__vt_probe__';
+    localStorage.setItem(k, '1');
+    localStorage.removeItem(k);
+    return 'No pudimos guardar: parece que tu almacenamiento está lleno. Borra algo y vuelve a intentar.';
+  } catch {
+    return 'No pudimos guardar: tu navegador está bloqueando el almacenamiento (modo privado). Prueba en una pestaña normal.';
+  }
+}
 
 const DIAS_SEMANA = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
 const HITOS_RACHA = [7, 14, 30, 90];
@@ -30,10 +45,23 @@ const variantesItem = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] as const } },
 };
 
-function Toast({ mensaje, onCerrar, reducedMotion }: { mensaje: string; onCerrar: () => void; reducedMotion: boolean }) {
+function Toast({
+  mensaje,
+  accionLabel,
+  onAccion,
+  onCerrar,
+  reducedMotion,
+}: {
+  mensaje: string;
+  accionLabel?: string;
+  onAccion?: () => void;
+  onCerrar: () => void;
+  reducedMotion: boolean;
+}) {
   useEffect(() => {
-    const t = window.setTimeout(onCerrar, 3200);
+    const t = window.setTimeout(onCerrar, accionLabel ? 5000 : 3200);
     return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [onCerrar]);
   return (
     <motion.div
@@ -41,9 +69,21 @@ function Toast({ mensaje, onCerrar, reducedMotion }: { mensaje: string; onCerrar
       animate={{ opacity: 1, y: 0 }}
       exit={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
       role="alert"
-      className="fixed inset-x-4 bottom-20 z-30 mx-auto max-w-[480px] rounded-[var(--radius-button)] bg-[var(--text-primary)] px-4 py-3 text-center text-[13px] font-medium text-[var(--bg)] shadow-[0_8px_24px_-6px_rgb(0_0_0_/_0.3)]"
+      className="fixed inset-x-4 bottom-20 z-30 mx-auto flex max-w-[480px] items-center justify-between gap-3 rounded-[var(--radius-button)] bg-[var(--text-primary)] px-4 py-3 text-[13px] font-medium text-[var(--bg)] shadow-[0_8px_24px_-6px_rgb(0_0_0_/_0.3)]"
     >
-      {mensaje}
+      <span>{mensaje}</span>
+      {accionLabel && onAccion && (
+        <button
+          type="button"
+          onClick={() => {
+            onAccion();
+            onCerrar();
+          }}
+          className="shrink-0 font-bold text-[var(--accent-2)] underline underline-offset-2"
+        >
+          {accionLabel}
+        </button>
+      )}
     </motion.div>
   );
 }
@@ -89,12 +129,14 @@ function FormularioBloque({
   inicial,
   onCerrar,
   onGuardado,
+  onEliminado,
   onError,
   reducedMotion,
 }: {
   inicial: Bloque | null;
   onCerrar: () => void;
   onGuardado: () => void;
+  onEliminado: (bloque: Bloque) => void;
   onError: () => void;
   reducedMotion: boolean;
 }) {
@@ -123,7 +165,7 @@ function FormularioBloque({
     }
     const resultado = eliminarBloque(inicial.id);
     if (!resultado.ok) return onError();
-    onGuardado();
+    onEliminado(inicial);
   };
 
   return (
@@ -187,7 +229,9 @@ function FormularioBloque({
               type="button"
               onClick={eliminar}
               className={`flex h-11 items-center justify-center gap-2 text-[14px] font-semibold text-[var(--error)] ${
-                confirmarEliminar ? 'rounded-[var(--radius-button)] bg-[color-mix(in_oklab,var(--error)_10%,transparent)]' : ''
+                confirmarEliminar
+                  ? 'rounded-[var(--radius-button)] border-[1.5px] border-[var(--error)] bg-[color-mix(in_oklab,var(--error)_12%,transparent)]'
+                  : ''
               }`}
             >
               <Trash2 size={15} aria-hidden="true" />
@@ -232,6 +276,7 @@ export default function Hoy() {
   const [version, setVersion] = useState(0);
   const [bloqueEditando, setBloqueEditando] = useState<Bloque | 'nuevo' | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [bloqueBorrado, setBloqueBorrado] = useState<Bloque | null>(null);
   const [celebracion, setCelebracion] = useState<number | null>(null);
   const rachaAnterior = useRef<number | null>(null);
   const reducedMotion = useReducedMotion();
@@ -287,7 +332,7 @@ export default function Hoy() {
   const marcar = (id: string) => {
     const resultado = alternarCompletado(hoy, id);
     if (!resultado.ok) {
-      setToast('No se pudo guardar. Intenta de nuevo.');
+      setToast(mensajeDeError());
       return;
     }
     setVersion((v) => v + 1);
@@ -319,17 +364,8 @@ export default function Hoy() {
             role="status"
             aria-live="polite"
             aria-label={`Racha de ${racha} ${racha === 1 ? 'día' : 'días'}`}
-            className="relative isolate flex items-center gap-1 overflow-hidden rounded-full bg-[color-mix(in_oklab,var(--accent-2)_14%,transparent)] px-3 py-1.5 text-[13px] font-bold text-[var(--accent-2)]"
+            className="relative isolate flex items-center gap-1 rounded-full bg-[color-mix(in_oklab,var(--accent-2)_18%,transparent)] px-3 py-1.5 text-[13px] font-bold text-[var(--accent-2)]"
           >
-            <span
-              aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                background: 'radial-gradient(120% 160% at 15% 0%, var(--accent) 0%, transparent 65%)',
-                mixBlendMode: 'soft-light',
-                opacity: 0.5,
-              }}
-            />
             <Flame size={14} aria-hidden="true" />
             {racha}
           </span>
@@ -367,10 +403,12 @@ export default function Hoy() {
       {/* La línea de tiempo — acción de 1 tap (M0.1 pieza 2) */}
       <motion.div variants={variantesItem} className="mt-8 flex items-center justify-between">
         <h2 className="text-[15px] font-bold text-[var(--text-primary)]">{rutina.nombre}</h2>
+        {/* min-h-11 (44px): el botón solo tenía el alto del texto — área táctil
+            bajo el mínimo accesible (veredicto del revisor). */}
         <button
           type="button"
           onClick={() => setBloqueEditando('nuevo')}
-          className="flex items-center gap-1 text-[13px] font-semibold text-[var(--accent)]"
+          className="flex min-h-11 items-center gap-1 px-2 text-[13px] font-semibold text-[var(--accent)]"
         >
           <Plus size={15} aria-hidden="true" /> Agregar
         </button>
@@ -433,21 +471,27 @@ export default function Hoy() {
         </ul>
       )}
 
-      {/* El insight — M0.1 pieza 4 */}
+      {/* El insight — M0.1 pieza 4. Contraste subido tras veredicto (la superficie
+          hundida era casi imperceptible junto a las cards blancas de arriba):
+          sombra interior más marcada + un ícono con el sello de marca que
+          refuerza la identidad ownable fuera del logo del header. */}
       {insight && (
         <motion.div
           variants={variantesItem}
-          className="mt-6 rounded-[var(--radius-card)] border border-transparent p-4"
+          className="mt-6 flex items-start gap-3 rounded-[var(--radius-card)] border border-transparent p-4"
           style={{
-            // Superficie HUNDIDA (3er nivel de profundidad de FICHA-ARTE): --surface-2 +
-            // sombra interior, para que se distinga de las cards ELEVADAS de arriba.
             background:
-              'linear-gradient(var(--surface-2), var(--surface-2)) padding-box, linear-gradient(135deg, color-mix(in oklab, var(--accent) 40%, transparent), transparent 60%) border-box',
-            boxShadow: 'inset 0 1px 4px rgb(15 118 110 / 0.14)',
-            borderWidth: 1,
+              'linear-gradient(var(--surface-2), var(--surface-2)) padding-box, linear-gradient(135deg, color-mix(in oklab, var(--accent) 55%, transparent), transparent 60%) border-box',
+            boxShadow: 'inset 0 2px 6px rgb(15 118 110 / 0.22)',
+            borderWidth: 1.5,
           }}
         >
-          <p className="text-[13px] leading-relaxed text-[var(--text-secondary)]">{insight}</p>
+          <EcoChip size={32}>
+            <span className="flex size-8 items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)]">
+              <TrendingUp size={15} strokeWidth={2} color="var(--accent)" aria-hidden="true" />
+            </span>
+          </EcoChip>
+          <p className="pt-1 text-[13px] leading-relaxed text-[var(--text-secondary)]">{insight}</p>
         </motion.div>
       )}
 
@@ -460,14 +504,39 @@ export default function Hoy() {
               setBloqueEditando(null);
               setVersion((v) => v + 1);
             }}
-            onError={() => setToast('No se pudo guardar. Intenta de nuevo.')}
+            onEliminado={(bloque) => {
+              setBloqueEditando(null);
+              setVersion((v) => v + 1);
+              setBloqueBorrado(bloque);
+              setToast(`Eliminaste "${bloque.titulo}"`);
+            }}
+            onError={() => setToast(mensajeDeError())}
             reducedMotion={Boolean(reducedMotion)}
           />
         )}
       </AnimatePresence>
 
       <AnimatePresence>
-        {toast && <Toast mensaje={toast} onCerrar={() => setToast(null)} reducedMotion={Boolean(reducedMotion)} />}
+        {toast && (
+          <Toast
+            mensaje={toast}
+            accionLabel={bloqueBorrado ? 'Deshacer' : undefined}
+            onAccion={
+              bloqueBorrado
+                ? () => {
+                    restaurarBloque(bloqueBorrado);
+                    setBloqueBorrado(null);
+                    setVersion((v) => v + 1);
+                  }
+                : undefined
+            }
+            onCerrar={() => {
+              setToast(null);
+              setBloqueBorrado(null);
+            }}
+            reducedMotion={Boolean(reducedMotion)}
+          />
+        )}
       </AnimatePresence>
 
       <AnimatePresence>

@@ -3,10 +3,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { ChevronLeft, Check } from 'lucide-react';
+import { ChevronLeft, Check, X } from 'lucide-react';
 import { PREGUNTAS, guardarRespuestas, type Respuestas } from '@/lib/onboarding';
 import { rutinaDesdeRespuesta, guardarRutina } from '@/lib/rutina';
 import { Hairline } from '@/components/landing/ui';
+import { LogoMark, EcoChip } from '@/components/ui/Marca';
+import { Sparkles } from 'lucide-react';
 
 const PAUSA_SELECCION_MS = 320;
 const DURACION_LOADING_MS = 5200;
@@ -27,10 +29,10 @@ function TituloConAcento({ texto, acento }: { texto: string; acento: string }) {
 function ProgresoBar({ pct }: { pct: number }) {
   return (
     // Surco "hundido" (tercer nivel de profundidad, --surface-2 + sombra interior) —
-    // el track era un fill plano sin relación con el sistema de 3 niveles de 55.
+    // subido a 8px tras veredicto del revisor: a 3px la sombra interior no se percibía.
     <div
-      className="h-[3px] w-full overflow-hidden rounded-full bg-[var(--surface-2)]"
-      style={{ boxShadow: 'inset 0 1px 2px rgb(15 118 110 / 0.18)' }}
+      className="h-2 w-full overflow-hidden rounded-full bg-[var(--surface-2)]"
+      style={{ boxShadow: 'inset 0 1.5px 3px rgb(15 118 110 / 0.28)' }}
     >
       <motion.div
         className="h-full rounded-full bg-[var(--accent)]"
@@ -45,26 +47,33 @@ function ProgresoBar({ pct }: { pct: number }) {
 function PantallaPregunta({
   indice,
   total,
+  respuestaGuardada,
   onAtras,
   onResponder,
 }: {
   indice: number;
   total: number;
+  /** La respuesta que ya había dado antes a ESTA pregunta (si volvió con "atrás") —
+   * sin esto, la opción elegida se "olvidaba" al navegar hacia atrás (h3/h6). */
+  respuestaGuardada: string | null;
   onAtras: () => void;
   onResponder: (valor: string) => void;
 }) {
   const pregunta = PREGUNTAS[indice];
-  const [seleccionada, setSeleccionada] = useState<string | null>(null);
-  const [otraCosaAbierta, setOtraCosaAbierta] = useState(false);
-  const [textoLibre, setTextoLibre] = useState('');
+  const esOpcionPredefinida = respuestaGuardada ? pregunta.opciones.includes(respuestaGuardada) : false;
+  const [seleccionada, setSeleccionada] = useState<string | null>(esOpcionPredefinida ? respuestaGuardada : null);
+  const [otraCosaAbierta, setOtraCosaAbierta] = useState(Boolean(respuestaGuardada && !esOpcionPredefinida));
+  const [textoLibre, setTextoLibre] = useState(respuestaGuardada && !esOpcionPredefinida ? respuestaGuardada : '');
+  const [hintVacio, setHintVacio] = useState(false);
   const reducedMotion = useReducedMotion();
   // Endowed progress (Nunes & Drèze 2006): la barra arranca en 8%, nunca en 0.
   const pct = 8 + (indice / total) * 92;
 
   useEffect(() => {
-    setSeleccionada(null);
-    setOtraCosaAbierta(false);
-    setTextoLibre('');
+    setSeleccionada(esOpcionPredefinida ? respuestaGuardada : null);
+    setOtraCosaAbierta(Boolean(respuestaGuardada && !esOpcionPredefinida));
+    setTextoLibre(respuestaGuardada && !esOpcionPredefinida ? respuestaGuardada : '');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [indice]);
 
   const elegir = (opcion: string) => {
@@ -151,24 +160,42 @@ function PantallaPregunta({
           </button>
         )}
         {otraCosaAbierta && (
-          <div className="flex flex-col gap-3">
+          // form (no solo button+input sueltos): Enter ahora envía — antes solo
+          // funcionaba el mouse sobre "Continuar" (h7/flexibilidad).
+          <form
+            className="flex flex-col gap-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (!textoLibre.trim()) {
+                setHintVacio(true);
+                return;
+              }
+              onResponder(textoLibre.trim());
+            }}
+          >
             <input
               autoFocus
               type="text"
               value={textoLibre}
-              onChange={(e) => setTextoLibre(e.target.value)}
+              onChange={(e) => {
+                setTextoLibre(e.target.value);
+                if (hintVacio) setHintVacio(false);
+              }}
               placeholder="Escribe tu rutina"
               className="h-14 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] px-4 text-[16px] text-[var(--text-primary)] outline-none focus:border-[var(--accent)]"
             />
+            {hintVacio && (
+              <p className="text-[13px] text-[var(--error)]">Escribe el nombre de tu rutina para continuar.</p>
+            )}
+            {/* CTA vivo SIEMPRE habilitado (nunca disabled por defecto) — valida
+                al enviar y muestra el hint en vez de bloquear el botón. */}
             <button
-              type="button"
-              disabled={!textoLibre.trim()}
-              onClick={() => onResponder(textoLibre.trim())}
-              className="flex h-13 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--bg)] disabled:opacity-50"
+              type="submit"
+              className="flex h-13 items-center justify-center rounded-[var(--radius-button)] bg-[var(--accent)] text-[15px] font-semibold text-[var(--bg)]"
             >
               Continuar
             </button>
-          </div>
+          </form>
         )}
       </div>
 
@@ -180,8 +207,15 @@ function PantallaPregunta({
         transition={{ duration: 0.25, delay: 0.2 }}
         className="mt-8"
       >
-        <Hairline className="p-4 shadow-[0_6px_18px_-6px_rgb(15_118_110_/_0.22)]">
-          <p className="text-[13px] leading-relaxed text-[var(--text-secondary)]">
+        <Hairline className="flex items-start gap-3 p-4 shadow-[0_6px_18px_-6px_rgb(15_118_110_/_0.22)]">
+          {/* EcoChip aquí repite el sello de marca fuera del logo del header —
+              el revisor lo marcó como viviendo SOLO en el logo de 24px. */}
+          <EcoChip size={36}>
+            <span className="flex size-9 items-center justify-center rounded-[var(--radius-button)] bg-[var(--chip-bg)]">
+              <Sparkles size={17} strokeWidth={2} color="var(--accent)" aria-hidden="true" />
+            </span>
+          </EcoChip>
+          <p className="pt-1 text-[13px] leading-relaxed text-[var(--text-secondary)]">
             <span className="font-semibold text-[var(--text-primary)]">Con tus respuestas</span> armamos tu
             línea de tiempo al instante — nada se comparte ni se publica sin que tú lo decidas.
           </p>
@@ -312,44 +346,44 @@ export default function Onboarding() {
 
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
-      {/* Fondo con profundidad (mesh del acento, dispositivo ownable de FICHA-ARTE) —
-          nunca fill plano, 55 gate G. Intensidad subida tras veredicto del revisor:
-          al 7% era imperceptible en el screenshot real. */}
+      {/* Fondo con profundidad (mesh del acento) — 3ª ronda tras veredicto: el centro
+          a "92% -8%" quedaba FUERA del viewport por arriba y se recortaba casi
+          entero; ahora el centro está DENTRO del área visible (85%/6%). */}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(820px 460px at 88% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 62%), radial-gradient(680px 460px at -5% 35%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 58%)',
+            'radial-gradient(560px 420px at 85% 6%, color-mix(in oklab, var(--accent) 32%, transparent) 0%, transparent 68%), radial-gradient(480px 380px at 2% 38%, color-mix(in oklab, var(--accent-2) 22%, transparent) 0%, transparent 62%)',
         }}
       />
-      <header className="mx-auto w-full max-w-[520px] px-4 pt-5">
+      <header className="mx-auto flex w-full max-w-[520px] items-center justify-between px-4 pt-5">
         <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
-          <span
-            aria-hidden="true"
-            className="relative isolate size-6 overflow-hidden rounded-[8px] bg-[var(--accent)]"
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                background: 'radial-gradient(120% 120% at 20% 10%, var(--accent-2) 0%, transparent 70%)',
-                mixBlendMode: 'soft-light',
-                opacity: 0.6,
-              }}
-            />
-          </span>
+          <LogoMark size={24} />
           VisualTime TDAH
+        </a>
+        {/* Affordance explícita de salida (h3/control y libertad) — antes solo
+            existía el logo-link del header, poco reconocible como "salir". */}
+        <a
+          href="/"
+          className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
+          aria-label="Salir del recorrido de inicio"
+        >
+          <X size={20} aria-hidden="true" />
         </a>
       </header>
 
-      <div className="mx-auto flex w-full max-w-[520px] flex-1 flex-col px-4 pb-10 pt-6">
+      {/* justify-center: evita el hueco vacío grande bajo la tarjeta de ayuda en
+          preguntas cortas — el bloque de pregunta se centra en el alto disponible
+          en vez de quedar pegado arriba con todo el resto del viewport vacío. */}
+      <div className="mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center px-4 pb-10 pt-6">
         <AnimatePresence mode="wait">
           {paso === 'pregunta' ? (
             <PantallaPregunta
               key={`p-${indice}`}
               indice={indice}
               total={PREGUNTAS.length}
+              respuestaGuardada={respuestas.current[PREGUNTAS[indice].id] ?? null}
               onAtras={atras}
               onResponder={responder}
             />

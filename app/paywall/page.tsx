@@ -3,11 +3,35 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { X, Lock, ShieldCheck } from 'lucide-react';
+import { X, Lock, ShieldCheck, LifeBuoy } from 'lucide-react';
 import { leerRespuestas, type Respuestas } from '@/lib/onboarding';
 import { CheckCustom, Hairline } from '@/components/landing/ui';
+import { LogoMark } from '@/components/ui/Marca';
 
 type PlanId = 'anual' | 'mensual';
+
+/** Conteo animado del precio (baseline obligatorio: ningún número héroe estático —
+ * 07/14). Cuenta de 0 al valor real en 500ms al montar. */
+function PrecioAnimado({ valor, reducedMotion }: { valor: number; reducedMotion: boolean }) {
+  const [mostrado, setMostrado] = useState(reducedMotion ? valor : 0);
+  useEffect(() => {
+    if (reducedMotion) {
+      setMostrado(valor);
+      return;
+    }
+    const inicio = performance.now();
+    const duracion = 500;
+    let raf: number;
+    const paso = (ahora: number) => {
+      const t = Math.min(1, (ahora - inicio) / duracion);
+      setMostrado(valor * (1 - Math.pow(1 - t, 3)));
+      if (t < 1) raf = requestAnimationFrame(paso);
+    };
+    raf = requestAnimationFrame(paso);
+    return () => cancelAnimationFrame(raf);
+  }, [valor, reducedMotion]);
+  return <>${mostrado.toFixed(2)}</>;
+}
 
 export default function Paywall() {
   const router = useRouter();
@@ -20,7 +44,7 @@ export default function Paywall() {
     setRespuestas(leerRespuestas());
   }, []);
 
-  const rutina = respuestas?.p3 || 'tu rutina';
+  const rutina = respuestas?.p3 || 'rutina';
   const nRespuestas = respuestas ? Object.keys(respuestas).length : 4;
 
   const empezarPrueba = () => {
@@ -52,23 +76,13 @@ export default function Paywall() {
       <div className="relative mx-auto w-full max-w-[520px] flex-1 px-4 pb-10 pt-5">
         <div className="flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
-            <span aria-hidden="true" className="relative isolate size-6 overflow-hidden rounded-[8px] bg-[var(--accent)]">
-              <span
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background: 'radial-gradient(120% 120% at 20% 10%, var(--accent-2) 0%, transparent 70%)',
-                  mixBlendMode: 'soft-light',
-                  opacity: 0.6,
-                }}
-              />
-            </span>
+            <LogoMark size={24} />
             VisualTime TDAH
           </a>
           <button
             type="button"
-            onClick={() => router.push('/')}
-            aria-label="Cerrar"
+            onClick={() => router.back()}
+            aria-label="Cerrar y volver"
             className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
           >
             <X size={20} />
@@ -91,57 +105,66 @@ export default function Paywall() {
 
         {/* Visual del valor: value stack — checks con las respuestas reales.
             Hairline degradé (dispositivo ownable de FICHA-ARTE) en el mecanismo. */}
+        {/* Value stack + timeline del trial FUSIONADOS en una sola superficie
+            (veredicto: 7 bloques apilados era demasiado para un avatar con
+            sobrecarga cognitiva — fusionar acorta el recorrido antes del CTA). */}
         <motion.div
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: reducedMotion ? 0 : 0.08 }}
           className="mt-6"
         >
-          <Hairline className="flex flex-col gap-3 p-4 shadow-[0_8px_26px_-8px_rgb(15_118_110_/_0.32)]">
-            {[
-              'Línea de tiempo visual de tu día',
-              'Rutinas recurrentes incluidas, sin límite',
-              'Alarmas nativas de tu teléfono',
-            ].map((f) => (
-              <div key={f} className="flex items-center gap-3">
-                <CheckCustom />
-                <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
-              </div>
-            ))}
-          </Hairline>
-        </motion.div>
-
-        {/* Timeline del trial (50 → C4): el visual default de todo paywall con trial */}
-        <motion.div
-          initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: reducedMotion ? 0 : 0.16 }}
-          className="mt-6 flex flex-col gap-4"
-        >
-          {[
-            { nodo: 'lleno', titulo: 'Hoy — acceso completo', sub: 'Todo tu plan, sin límites' },
-            { nodo: 'lleno', titulo: 'Día 6 — te avisamos', sub: 'Correo antes de cualquier cobro' },
-            {
-              nodo: 'vacio',
-              titulo: `Día 7 — 1er cobro: ${plan === 'anual' ? '$29.99/año' : '$4.99'}`,
-              sub: 'Cancela antes sin costo',
-            },
-          ].map((n, i) => (
-            <div key={n.titulo} className="flex gap-3">
-              <div className="flex flex-col items-center">
-                <span
-                  className={`size-3 rounded-full ${
-                    n.nodo === 'lleno' ? 'bg-[var(--accent)]' : 'border-2 border-[var(--accent)] bg-transparent'
-                  }`}
-                />
-                {i < 2 && <span className="mt-1 w-[2px] flex-1 bg-[var(--accent)]" />}
-              </div>
-              <div className="pb-1">
-                <p className="text-[15px] font-semibold text-[var(--text-primary)]">{n.titulo}</p>
-                <p className="text-[13px] text-[var(--text-secondary)]">{n.sub}</p>
-              </div>
+          <Hairline className="p-4 shadow-[0_8px_26px_-8px_rgb(15_118_110_/_0.32)]">
+            <div className="flex flex-col gap-3">
+              {[
+                'Línea de tiempo visual de tu día',
+                'Rutinas recurrentes incluidas, sin límite',
+                'Alarmas nativas de tu teléfono',
+              ].map((f) => (
+                <div key={f} className="flex items-center gap-3">
+                  <CheckCustom />
+                  <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
+                </div>
+              ))}
             </div>
-          ))}
+
+            {/* Especificidad real (sin inventar números): lo que SÍ podemos
+                prometer con certeza sobre la arquitectura 100% local del MVP. */}
+            <p className="mt-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pt-3 text-[13px] text-[var(--text-secondary)]">
+              Tus rutinas viven solo en tu teléfono — nunca se venden ni se comparten.
+            </p>
+
+            {/* Timeline del trial — superficie HUNDIDA (3er nivel de profundidad). */}
+            <div
+              className="mt-3 flex flex-col gap-4 rounded-[var(--radius-card)] bg-[var(--surface-2)] p-4"
+              style={{ boxShadow: 'inset 0 1px 4px rgb(15 118 110 / 0.16)' }}
+            >
+              {[
+                { nodo: 'lleno', titulo: 'Hoy — acceso completo', sub: 'Todo tu plan, sin límites' },
+                { nodo: 'lleno', titulo: 'Día 6 — te avisamos', sub: 'Correo antes de cualquier cobro' },
+                {
+                  nodo: 'vacio',
+                  titulo: `Día 7 — 1er cobro: ${plan === 'anual' ? '$29.99/año' : '$4.99'}`,
+                  sub: 'Cancela antes sin costo',
+                },
+              ].map((n, i) => (
+                <div key={n.titulo} className="flex gap-3">
+                  <div className="flex flex-col items-center">
+                    <span
+                      className={`size-3 rounded-full ${
+                        n.nodo === 'lleno' ? 'bg-[var(--accent)]' : 'border-2 border-[var(--accent)] bg-transparent'
+                      }`}
+                    />
+                    {i < 2 && <span className="mt-1 w-[2px] flex-1 bg-[var(--accent)]" />}
+                  </div>
+                  <div className="pb-1">
+                    <p className="text-[15px] font-semibold text-[var(--text-primary)]">{n.titulo}</p>
+                    <p className="text-[13px] text-[var(--text-secondary)]">{n.sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Hairline>
         </motion.div>
 
         {/* Plan cards */}
@@ -154,10 +177,10 @@ export default function Paywall() {
           <button
             type="button"
             onClick={() => setPlan('anual')}
-            className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_6px_20px_-6px_rgb(15_118_110_/_0.3)] transition-colors ${
+            className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors ${
               plan === 'anual'
-                ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))]'
-                : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)]'
+                ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))] shadow-[0_6px_20px_-6px_rgb(15_118_110_/_0.3)]'
+                : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
             }`}
           >
             <span className="absolute -top-[10px] left-4 rounded-[6px] bg-[var(--accent)] px-2 py-[2px] text-[11px] font-bold uppercase tracking-[0.04em] text-[var(--bg)]">
@@ -166,7 +189,8 @@ export default function Paywall() {
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-semibold text-[var(--text-primary)]">Anual</span>
               <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                $2.49<span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
+                <PrecioAnimado valor={2.49} reducedMotion={Boolean(reducedMotion)} />
+                <span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
             <span className="mt-1 text-[13px] text-[var(--text-secondary)]">Se cobra $29.99/año · 2 meses gratis</span>
@@ -175,16 +199,17 @@ export default function Paywall() {
           <button
             type="button"
             onClick={() => setPlan('mensual')}
-            className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_6px_20px_-6px_rgb(15_118_110_/_0.3)] transition-colors ${
+            className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors ${
               plan === 'mensual'
-                ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))]'
-                : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)]'
+                ? 'border-[2px] border-[var(--accent)] bg-[color-mix(in_oklab,var(--accent)_7%,var(--surface))] shadow-[0_6px_20px_-6px_rgb(15_118_110_/_0.3)]'
+                : 'border border-[color-mix(in_oklab,var(--text-tertiary)_22%,transparent)] bg-[var(--surface)] shadow-[var(--shadow-1)]'
             }`}
           >
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-semibold text-[var(--text-primary)]">Mensual</span>
               <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
-                $4.99<span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
+                <PrecioAnimado valor={4.99} reducedMotion={Boolean(reducedMotion)} />
+                <span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
           </button>
@@ -217,13 +242,24 @@ export default function Paywall() {
           </button>
         </div>
         {restauro === 'sin-compra' && (
-          <motion.p
+          // h9 (ayuda a reconocer/diagnosticar/recuperarse del error): el mensaje
+          // ahora ofrece una acción de seguimiento, no solo informa que falló.
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="mt-2 text-center text-[13px] text-[var(--text-secondary)]"
+            className="mt-2 flex flex-col items-center gap-2 text-center"
           >
-            No encontramos una compra para este dispositivo todavía.
-          </motion.p>
+            <p className="text-[13px] text-[var(--text-secondary)]">
+              No encontramos una compra para este dispositivo todavía.
+            </p>
+            <a
+              href="mailto:soporte@visualtimetdah.app"
+              className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--accent)]"
+            >
+              <LifeBuoy size={14} aria-hidden="true" />
+              Escribir a soporte
+            </a>
+          </motion.div>
         )}
 
         <div className="mt-6 flex items-center justify-center gap-2 text-[12px] text-[var(--text-secondary)]">

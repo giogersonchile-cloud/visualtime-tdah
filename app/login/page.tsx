@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { Lock } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
+import { LogoMark } from '@/components/ui/Marca';
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'verificando' | 'error';
 
@@ -105,17 +106,7 @@ export default function Login() {
       />
       <div className="w-full max-w-[400px]">
         <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
-          <span aria-hidden="true" className="relative isolate size-6 overflow-hidden rounded-[8px] bg-[var(--accent)]">
-            <span
-              aria-hidden="true"
-              className="absolute inset-0"
-              style={{
-                background: 'radial-gradient(120% 120% at 20% 10%, var(--accent-2) 0%, transparent 70%)',
-                mixBlendMode: 'soft-light',
-                opacity: 0.6,
-              }}
-            />
-          </span>
+          <LogoMark size={24} />
           VisualTime TDAH
         </a>
 

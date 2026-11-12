@@ -6,6 +6,7 @@
 // Tokens visuales: components/landing/tokens.css, tematizado con FICHA-ARTE.md (Opción B).
 
 import { Lock, BellOff, Smartphone, RefreshCcw } from 'lucide-react';
+import { LogoMark } from '@/components/ui/Marca';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
 import { Agitacion } from '@/components/landing/Agitacion';
@@ -29,13 +30,14 @@ export default function LandingVisualTimeTDAH() {
       {/* 1. HERO */}
       <Hero
         appName="VisualTime TDAH"
+        logo={<LogoMark size={24} />}
         loginHref="/entrar"
         h1Marked="La agenda que te [acento]regala[/acento] repetir tus rutinas"
         subtitleMarked="Tu día en una [b]línea de tiempo[/b] clara, sin pagar de más."
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
         socialProof={<span>Garantía de 15 días respaldada por Hotmart — sin preguntas</span>}
-        visualPlaceholderSugerencia="captura de la línea de tiempo del día con la Rutina de Mañana Exitosa ya armada"
+        visual={<img src="/screenshots/hoy.jpg" alt="Línea de tiempo del día en VisualTime TDAH" className="w-full" />}
       />
 
       {/* 2. PROBLEMA */}
@@ -82,13 +84,13 @@ export default function LandingVisualTimeTDAH() {
         }}
       />
 
-      {/* 5. LA APP POR DENTRO — placeholders honestos hasta tener screenshots reales (Sesión 5) */}
+      {/* 5. LA APP POR DENTRO — screenshots reales de la app ya construida (Sesión 7) */}
       <AppPorDentro
         tituloMarked="Así se ve [acento]tu día[/acento] por dentro"
         frames={[
-          { label: 'Tu línea de tiempo de hoy', nombrePantalla: 'Hoy' },
-          { label: 'Elige tu plantilla en 1 toque', nombrePantalla: 'Rutina de Mañana Exitosa' },
-          { label: 'Tu racha y tus medallas', nombrePantalla: 'Progreso' },
+          { src: '/screenshots/onboarding.jpg', label: 'Arma tu rutina en 2 minutos' },
+          { src: '/screenshots/hoy.jpg', label: 'Tu línea de tiempo de hoy' },
+          { src: '/screenshots/progreso.jpg', label: 'Tu racha y tus medallas' },
         ]}
         ctaLabel={CTA_LABEL}
         ctaHref={CTA_HREF}
