@@ -83,7 +83,7 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy con fuente y fecha. No bloquea nada — la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
-- [ ] Decidir si cancela las 2 suscripciones de prueba activas en Hotmart (plan mensual y anual, ambas en periodo de prueba gratis) para que no se cobren
+- [x] Cancelar la suscripción de prueba activa en Hotmart — HECHO 2026-11-12 (solo existía la mensual, con la cuenta `grei.giogerson@gmail.com`; no se encontró una anual)
 
 ## Notas para la próxima sesión
 - El usuario entregó un RESUMEN FINAL — IDEA VALIDADA PARA CONSTRUIR en PDF: NO se re-valida ni se buscan alternativas. Se usa como contexto base.
