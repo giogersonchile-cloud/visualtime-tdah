@@ -68,11 +68,11 @@ export default function Paywall() {
           filter:blur, que sí se perciben a 375px (misma causa raíz que onboarding). */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute -left-16 -top-20 size-[320px] rounded-full bg-[var(--accent)] opacity-40"
+          className="absolute -left-16 -top-20 size-[320px] rounded-full bg-[var(--accent)] opacity-55"
           style={{ filter: 'blur(40px)' }}
         />
         <div
-          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent-2)] opacity-30"
+          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent-2)] opacity-45"
           style={{ filter: 'blur(40px)' }}
         />
       </div>
@@ -191,8 +191,9 @@ export default function Paywall() {
           transition={{ duration: 0.3, delay: reducedMotion ? 0 : 0.24 }}
           className="mt-6 flex flex-col gap-3"
         >
-          <button
+          <motion.button
             type="button"
+            whileTap={{ scale: 0.97 }}
             onClick={() => setPlan('anual')}
             className={`relative flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors ${
               plan === 'anual'
@@ -211,10 +212,11 @@ export default function Paywall() {
               </span>
             </div>
             <span className="mt-1 text-[13px] text-[var(--text-secondary)]">Se cobra $29.99/año · 2 meses gratis</span>
-          </button>
+          </motion.button>
 
-          <button
+          <motion.button
             type="button"
+            whileTap={{ scale: 0.97 }}
             onClick={() => setPlan('mensual')}
             className={`flex min-h-[76px] flex-col justify-center rounded-[var(--radius-card)] border px-4 py-3 text-left transition-colors ${
               plan === 'mensual'
@@ -229,7 +231,7 @@ export default function Paywall() {
                 <span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
-          </button>
+          </motion.button>
         </motion.div>
 
         <motion.button

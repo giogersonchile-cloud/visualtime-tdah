@@ -353,11 +353,11 @@ export default function Onboarding() {
           se diluye por interpolación, así que SÍ se percibe a 375px. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute -right-16 -top-24 size-[340px] rounded-full bg-[var(--accent)] opacity-40"
+          className="absolute -right-16 -top-24 size-[340px] rounded-full bg-[var(--accent)] opacity-55"
           style={{ filter: 'blur(40px)' }}
         />
         <div
-          className="absolute -left-20 top-48 size-[280px] rounded-full bg-[var(--accent-2)] opacity-30"
+          className="absolute -left-20 top-48 size-[280px] rounded-full bg-[var(--accent-2)] opacity-45"
           style={{ filter: 'blur(40px)' }}
         />
       </div>
@@ -367,14 +367,22 @@ export default function Onboarding() {
           VisualTime TDAH
         </a>
         {/* Affordance explícita de salida (h3/control y libertad) — antes solo
-            existía el logo-link del header, poco reconocible como "salir". */}
-        <a
-          href="/"
+            existía el logo-link del header, poco reconocible como "salir".
+            Confirma si ya respondió algo: salir a mitad de camino borra esas
+            respuestas (viven solo en un ref hasta terminar el recorrido) —
+            una acción destructiva disfrazada de neutra, ahora con aviso. */}
+        <button
+          type="button"
+          onClick={() => {
+            if (indice === 0 || window.confirm('¿Seguro que quieres salir? Vas a perder lo que ya respondiste.')) {
+              router.push('/');
+            }
+          }}
           className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
           aria-label="Salir del recorrido de inicio"
         >
           <X size={20} aria-hidden="true" />
-        </a>
+        </button>
       </header>
 
       {/* justify-center: evita el hueco vacío grande bajo la tarjeta de ayuda en

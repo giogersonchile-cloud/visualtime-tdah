@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — Paywall
 Fecha: 2026-11-12 00:00
 Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 28/40
+Usabilidad: 29/40
 Craft: 15/20
-Copy (si vende): 14/20
+Copy (si vende): 17/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [headline + value stack, justo debajo] La promesa "Tu rutina ya es tuya, gratis" convive sin ninguna etiqueta con una lista de 3 checks que en realidad son funciones PAGAS (línea de tiempo visual, rutinas sin límite, alarmas) — un usuario cualquiera no entiende de un vistazo qué es gratis y qué es premium → agregar un rótulo tipo "Con Premium también tienes:" encima de los 3 checks para separar lo gratis (su rutina ya armada) de lo que desbloquea el pago.
-2. [eje emoción del copy, pantalla completa] El copy del paywall es puramente transaccional (precio/trial/garantía) y nunca nombra ni agita el dolor real del avatar (★ "tienes que pagar para la rutina, y eso me parece una injusticia", "me cobraron antes de los 7 días de prueba") antes de resolverlo — eje emoción queda en 2/4, bajo el umbral mínimo exigido aunque el total de copy no pasara de todos modos → sumar 1 línea breve con la frase VOC del avatar cerca del value stack (ej. "Sin trucos: nunca más pagarás por lo básico").
-3. [fondo, pantalla completa] El mesh gradient de acento en las esquinas (radial-gradient al 16%/12% de opacidad, código línea 72-74) es casi imperceptible en el screenshot renderizado a 375px — el fondo se lee prácticamente plano, el 3er nivel de profundidad no se nota a simple vista → subir la opacidad o acercar el radio del gradiente a la zona visible del viewport.
-4. [jerarquía tipográfica, pantalla completa] Hay ~5-6 tamaños de texto distintos en la pantalla (30/22/16/15/13/11px) cuando la regla del sistema es máximo 3 — el precio del plan (22px bold) compite visualmente con el titular (30px bold) al entrecerrar los ojos → bajar el tamaño del precio a ~18-19px para que el titular quede como único nivel héroe.
-5. [h7 flexibilidad, código] No hay memoria de la última elección de plan entre sesiones (siempre default "anual" sin persistir en localStorage) ni atajo alguno para el usuario recurrente → guardar la última selección y preseleccionarla en la siguiente visita; no bloqueante, mejora menor.
+1. [tarjetas "Anual"/"Mensual", bloque de planes] No tienen whileTap ni ningún feedback táctil animado al tocarlas para elegir plan (en el código solo el CTA final usa whileTap scale 0.97) — rompe la baseline de movimiento obligatoria (tap <150ms en TODO elemento tocable) → agregar whileTap={{ scale: 0.97 }} a ambos botones de plan.
+2. [fondo, esquinas superiores] El mesh de acento (blur 40px, opacidad 40%/30%) mejoró frente a la ronda anterior y ya se percibe, pero sigue siendo tenue a 375px — el fondo se lee casi plano para un usuario que no lo busca → subir opacidad a ~55-60% o acercar las manchas al viewport visible.
+3. [jerarquía tipográfica, pantalla completa] Siguen coexistiendo ~7 tamaños de texto (30/19/16/15/14/13/11px); el precio ya bajó de 22 a 19px (mejora correcta), pero los tamaños de "cuerpo" (13/14/15px) no se diferencian con intención entre sí → consolidar en un solo tamaño de cuerpo (14px) y dejar solo label (11px) + los dos héroes (19/30px) como jerarquía real.
+4. [h7 código, selección de plan] No se persiste la última elección de plan entre visitas (siempre default "anual", sin localStorage) — gap menor de flexibilidad para el usuario recurrente, no bloqueante.
+5. [eje2 copy "especificidad y prueba", value stack] Correcto no inventar cifras sin fuente; el rótulo "CON TU PRUEBA GRATIS DE 7 DÍAS" + la línea de dolor nuevo ya aportan especificidad real sobre el mecanismo del trial (día 6/día 7/precio exacto), pero sigue sin ningún ancla de prueba externa (ni 1 testimonio, ni rating) — aceptable por ahora dado que no hay usuarios reales todavía; anotar como deuda para cuando exista al menos 1 testimonio beta verídico.
