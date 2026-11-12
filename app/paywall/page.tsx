@@ -63,16 +63,19 @@ export default function Paywall() {
 
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
-      {/* Fondo con profundidad (mesh del acento, dispositivo ownable) — nunca fill
-          plano, 55 gate G. Intensidad subida tras veredicto: al 7% no se notaba. */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            'radial-gradient(820px 480px at 8% -10%, color-mix(in oklab, var(--accent) 16%, transparent) 0%, transparent 62%), radial-gradient(680px 440px at 102% 12%, color-mix(in oklab, var(--accent-2) 12%, transparent) 0%, transparent 58%)',
-        }}
-      />
+      {/* Fondo con profundidad — el radial-gradient con color-mix se diluía casi a
+          cero sobre un fondo tan claro (--bg); reemplazado por manchas sólidas con
+          filter:blur, que sí se perciben a 375px (misma causa raíz que onboarding). */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div
+          className="absolute -left-16 -top-20 size-[320px] rounded-full bg-[var(--accent)] opacity-40"
+          style={{ filter: 'blur(40px)' }}
+        />
+        <div
+          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent-2)] opacity-30"
+          style={{ filter: 'blur(40px)' }}
+        />
+      </div>
       <div className="relative mx-auto w-full max-w-[520px] flex-1 px-4 pb-10 pt-5">
         <div className="flex items-center justify-between">
           <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
@@ -101,6 +104,14 @@ export default function Paywall() {
           <p className="mt-2 text-[14px] text-[var(--text-secondary)]">
             Hecho con tus {nRespuestas} respuestas
           </p>
+          {/* Ancla emocional real (FICHA-AVATAR.md, dolor #3 citado): "me cobraron
+              antes de los 7 días" es el miedo exacto que este paywall debe disolver
+              — la pantalla era puramente transaccional sin nombrar el dolor. */}
+          <p className="mt-3 text-[14px] leading-snug text-[var(--text-secondary)]">
+            Sabemos que otras apps te cobraron antes de que terminara la prueba.{' '}
+            <span className="font-semibold text-[var(--text-primary)]">Aquí no</span> — te avisamos
+            antes del día 7, siempre.
+          </p>
         </motion.div>
 
         {/* Visual del valor: value stack — checks con las respuestas reales.
@@ -115,7 +126,13 @@ export default function Paywall() {
           className="mt-6"
         >
           <Hairline className="p-4 shadow-[0_8px_26px_-8px_rgb(15_118_110_/_0.32)]">
-            <div className="flex flex-col gap-3">
+            {/* Rótulo que distingue qué desbloquea la prueba — el titular dice
+                "gratis" y, sin esto, los checks de abajo podían leerse como si
+                también fueran gratis para siempre (confunde free vs. premium). */}
+            <p className="text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--accent)]">
+              Con tu prueba gratis de 7 días
+            </p>
+            <div className="mt-3 flex flex-col gap-3">
               {[
                 'Línea de tiempo visual de tu día',
                 'Rutinas recurrentes incluidas, sin límite',
@@ -188,7 +205,7 @@ export default function Paywall() {
             </span>
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-semibold text-[var(--text-primary)]">Anual</span>
-              <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className="text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                 <PrecioAnimado valor={2.49} reducedMotion={Boolean(reducedMotion)} />
                 <span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
               </span>
@@ -207,7 +224,7 @@ export default function Paywall() {
           >
             <div className="flex items-center justify-between">
               <span className="text-[16px] font-semibold text-[var(--text-primary)]">Mensual</span>
-              <span className="text-[22px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
+              <span className="text-[19px] font-bold tabular-nums text-[var(--text-primary)] [font-family:var(--font-display)]">
                 <PrecioAnimado valor={4.99} reducedMotion={Boolean(reducedMotion)} />
                 <span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
               </span>

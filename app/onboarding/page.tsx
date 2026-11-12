@@ -346,17 +346,21 @@ export default function Onboarding() {
 
   return (
     <main className="relative flex min-h-dvh flex-col overflow-hidden bg-[var(--bg)] [font-family:var(--font-body)]">
-      {/* Fondo con profundidad (mesh del acento) — 3ª ronda tras veredicto: el centro
-          a "92% -8%" quedaba FUERA del viewport por arriba y se recortaba casi
-          entero; ahora el centro está DENTRO del área visible (85%/6%). */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            'radial-gradient(560px 420px at 85% 6%, color-mix(in oklab, var(--accent) 32%, transparent) 0%, transparent 68%), radial-gradient(480px 380px at 2% 38%, color-mix(in oklab, var(--accent-2) 22%, transparent) 0%, transparent 62%)',
-        }}
-      />
+      {/* Fondo con profundidad — 4ª ronda: el radial-gradient con color-mix se diluye
+          casi a cero sobre un fondo tan claro (--bg) sin importar el % de alpha,
+          porque la interpolación hacia "transparent" apaga el color mucho antes del
+          borde. Técnica reemplazada: manchas SÓLIDAS con filter:blur — el color no
+          se diluye por interpolación, así que SÍ se percibe a 375px. */}
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div
+          className="absolute -right-16 -top-24 size-[340px] rounded-full bg-[var(--accent)] opacity-40"
+          style={{ filter: 'blur(40px)' }}
+        />
+        <div
+          className="absolute -left-20 top-48 size-[280px] rounded-full bg-[var(--accent-2)] opacity-30"
+          style={{ filter: 'blur(40px)' }}
+        />
+      </div>
       <header className="mx-auto flex w-full max-w-[520px] items-center justify-between px-4 pt-5">
         <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
           <LogoMark size={24} />

@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — Onboarding
 Fecha: 2026-11-12 00:00
 Screenshot: docs/revisiones/onboarding-375.png
-Usabilidad: 31/40
-Craft: 12/20
+Usabilidad: 30/40
+Craft: 11/20
 Copy (si vende): N-A (no vende)
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [fondo, pantalla completa] Mesh del acento sigue casi imperceptible en el screenshot real pese a subir a 28%/20% — el radial de 520px está anclado a "92% -8%" (fuera del viewport por arriba) y se recorta; reposicionar el centro dentro del área visible (ej. 85%/10%) o agrandar el radio para que se note sin lupa.
-2. [header, logo 24px] El dispositivo ownable (duotone "eco de marca") solo vive en el logo diminuto — ningún otro elemento de la pantalla lo repite; usar `EcoChip` en el ícono de la tarjeta de ayuda o en el check de opción seleccionada para reforzar identidad (EJE3 craft).
-3. [input "Otra cosa", botón Continuar] Sigue naciendo disabled/opacity-50 hasta llenar el campo en vez de habilitado-siempre con validación al click + hint — viola la ancla de CTA vivo (nunca disabled por defecto), aunque sea un CTA secundario.
-4. [input "Otra cosa"] No hay atajo de teclado: presionar Enter no envía la respuesta, obliga a usar el mouse sobre "Continuar" — rompe flexibilidad/eficiencia (h7) para el usuario que ya está escribiendo con el teclado.
-5. [flecha "atrás" del header] Al volver a una pregunta ya respondida, ninguna opción aparece resaltada (el estado `seleccionada` se resetea en cada cambio de índice) — el usuario pierde la referencia de qué había elegido antes, afecta control/reconocer-vs-recordar (h3/h6).
+1. [tercio inferior de la pantalla, bajo la tarjeta "Con tus respuestas"] Queda un vacío plano de ~200px sin ningún contenido, textura ni ilustración — rompe el encaje óptico y la sensación de pantalla terminada; el `justify-center` del contenedor no está logrando centrar el bloque de verdad (hay mucho más aire abajo que arriba). Fix: centrar realmente el bloque pregunta+ayuda en el alto disponible, o rellenar ese espacio con algo útil (ilustración de marca, progreso visual) en vez de dejarlo muerto.
+2. [fondo, pantalla completa] El mesh radial del acento (reposicionado a "85% 6%"/"2% 38%") sigue sin percibirse en el screenshot real — el fondo se ve uniformemente plano (#F4F7F6), igual que en la ronda anterior pese al cambio de código. Fix: subir opacidad/saturación aún más o verificar que el `color-mix` esté renderizando el valor esperado en el navegador real (puede estar cayendo a fallback).
+3. [opciones de respuesta, teclado] Solo el formulario de "Otra cosa" responde a Enter; las 4 opciones predefinidas no tienen ningún atajo de teclado (flechas+Enter, o números 1-4) para el usuario que no usa mouse — h7/flexibilidad sigue incompleta para el caso más común (elegir una opción, no escribir texto libre).
+4. [botón "Salir" (X) del header] Sale sin ninguna confirmación aunque el usuario ya haya respondido varias preguntas — no es crítico (es reversible, se puede reiniciar) pero es inconsistente con el cuidado de control/libertad que sí se aplicó al botón "Continuar".
+5. [tarjeta "Con tus respuestas", ícono EcoChip] El ícono con Sparkles queda levemente desalineado respecto a la primera línea de texto (se percibe 2-3px más alto) — ajustar el padding-top del bloque de texto para alinear ópticamente con el chip.

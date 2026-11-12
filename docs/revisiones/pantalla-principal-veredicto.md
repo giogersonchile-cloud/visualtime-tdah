@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — pantalla-principal
 Fecha: 2026-11-12 00:00
 Screenshot: docs/revisiones/pantalla-principal-375.png
-Usabilidad: 28/40
-Craft: 12/20
+Usabilidad: 32/40
+Craft: 16/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Identidad visual, toda la pantalla] Sigue sin dispositivo ownable: FICHA-ARTE promete duotone de marca en íconos/chips (dirección "Clínica humana") pero check, flama y lápiz son Lucide planos estándar, indistinguibles de cualquier app de productividad → aplicar tratamiento duotone a los íconos clave del M0 (check completado, flama de racha, ícono de insight).
-2. [Tarjeta de insight, debajo de la lista] La superficie "hundida" (--surface-2 + inset shadow) sigue imperceptible a 375px — pendiente explícito de la ronda anterior que NO se corrigió → subir el contraste real de --surface-2 o reforzar la sombra inset hasta que se note junto a las cards blancas de arriba.
-3. [Lista de bloques] Sigue sin swipe-to-complete ni ningún atajo para el usuario frecuente — pendiente explícito de la ronda anterior que NO se corrigió → implementar el gesto con fallback de tap, o al menos un long-press/acción rápida.
-4. [Modal Editar bloque → Eliminar] La confirmación de borrado reutiliza el mismo botón cambiando solo el texto y un tinte de fondo al 10% de opacidad — a simple vista no se distingue lo suficiente de un botón normal y favorece el doble-tap accidental → reforzar visualmente el estado "a confirmar" (color sólido, ícono de advertencia, o separar en dos controles).
-5. [Header de la lista, botón "+ Agregar"] Sin alto/padding mínimo definido en el código (clases solo de texto e ícono, sin h-11/h-12 ni padding), el área táctil queda por debajo de los 44px recomendados → añadir padding y alto mínimo para un touch target accesible.
+1. [Lista de bloques, toda la pantalla] Sigue sin swipe-to-complete ni ningún atajo para el usuario frecuente (h7=2/4, pendiente explícito de rondas anteriores) → implementar el gesto con fallback de tap, o al menos un long-press/acción rápida.
+2. [Identidad visual] El dispositivo ownable (eco de marca duotone) ya se nota en el badge de racha y en el chip del insight, pero el resto de la pantalla (check de completado, lápiz de editar, nav inferior) sigue siendo Lucide plano sin tratamiento — a simple vista todavía se lee más como "acentos de color" que como un sistema propio → extender el eco de marca a al menos un elemento más (p.ej. el check del bloque completado).
+3. [Modal Editar bloque → Eliminar] La confirmación ahora tiene borde 1.5px + tinte, mejora real, pero sigue siendo el MISMO botón en la MISMA posición (solo cambia estilo) — dos taps rápidos accidentales siguen siendo plausibles para el usuario TDAH objetivo → separar el estado de confirmación en un control visualmente distinto (tamaño, ícono de advertencia o desplazamiento de posición).
+4. [Header de la lista, botón "+ Agregar"] Ya cumple min-h-11 (44px), pero el padding horizontal (px-2 = 8px) es mínimo — el área de tap se sigue leyendo angosta junto al resto de controles de la pantalla → subir a px-3/px-4 para que el touch target se vea, no solo se mida, generoso.
+5. [Tarjeta de insight] La superficie hundida mejoró de contraste (sombra inset 0.22 + borde 1.5px) y ya es perceptible junto a las cards blancas, pero el sistema de profundidad general de la pantalla (base/elevado/hundido) sigue siendo sutil comparado con las cards de arriba → reforzar un poco más la diferencia visual entre "elevado" (lista) y "hundido" (insight) para que la jerarquía de planos se lea sin esfuerzo.

@@ -116,7 +116,7 @@ export default function LandingVisualTimeTDAH() {
           totalAnual: 'Se cobra $29.99/año',
           ahorro: '2 meses gratis',
           descomposicionDia: 'menos de $0.09 al día',
-          ctaLabel: 'Empezar mis 7 días gratis',
+          ctaLabel: CTA_LABEL,
           ctaHref: CTA_HREF,
           features: [
             'Línea de tiempo visual de tu día',
