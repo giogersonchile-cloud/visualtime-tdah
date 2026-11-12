@@ -1,24 +1,28 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-12 | Sesión actual: 8
 
-✅ CHECKPOINT — Sesión 8 (craft visual, 2 rondas) EN CURSO — mejora real, NO LISTA aún: se creó un
-"eco de marca" (components/ui/Marca.tsx: LogoMark + EcoChip — silueta sólida de --accent-2 offset,
-sin mix-blend-mode) que reemplaza el duotone anterior (imperceptible sobre fondo claro) y se aplicó
-en logo, íconos de landing, tarjeta de ayuda del onboarding e insight de la pantalla principal. Landing:
-se conectaron screenshots REALES de la app (public/screenshots/hoy.jpg, onboarding.jpg, progreso.jpg)
-en el hero y el carrusel "Así se ve por dentro" (antes placeholders grises). Onboarding: mesh de fondo
-reposicionado dentro del viewport, barra de progreso a 8px, justify-center (sin hueco vacío), botón
-de salida explícito, la opción elegida ya se recuerda al volver con "atrás", input "Otra cosa" ahora
-envía con Enter y nunca queda disabled. Paywall: botón X usa router.back(), value-stack+timeline
-fusionados en una sola superficie (antes 7 bloques apilados), precio con conteo animado, tarjetas de
-plan con sombra diferenciada, "restaurar compra" ofrece "Escribir a soporte", bug de texto corregido.
-Pantalla principal: "deshacer" al eliminar un bloque (toast 5s, restaurarBloque() preserva el id),
-mensajes de error diferenciados (cuota llena vs modo privado), tarjeta de insight con más contraste,
-botón "+Agregar" con área táctil de 44px. Veredictos del revisor-visual (2ª ronda, docs/revisiones/):
-landing 29/40·14/20 (copy 16/20) · onboarding 31/40·12/20 · paywall 28/40·15/20·copy14/20 · pantalla
-principal 28/40·12/20 — las 4 SIGUEN por debajo del gate (≥36/40 y ≥16/20): mejoraron pero no pasan.
-Pendiente: decidir con el usuario si se lanza una 3ª ronda de revisor (costosa, ~80-90k tokens c/u)
-o se sigue con otra prioridad y se retoma el craft visual más adelante. se compró el dominio `visualtimetdah.com` (Namecheap, contactos verificados ante ICANN, Domain Privacy activada) y se conectó a Vercel (`@` y `www` con "Valid Configuration", certificado SSL generado). Se conectó el subdominio `mail.visualtimetdah.com` en Resend con sus 4 registros DNS (DKIM, 2 CNAME de SPF, TXT de DMARC) — estado "Verified", el dominio ya puede mandar correos a cualquier destinatario. Se actualizó Supabase: "Sender email address" en SMTP Settings ahora es `acceso@mail.visualtimetdah.com` (ya no `onboarding@resend.dev`), y `Site URL`/`Redirect URLs` ahora apuntan a `https://www.visualtimetdah.com` (se dejó también la URL vieja de vercel.app como respaldo). Prueba de punta a punta HECHA en producción con el dominio nuevo: entró a `www.visualtimetdah.com/login`, le llegó el código por correo real, lo escribió y entró a `/app`. Con esto, el pendiente de "correo solo le llega a la cuenta de prueba" queda resuelto.
+✅ CHECKPOINT — Sesión 8 (craft visual, 5 rondas de revisor) PAUSADA por decisión del agente —
+mejora real y medible en las 4, NINGUNA cruza el gate (≥36/40 usabilidad, ≥16/20 craft) todavía:
+- Trabajo hecho (resumen, no repetir): "eco de marca" propio (components/ui/Marca.tsx) reemplaza
+  el duotone imperceptible anterior; landing conectada a screenshots reales de la app; onboarding
+  con fondo visible, sin huecos vacíos, recuerda respuestas al volver, confirma antes de salir;
+  paywall con value-stack fusionado, precio animado, rótulo "gratis vs. premium", línea de copy
+  que nombra el miedo real del avatar (ya pasa el gate de copy, 17/20); pantalla principal con
+  "deshacer" al borrar, errores diferenciados, insight con más contraste (la más cerca de pasar).
+- Última foto (ronda 5, docs/revisiones/): landing 32/40·15/20·copy16/20 · onboarding 29/40·14/20 ·
+  paywall 28/40·13/20·copy17/20 (copy YA PASA) · pantalla principal 32/40·16/20 (craft YA PASA,
+  ronda 3, no se reevaluó desde entonces).
+- Lo que falta para cada una ya NO es "craft plano": son juicios finos (consolidar tamaños de
+  texto a 3-4 niveles, un dispositivo ownable más específico por pantalla, atajos de teclado,
+  reemplazar el diálogo nativo del navegador por uno con los tokens de marca) + 2 decisiones de
+  CONTENIDO que el agente no puede resolver solo: aprobar FICHA-AVATAR.md (sigue BORRADOR) y
+  sumar ≥1 prueba social real (testimonio) — inventar un número sin fuente está prohibido por el SO.
+- Decisión del agente: 5 rondas de revisor (~350k tokens c/u aprox.) sin que ninguna pantalla
+  cruce el gate indica rendimientos decrecientes — se pausa el ciclo. Seguir iterando a ciegas no
+  es el uso correcto del revisor (la Regla de Oro 7 lo llama "la operación más cara del SO").
+  Próxima sesión de diseño: antes de relanzar el revisor, cerrar las 2 decisiones de contenido de
+  arriba y, si se quiere seguir subiendo puntaje, atacar un defecto puntual a la vez (no rondas
+  completas) verificando con el agente mismo antes de gastar otra revisión completa. se compró el dominio `visualtimetdah.com` (Namecheap, contactos verificados ante ICANN, Domain Privacy activada) y se conectó a Vercel (`@` y `www` con "Valid Configuration", certificado SSL generado). Se conectó el subdominio `mail.visualtimetdah.com` en Resend con sus 4 registros DNS (DKIM, 2 CNAME de SPF, TXT de DMARC) — estado "Verified", el dominio ya puede mandar correos a cualquier destinatario. Se actualizó Supabase: "Sender email address" en SMTP Settings ahora es `acceso@mail.visualtimetdah.com` (ya no `onboarding@resend.dev`), y `Site URL`/`Redirect URLs` ahora apuntan a `https://www.visualtimetdah.com` (se dejó también la URL vieja de vercel.app como respaldo). Prueba de punta a punta HECHA en producción con el dominio nuevo: entró a `www.visualtimetdah.com/login`, le llegó el código por correo real, lo escribió y entró a `/app`. Con esto, el pendiente de "correo solo le llega a la cuenta de prueba" queda resuelto.
 
 ## Sesión anterior (6 — servicios externos, CERRADA EN LO FUNCIONAL)
 El camino completo compra → acceso → login → app ya se había probado de punta a punta. Bugs encontrados y corregidos esa sesión (todos publicados en producción): (1) `SUPABASE_SECRET_KEY` en Vercel tenía un salto de línea invisible — por eso cada escritura a Supabase fallaba en silencio y el webhook igual respondía 200 a Hotmart; (2) carrera de milisegundos entre eventos casi simultáneos del mismo comprador; (3) `Site URL`/`Redirect URLs` de Supabase Auth apuntaban a `localhost:3000`; (4) faltaba `emailRedirectTo` apuntando a `/login`; (5) el enlace llega con un código PKCE que hay que canjear a mano (`exchangeCodeForSession`); (6) el código de acceso de Supabase es de 8 dígitos, no 6.

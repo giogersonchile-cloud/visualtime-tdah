@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — Paywall
 Fecha: 2026-11-12 00:00
 Screenshot: docs/revisiones/paywall-375.png
-Usabilidad: 29/40
-Craft: 15/20
+Usabilidad: 28/40
+Craft: 13/20
 Copy (si vende): 17/20
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [tarjetas "Anual"/"Mensual", bloque de planes] No tienen whileTap ni ningún feedback táctil animado al tocarlas para elegir plan (en el código solo el CTA final usa whileTap scale 0.97) — rompe la baseline de movimiento obligatoria (tap <150ms en TODO elemento tocable) → agregar whileTap={{ scale: 0.97 }} a ambos botones de plan.
-2. [fondo, esquinas superiores] El mesh de acento (blur 40px, opacidad 40%/30%) mejoró frente a la ronda anterior y ya se percibe, pero sigue siendo tenue a 375px — el fondo se lee casi plano para un usuario que no lo busca → subir opacidad a ~55-60% o acercar las manchas al viewport visible.
-3. [jerarquía tipográfica, pantalla completa] Siguen coexistiendo ~7 tamaños de texto (30/19/16/15/14/13/11px); el precio ya bajó de 22 a 19px (mejora correcta), pero los tamaños de "cuerpo" (13/14/15px) no se diferencian con intención entre sí → consolidar en un solo tamaño de cuerpo (14px) y dejar solo label (11px) + los dos héroes (19/30px) como jerarquía real.
-4. [h7 código, selección de plan] No se persiste la última elección de plan entre visitas (siempre default "anual", sin localStorage) — gap menor de flexibilidad para el usuario recurrente, no bloqueante.
-5. [eje2 copy "especificidad y prueba", value stack] Correcto no inventar cifras sin fuente; el rótulo "CON TU PRUEBA GRATIS DE 7 DÍAS" + la línea de dolor nuevo ya aportan especificidad real sobre el mecanismo del trial (día 6/día 7/precio exacto), pero sigue sin ningún ancla de prueba externa (ni 1 testimonio, ni rating) — aceptable por ahora dado que no hay usuarios reales todavía; anotar como deuda para cuando exista al menos 1 testimonio beta verídico.
+1. [jerarquía tipográfica, pantalla completa] Siguen coexistiendo ~7 tamaños de texto (30/19/16/15/14/13/11px); los tamaños de "cuerpo" (13/14/15px) no se diferencian con intención entre sí, solo por reflejo accidental del elemento donde aparecen → consolidar en un único tamaño de cuerpo (14px) y dejar solo label (11px) + los dos héroes (19/30px) como jerarquía real de 4 niveles.
+2. [identidad ownable, pantalla completa] Fuera del color de acento teal, esta pantalla concreta no exhibe ningún dispositivo visual propio (sin textura, ilustración o tratamiento firma) — el hairline y el check custom son pulido de componente compartido, no un detalle distintivo de ESTE paywall → sumar al menos un detalle ownable específico (ej. el duotone de marca aplicado a un ícono/ilustración de la línea de tiempo del trial).
+3. [h7 código, bloque de planes] Confirmado en page.tsx: no existe ninguna llamada a localStorage — la elección de plan nunca se persiste entre visitas, siempre reinicia en "Anual" → guardar el plan elegido en localStorage y leerlo en el montaje inicial.
+4. [fondo, esquinas superiores] La corrección de opacidad (40/30% → 55/45%) ya se percibe en el screenshot, pero las manchas siguen leyéndose como decoración de fondo tenue, al límite entre "funciona" y "se nota sin buscarlo" → si se vuelve a tocar, medir contraste real de las manchas contra --bg antes de dar por cerrado el defecto.
+5. [bloque "Restaurar compra"] El estado "Buscando tu compra…" solo cambia el texto del botón, sin ningún ícono/spinner de carga — cumple el mínimo de h1 pero es fácil de perder en un vistazo rápido → agregar un ícono de loading inline junto al texto.
