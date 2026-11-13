@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { X, Lock, ShieldCheck, LifeBuoy } from 'lucide-react';
+import { X, Lock, ShieldCheck, LifeBuoy, LoaderCircle } from 'lucide-react';
 import { leerRespuestas, type Respuestas } from '@/lib/onboarding';
 import { CheckCustom, Hairline } from '@/components/landing/ui';
 import { LogoMark, EcoChip } from '@/components/ui/Marca';
@@ -91,12 +91,12 @@ export default function Paywall() {
           filter:blur, que sí se perciben a 375px (misma causa raíz que onboarding). */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute -left-16 -top-20 size-[320px] rounded-full bg-[var(--accent)] opacity-55"
-          style={{ filter: 'blur(40px)' }}
+          className="absolute -left-16 -top-20 size-[320px] rounded-full bg-[var(--accent)] opacity-70"
+          style={{ filter: 'blur(22px)' }}
         />
         <div
-          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent-2)] opacity-45"
-          style={{ filter: 'blur(40px)' }}
+          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent-2)] opacity-60"
+          style={{ filter: 'blur(22px)' }}
         />
       </div>
       <div className="relative mx-auto w-full max-w-[520px] flex-1 px-4 pb-10 pt-5">
@@ -190,11 +190,27 @@ export default function Paywall() {
               ].map((n, i) => (
                 <div key={n.titulo} className="flex gap-3">
                   <div className="flex flex-col items-center">
-                    <span
-                      className={`size-3 rounded-full ${
-                        n.nodo === 'lleno' ? 'bg-[var(--accent)]' : 'border-2 border-[var(--accent)] bg-transparent'
-                      }`}
-                    />
+                    {i === 0 ? (
+                      // Sello de marca en el nodo "Hoy" — el elemento más narrativo
+                      // y exclusivo de esta pantalla (veredicto: la identidad ownable
+                      // vivía solo en un EcoChip de 26px junto al CTA, insuficiente).
+                      // Un poco más grande que los otros 2 nodos: "hoy" es el único
+                      // momento con acción real, merece más peso visual.
+                      <span className="relative isolate -ml-0.5 -mt-0.5 inline-block size-4">
+                        <span
+                          aria-hidden="true"
+                          className="absolute size-4 rounded-full bg-[var(--accent-2)] opacity-70"
+                          style={{ left: 4, top: 4 }}
+                        />
+                        <span className="absolute left-0 top-0 size-4 rounded-full bg-[var(--accent)]" />
+                      </span>
+                    ) : (
+                      <span
+                        className={`size-3 rounded-full ${
+                          n.nodo === 'lleno' ? 'bg-[var(--accent)]' : 'border-2 border-[var(--accent)] bg-transparent'
+                        }`}
+                      />
+                    )}
                     {i < 2 && <span className="mt-1 w-[2px] flex-1 bg-[var(--accent)]" />}
                   </div>
                   <div className="pb-1">
@@ -286,7 +302,15 @@ export default function Paywall() {
             Ahora no
           </button>
           <span aria-hidden="true">·</span>
-          <button type="button" onClick={restaurarCompra} disabled={restauro === 'buscando'} className="py-2 disabled:opacity-60">
+          <button
+            type="button"
+            onClick={restaurarCompra}
+            disabled={restauro === 'buscando'}
+            className="flex items-center gap-1.5 py-2 disabled:opacity-60"
+          >
+            {restauro === 'buscando' && (
+              <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />
+            )}
             {restauro === 'buscando' ? 'Buscando tu compra…' : 'Restaurar compra'}
           </button>
         </div>

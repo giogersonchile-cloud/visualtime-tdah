@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
-import { Check, Plus, Flame, X, Pencil, Trash2, Award, TrendingUp } from 'lucide-react';
+import { Check, Plus, Flame, X, Pencil, Trash2, Award, TrendingUp, GripVertical } from 'lucide-react';
 import {
   obtenerRutina,
   bloquesDelDia,
@@ -94,7 +94,7 @@ function CelebracionRacha({ dias, onCerrar, reducedMotion }: { dias: number; onC
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-[rgb(15_23_21_/_0.55)] px-6 text-center"
+      className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-4 bg-[var(--scrim-fuerte)] px-6 text-center"
       onClick={onCerrar}
     >
       <motion.div
@@ -173,7 +173,7 @@ function FormularioBloque({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-20 flex items-end justify-center bg-[rgb(15_23_21_/_0.35)] px-4 pb-4"
+      className="fixed inset-0 z-20 flex items-end justify-center bg-[var(--scrim)] px-4 pb-4"
       onClick={onCerrar}
     >
       <motion.div
@@ -224,19 +224,39 @@ function FormularioBloque({
           >
             {esEdicion ? 'Guardar cambios' : 'Agregar a hoy'}
           </button>
-          {esEdicion && (
+          {esEdicion && !confirmarEliminar && (
             <button
               type="button"
               onClick={eliminar}
-              className={`flex h-11 items-center justify-center gap-2 text-[14px] font-semibold text-[var(--error)] ${
-                confirmarEliminar
-                  ? 'rounded-[var(--radius-button)] border-[1.5px] border-[var(--error)] bg-[color-mix(in_oklab,var(--error)_12%,transparent)]'
-                  : ''
-              }`}
+              className="flex h-11 items-center justify-center gap-2 text-[14px] font-semibold text-[var(--error)]"
             >
               <Trash2 size={15} aria-hidden="true" />
-              {confirmarEliminar ? 'Toca de nuevo para confirmar' : 'Eliminar bloque'}
+              Eliminar bloque
             </button>
+          )}
+          {/* Confirmación en una posición NUEVA, no el mismo botón solo con otro
+              estilo (veredicto: riesgo de doble-tap accidental para un avatar
+              con impulsividad). "Sí, eliminar" y "Cancelar" son controles
+              distintos, obligando a un gesto deliberado hacia abajo. */}
+          {esEdicion && confirmarEliminar && (
+            <div className="flex flex-col gap-2 rounded-[var(--radius-button)] border border-[var(--error)] bg-[color-mix(in_oklab,var(--error)_8%,transparent)] p-3">
+              <p className="text-center text-[13px] text-[var(--text-secondary)]">¿Eliminar este bloque?</p>
+              <button
+                type="button"
+                onClick={eliminar}
+                className="flex h-11 items-center justify-center gap-2 rounded-[var(--radius-button)] bg-[var(--error)] text-[14px] font-semibold text-[var(--bg)]"
+              >
+                <Trash2 size={15} aria-hidden="true" />
+                Sí, eliminar
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmarEliminar(false)}
+                className="flex h-9 items-center justify-center text-[13px] font-semibold text-[var(--text-secondary)]"
+              >
+                Cancelar
+              </button>
+            </div>
           )}
         </div>
       </motion.div>
@@ -412,7 +432,7 @@ export default function Hoy() {
         <button
           type="button"
           onClick={() => setBloqueEditando('nuevo')}
-          className="flex min-h-11 items-center gap-1 px-2 text-[13px] font-semibold text-[var(--accent)]"
+          className="flex min-h-11 items-center gap-1 px-3 text-[13px] font-semibold text-[var(--accent)]"
         >
           <Plus size={15} aria-hidden="true" /> Agregar
         </button>
@@ -485,6 +505,10 @@ export default function Hoy() {
                     </p>
                     <p className="text-[12px] text-[var(--text-secondary)]">{b.duracionMin} min</p>
                   </span>
+                  {/* Pista FIJA de que el bloque se puede deslizar — sin esto, el
+                      gesto solo se revela a mitad de camino y "si el usuario no
+                      sabe que existe, no existe" (veredicto del revisor). */}
+                  <GripVertical size={16} className="shrink-0 text-[var(--text-tertiary)] opacity-40" aria-hidden="true" />
                 </motion.button>
                 <button
                   type="button"

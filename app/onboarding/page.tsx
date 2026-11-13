@@ -131,7 +131,7 @@ function PantallaPregunta({
         <TituloConAcento texto={pregunta.pregunta} acento={pregunta.acento} />
       </h1>
       {pregunta.microcopy && (
-        <p className="mt-2 text-[14px] text-[var(--text-secondary)]">{pregunta.microcopy}</p>
+        <p className="mt-2 text-[13px] text-[var(--text-secondary)]">{pregunta.microcopy}</p>
       )}
 
       <div className="mt-6 flex flex-col gap-3">
@@ -171,7 +171,7 @@ function PantallaPregunta({
           <button
             type="button"
             onClick={() => setOtraCosaAbierta(true)}
-            className="py-2 text-left text-[14px] font-medium text-[var(--text-secondary)] underline underline-offset-2"
+            className="py-2 text-left text-[13px] font-medium text-[var(--text-secondary)] underline underline-offset-2"
           >
             Otra cosa (escribe la tuya)
           </button>
@@ -374,12 +374,15 @@ export default function Onboarding() {
           se diluye por interpolación, así que SÍ se percibe a 375px. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div
-          className="absolute -right-16 -top-24 size-[340px] rounded-full bg-[var(--accent)] opacity-55"
-          style={{ filter: 'blur(40px)' }}
+          className="absolute -right-16 -top-24 size-[340px] rounded-full bg-[var(--accent)] opacity-70"
+          style={{ filter: 'blur(22px)' }}
         />
+        {/* Reposicionada: a "top-48" quedaba detrás de las tarjetas de opciones
+            (opacas, la tapaban por completo) — el revisor veía plano justo el
+            hueco bajo la tarjeta de ayuda, donde SÍ hay canvas visible. */}
         <div
-          className="absolute -left-20 top-48 size-[280px] rounded-full bg-[var(--accent-2)] opacity-45"
-          style={{ filter: 'blur(40px)' }}
+          className="absolute -left-20 -bottom-24 size-[280px] rounded-full bg-[var(--accent-2)] opacity-60"
+          style={{ filter: 'blur(22px)' }}
         />
       </div>
       <header className="mx-auto flex w-full max-w-[520px] items-center justify-between px-4 pt-5">
@@ -438,7 +441,7 @@ export default function Onboarding() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-20 flex items-end justify-center bg-[rgb(15_23_21_/_0.35)] px-4 pb-4 sm:items-center"
+            className="fixed inset-0 z-20 flex items-end justify-center bg-[var(--scrim)] px-4 pb-4 sm:items-center"
             onClick={() => setConfirmarSalida(false)}
           >
             <motion.div
@@ -451,7 +454,7 @@ export default function Onboarding() {
               <h2 className="text-[18px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
                 ¿Seguro que quieres salir?
               </h2>
-              <p className="mt-2 text-[14px] leading-relaxed text-[var(--text-secondary)]">
+              <p className="mt-2 text-[13px] leading-relaxed text-[var(--text-secondary)]">
                 Vas a perder lo que ya respondiste.
               </p>
               <div className="mt-5 flex flex-col gap-3">

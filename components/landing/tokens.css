@@ -51,6 +51,12 @@
 
   /* ── DERIVADOS (no se tocan: se recalculan solos desde --accent) ── */
   --chip-bg: color-mix(in oklab, var(--accent) 10%, transparent);
+
+  /* ── VELO de modales/overlays (casi-negro CON tinte, nunca rgb(0 0 0)) ──
+     Antes vivía hardcodeado como rgb(15 23 21 / 0.35) y /0.55 en cada modal
+     (veredicto del revisor: "ausente de FICHA-ARTE.md, viola regla de tokens"). */
+  --scrim: rgb(15 23 21 / 0.35);
+  --scrim-fuerte: rgb(15 23 21 / 0.55);
 }
 
 /* ============================================================================
