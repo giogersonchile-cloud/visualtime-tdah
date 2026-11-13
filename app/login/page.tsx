@@ -50,6 +50,29 @@ export default function Login() {
     window.setTimeout(tick, 1000);
   };
 
+  const [cargandoGoogle, setCargandoGoogle] = useState(false);
+
+  // Google reutiliza el MISMO canje de código PKCE del useEffect de arriba —
+  // Supabase manda de vuelta a redirectTo con "?code=..." igual que el enlace
+  // de correo, así que no hace falta lógica nueva para completar el login.
+  // El acceso real sigue protegido en app/app/layout.tsx (plan_status en
+  // servidor): si alguien entra con Google sin haber comprado, cae a /paywall
+  // igual que cualquier sesión sin plan activo — no es un bypass del pago.
+  const continuarConGoogle = async () => {
+    setCargandoGoogle(true);
+    setErrorMsg('');
+    const supabase = crearClienteSupabase();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/login` },
+    });
+    if (error) {
+      setCargandoGoogle(false);
+      setErrorMsg('No pudimos conectar con Google. Intenta de nuevo o usa tu correo.');
+    }
+    // Sin "else": si no hubo error, el navegador ya está navegando a Google.
+  };
+
   const enviar = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.includes('@') || estado === 'enviando') return;
@@ -144,10 +167,12 @@ export default function Login() {
                 </button>
                 <button
                   type="button"
-                  className="flex h-14 items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] text-[15px] font-medium text-[var(--text-primary)]"
+                  onClick={continuarConGoogle}
+                  disabled={cargandoGoogle}
+                  className="flex h-14 items-center justify-center gap-2 rounded-[var(--radius-button)] border border-[color-mix(in_oklab,var(--text-tertiary)_30%,transparent)] bg-[var(--surface)] text-[15px] font-medium text-[var(--text-primary)] disabled:opacity-60"
                 >
                   <span aria-hidden="true" className="text-[16px] font-bold">G</span>
-                  Continuar con Google
+                  {cargandoGoogle ? 'Conectando…' : 'Continuar con Google'}
                 </button>
               </form>
 
