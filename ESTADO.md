@@ -1,25 +1,14 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
-⏸️ EN CURSO — Activar Google en Supabase (botón "Continuar con Google" ya conectado en código,
-ver más abajo). El usuario está creando las credenciales en Google Cloud Console, paso a paso:
-- Proyecto "VisualTime TDAH" creado en Google Cloud (ID: `visualtime-tdah`).
-- Pantalla de consentimiento OAuth configurada: tipo "Externos", nombre de app, correo de soporte
-  y de contacto ya puestos. Estado: "Se creó la configuración de OAuth" — confirmado.
-- PRÓXIMO PASO (donde se quedó): en `console.cloud.google.com/auth/overview?project=visualtime-tdah`,
-  hacer clic en "Crear cliente de OAuth". Ahí van a pedir:
-  - Tipo de aplicación: "Aplicación web"
-  - Nombre: cualquiera, ej. "VisualTime TDAH Web"
-  - "Orígenes autorizados de JavaScript": agregar `https://www.visualtimetdah.com`
-  - "URI de redireccionamiento autorizados": agregar
-    `https://tspjibbqokwxztfiicok.supabase.co/auth/v1/callback` (el callback del proyecto de
-    Supabase — SIN esto el login con Google no va a funcionar)
-  - Al crear, Google muestra un "ID de cliente" y un "Secreto de cliente" — el usuario los copia y
-    los pega en Supabase (Authentication → Sign In / Providers → Google → activar → pegar ambos →
-    guardar). Recordar: nunca pedir que pegue esos valores en el chat (son secretos) — solo
-    confirmar que ya los puso en Supabase.
-- Después de activar el proveedor en Supabase, probar el botón "Continuar con Google" en
-  `www.visualtimetdah.com/login` de punta a punta.
+✅ CHECKPOINT — Google OAuth CONECTADO de punta a punta (2026-11-13): proyecto "visualtime-tdah"
+creado en Google Cloud, pantalla de consentimiento configurada (tipo Externos), cliente OAuth web
+creado con origen `https://www.visualtimetdah.com` y callback
+`https://tspjibbqokwxztfiicok.supabase.co/auth/v1/callback`. Proveedor Google activado en Supabase
+(Authentication → Sign In / Providers → Google) con el Client ID y Secret pegados y guardados.
+Pendiente: probar el botón "Continuar con Google" en `www.visualtimetdah.com/login` para confirmar
+que entra de verdad (el código ya estaba listo desde antes, ver commit "feat: conecta el botón
+Continuar con Google").
 
 ✅ CHECKPOINT — Auditoría de seguridad pre-venta (27-REVISION-SEGURIDAD.md) HECHA — ver SECURITY.md
 para el detalle completo. Resultado: sin hallazgos críticos. Se corrigió 1 hueco real (faltaban
