@@ -18,15 +18,26 @@ export default function Login() {
   const [segundos, setSegundos] = useState(0);
   const reducedMotion = useReducedMotion();
 
-  // El enlace del correo llega con "?code=..." (flujo PKCE) — el cliente de Supabase NO lo
-  // canjea solo, hay que llamarlo a mano con el código de la URL. Si ya quedó una sesión
-  // activa (porque la persona entró desde el enlace), la mandamos a /app.
+  // El enlace del correo (y el regreso de Google) llega con "?code=..." (flujo PKCE) —
+  // el cliente de Supabase NO lo canjea solo, hay que llamarlo a mano con el código de
+  // la URL. Si ya quedó una sesión activa, la mandamos a /app.
   useEffect(() => {
     const supabase = crearClienteSupabase();
     const code = new URLSearchParams(window.location.search).get('code');
     if (code) {
+      // Bug real encontrado probando Google: si el canje fallaba (doble clic, el
+      // código ya se había usado, etc.) la pantalla se quedaba congelada sin avisar
+      // nada — ni error ni forma de reintentar. Ahora SIEMPRE reacciona.
       supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
-        if (!error && data.session) router.replace('/app');
+        if (!error && data.session) {
+          router.replace('/app');
+        } else {
+          // Limpia el "?code=" de la URL (ya se consumió, reintentarlo con el mismo
+          // código siempre va a fallar) y deja al usuario volver a intentarlo.
+          window.history.replaceState({}, '', '/login');
+          setEstado('error');
+          setErrorMsg('No pudimos completar el inicio de sesión. Intenta de nuevo.');
+        }
       });
       return;
     }
