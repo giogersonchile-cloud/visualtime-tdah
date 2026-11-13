@@ -1,44 +1,37 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
-✅ CHECKPOINT — 6ª ronda de revisor-visual completa (2026-11-13). FICHA-AVATAR.md ya APROBADA por
-el usuario (cosa juzgada, igual que FICHA-ARTE.md) y se agregó la leyenda honesta "Capturas reales
-de la app, sin retocar" en vez de un testimonio inventado. Con eso, el COPY ya pasa en las 3 pantallas
-que venden: landing 17/20, paywall 19/20 (ningún eje ≤2 en ninguna). El CRAFT ya pasa en pantalla
-principal (16/20) y casi en landing/paywall (15/14/20). Lo que sigue bloqueando el gate doble
-(≥36/40 usabilidad + ≥16/20 craft) en las 4 es, sobre todo, USABILIDAD (entre 30 y 33/40, faltan
-3-6 puntos) y en 3 de las 4 un mismo defecto de craft que se repite ronda tras ronda: el fondo con
-manchas de color (mesh) sigue leyéndose casi plano en el screenshot real pese a 3 subidas de
-opacidad — causa raíz AÚN no resuelta del todo (candidatos pendientes: revisar si el overflow-hidden
-del contenedor recorta el blob, o cambiar la técnica de blur por una textura). Último marcador
-(ronda 6, docs/revisiones/): landing 32/40·15/20·copy17/20 · onboarding 30/40·14/20 · paywall
-33/40·14/20·copy19/20 · pantalla principal 31/40·16/20.
-Decisión del agente: 6 rondas (~2M tokens de revisor en total) es un punto razonable para pausar y
-consultar con el usuario antes de seguir — ver sección de Problemas conocidos para el detalle fino
-pendiente por pantalla (para cuando se retome).
+✅ CHECKPOINT — craft visual PAUSADO tras 7 rondas de revisor-visual (2026-11-13) — decisión del
+agente, no por falta de progreso real sino por rendimientos decrecientes:
+- Lo que SÍ se logró y quedó verificado: FICHA-AVATAR.md APROBADA por el usuario (cosa juzgada).
+  El COPY ya pasa en landing (17/20) y paywall (19/20), ningún eje ≤2. Se corrigieron decenas de
+  defectos reales y concretos a lo largo de las 7 rondas (ver commits "fix: craft visual (ronda N)"
+  en el historial de git para el detalle técnico completo — no repetir aquí).
+- Último marcador (ronda 7, docs/revisiones/): landing 32/40·15/20·copy17/20 (sin cambios de código
+  en ronda 7) · onboarding 29/40·14/20 · paywall 29/40·14/20·copy19/20 · pantalla principal
+  28/40·14/20. NINGUNA cruza el gate doble (≥36/40 usabilidad + ≥16/20 craft) todavía.
+- Patrón observado en las últimas 3 rondas: cada vez que se corrige lo que el revisor pidió, el
+  PUNTAJE TOTAL se mantiene casi igual (28-33/40, 13-16/20) porque el revisor —con razón— encuentra
+  defectos NUEVOS en la misma pasada (ej.: un ícono con la convención equivocada, un color de marca
+  usado fuera de su regla, una jerarquía tipográfica que se desvía 1px de lo documentado). Esto NO es
+  ruido: cada hallazgo fue real y se corrigió. Pero sugiere que el gate automático, pieza por pieza,
+  tiene rendimientos decrecientes para este nivel de pulido — probablemente necesite una pasada de
+  diseño más holística (no solo parches puntuales) para cruzarlo, no más rondas idénticas.
+- Pendiente real, no de craft sino de contenido (el agente no puede resolverlo solo): sumar ≥1
+  prueba social real (testimonio de un cliente) cuando exista — hoy hay una leyenda honesta en su
+  lugar ("Capturas reales, sin retocar"), válida pero con techo de puntaje.
+- Recomendación del agente para la próxima sesión de diseño: NO relanzar rondas completas de
+  revisor sin un cambio de enfoque. Opciones: (a) aceptar el nivel actual como suficiente para
+  lanzar y seguir punliendo post-lanzamiento con feedback real de usuarios: (b) pedir una pasada de
+  diseño nueva, desde cero, con un dispositivo ownable más fuerte definido de una sola vez (no
+  parchado pantalla por pantalla).
 
-✅ CHECKPOINT — Sesión 8 (craft visual, 5 rondas de revisor) PAUSADA por decisión del agente —
-mejora real y medible en las 4, NINGUNA cruza el gate (≥36/40 usabilidad, ≥16/20 craft) todavía:
-- Trabajo hecho (resumen, no repetir): "eco de marca" propio (components/ui/Marca.tsx) reemplaza
-  el duotone imperceptible anterior; landing conectada a screenshots reales de la app; onboarding
-  con fondo visible, sin huecos vacíos, recuerda respuestas al volver, confirma antes de salir;
-  paywall con value-stack fusionado, precio animado, rótulo "gratis vs. premium", línea de copy
-  que nombra el miedo real del avatar (ya pasa el gate de copy, 17/20); pantalla principal con
-  "deshacer" al borrar, errores diferenciados, insight con más contraste (la más cerca de pasar).
-- Última foto (ronda 5, docs/revisiones/): landing 32/40·15/20·copy16/20 · onboarding 29/40·14/20 ·
-  paywall 28/40·13/20·copy17/20 (copy YA PASA) · pantalla principal 32/40·16/20 (craft YA PASA,
-  ronda 3, no se reevaluó desde entonces).
-- Lo que falta para cada una ya NO es "craft plano": son juicios finos (consolidar tamaños de
-  texto a 3-4 niveles, un dispositivo ownable más específico por pantalla, atajos de teclado,
-  reemplazar el diálogo nativo del navegador por uno con los tokens de marca) + 2 decisiones de
-  CONTENIDO que el agente no puede resolver solo: aprobar FICHA-AVATAR.md (sigue BORRADOR) y
-  sumar ≥1 prueba social real (testimonio) — inventar un número sin fuente está prohibido por el SO.
-- Decisión del agente: 5 rondas de revisor (~350k tokens c/u aprox.) sin que ninguna pantalla
-  cruce el gate indica rendimientos decrecientes — se pausa el ciclo. Seguir iterando a ciegas no
-  es el uso correcto del revisor (la Regla de Oro 7 lo llama "la operación más cara del SO").
-  Próxima sesión de diseño: antes de relanzar el revisor, cerrar las 2 decisiones de contenido de
-  arriba y, si se quiere seguir subiendo puntaje, atacar un defecto puntual a la vez (no rondas
-  completas) verificando con el agente mismo antes de gastar otra revisión completa. se compró el dominio `visualtimetdah.com` (Namecheap, contactos verificados ante ICANN, Domain Privacy activada) y se conectó a Vercel (`@` y `www` con "Valid Configuration", certificado SSL generado). Se conectó el subdominio `mail.visualtimetdah.com` en Resend con sus 4 registros DNS (DKIM, 2 CNAME de SPF, TXT de DMARC) — estado "Verified", el dominio ya puede mandar correos a cualquier destinatario. Se actualizó Supabase: "Sender email address" en SMTP Settings ahora es `acceso@mail.visualtimetdah.com` (ya no `onboarding@resend.dev`), y `Site URL`/`Redirect URLs` ahora apuntan a `https://www.visualtimetdah.com` (se dejó también la URL vieja de vercel.app como respaldo). Prueba de punta a punta HECHA en producción con el dominio nuevo: entró a `www.visualtimetdah.com/login`, le llegó el código por correo real, lo escribió y entró a `/app`. Con esto, el pendiente de "correo solo le llega a la cuenta de prueba" queda resuelto.
+✅ Sesión 7 (dominio propio + correo) — CERRADA: se compró `visualtimetdah.com` (Namecheap, contactos
+verificados ante ICANN, Domain Privacy activa) y se conectó a Vercel (`@` y `www` "Valid
+Configuration", SSL generado). Se verificó `mail.visualtimetdah.com` en Resend (DKIM, 2 CNAME SPF,
+TXT DMARC) — ya manda correo a cualquier destinatario. Supabase actualizado: sender
+`acceso@mail.visualtimetdah.com`, Site URL/Redirect URLs apuntan a `https://www.visualtimetdah.com`
+(se dejó la URL vieja de vercel.app como respaldo). Prueba de punta a punta HECHA en producción.
 
 ## Sesión anterior (6 — servicios externos, CERRADA EN LO FUNCIONAL)
 El camino completo compra → acceso → login → app ya se había probado de punta a punta. Bugs encontrados y corregidos esa sesión (todos publicados en producción): (1) `SUPABASE_SECRET_KEY` en Vercel tenía un salto de línea invisible — por eso cada escritura a Supabase fallaba en silencio y el webhook igual respondía 200 a Hotmart; (2) carrera de milisegundos entre eventos casi simultáneos del mismo comprador; (3) `Site URL`/`Redirect URLs` de Supabase Auth apuntaban a `localhost:3000`; (4) faltaba `emailRedirectTo` apuntando a `/login`; (5) el enlace llega con un código PKCE que hay que canjear a mano (`exchangeCodeForSession`); (6) el código de acceso de Supabase es de 8 dígitos, no 6.
