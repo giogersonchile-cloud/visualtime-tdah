@@ -128,7 +128,10 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 
 ## Problemas conocidos ⚠️
 - Las 4 pantallas que decidían el dinero (landing, onboarding, paywall, pantalla principal) pasan la auditoría técnica automática pero el revisor-visual las marca NO LISTA por craft visual (12-16/20, bajo el umbral de 16/20) — en todos los casos la causa de fondo es la misma: falta un dispositivo visual ownable (duotone/textura/ilustración de marca) lo bastante fuerte para diferenciarse de cualquier app genérica del nicho, y en la pantalla principal además faltan gestos/atajos (heurística de eficiencia h7). Se corrigieron 2-3 rondas de defectos reales en cada pantalla (ver commits de Sesión 3/4/5) — lo que queda es craft de identidad visual, no funcionalidad rota. Decisión del agente: no seguir iterando a ciegas sesión tras sesión — se agrupan las 4 como un pendiente de pulido visual único, a retomar con criterio nuevo (posiblemente un dispositivo ownable diseñado una sola vez y aplicado a las 4).
-- Botón "Continuar con Google" del login: sigue siendo solo visual, no conectado (pendiente, no bloquea — el login por correo ya funciona).
+- Botón "Continuar con Google" del login: YA CONECTADO en código (signInWithOAuth, reutiliza el
+  canje PKCE existente) — falta que el usuario active el proveedor de Google en Supabase
+  (Authentication → Providers → Google) con credenciales de su propia cuenta de Google Cloud; sin
+  eso, el botón da error "No pudimos conectar con Google" (manejado, no rompe nada).
 - FICHA-MODELO.md: sin verificación directa de MRR/Stripe de Structured (TrustMRR/Sensor Tower no dieron cifra oficial); se usan señales proxy con fuente y fecha. No bloquea nada — la categoría ya está validada por el propio usuario.
 
 ## Pendientes del usuario (acciones que el usuario debe hacer)
