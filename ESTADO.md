@@ -1,22 +1,30 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
-✅ CHECKPOINT — craft visual PAUSADO tras 7 rondas de revisor-visual (2026-11-13) — decisión del
-agente, no por falta de progreso real sino por rendimientos decrecientes:
+✅ CHECKPOINT — craft visual PAUSADO tras 8 rondas de revisor-visual (2026-11-13) — decisión firme
+del agente esta vez, con evidencia de que el ciclo ya no mide señal real:
 - Lo que SÍ se logró y quedó verificado: FICHA-AVATAR.md APROBADA por el usuario (cosa juzgada).
   El COPY ya pasa en landing (17/20) y paywall (19/20), ningún eje ≤2. Se corrigieron decenas de
-  defectos reales y concretos a lo largo de las 7 rondas (ver commits "fix: craft visual (ronda N)"
+  defectos reales y concretos a lo largo de las 8 rondas (ver commits "fix: craft visual (ronda N)"
   en el historial de git para el detalle técnico completo — no repetir aquí).
-- Último marcador (ronda 7, docs/revisiones/): landing 32/40·15/20·copy17/20 (sin cambios de código
-  en ronda 7) · onboarding 29/40·14/20 · paywall 29/40·14/20·copy19/20 · pantalla principal
-  28/40·14/20. NINGUNA cruza el gate doble (≥36/40 usabilidad + ≥16/20 craft) todavía.
-- Patrón observado en las últimas 3 rondas: cada vez que se corrige lo que el revisor pidió, el
-  PUNTAJE TOTAL se mantiene casi igual (28-33/40, 13-16/20) porque el revisor —con razón— encuentra
-  defectos NUEVOS en la misma pasada (ej.: un ícono con la convención equivocada, un color de marca
-  usado fuera de su regla, una jerarquía tipográfica que se desvía 1px de lo documentado). Esto NO es
-  ruido: cada hallazgo fue real y se corrigió. Pero sugiere que el gate automático, pieza por pieza,
-  tiene rendimientos decrecientes para este nivel de pulido — probablemente necesite una pasada de
-  diseño más holística (no solo parches puntuales) para cruzarlo, no más rondas idénticas.
+- Último marcador (ronda 8): landing sin re-revisar (sin cambios de código, se queda en 32/40·15/20
+  de ronda 7) · onboarding 29/40·10/20 (CAYÓ de 14 a 10 en craft) · paywall 29/40·14/20·copy19/20
+  (sin cambio) · pantalla principal 28/40·13/20 (bajó de 14). NINGUNA cruza el gate doble (≥36/40 +
+  ≥16/20).
+- EVIDENCIA DE QUE EL CICLO DEJÓ DE SER ÚTIL: en la ronda 8 se le pidió al revisor-visual de
+  onboarding evaluar EXACTAMENTE el mismo screenshot/fondo que el agente había verificado momentos
+  antes con zoom manual en el navegador (sí se percibía un tinte de color real en ambas esquinas) —
+  el revisor de esa ronda reportó "profundidad: 0, no se percibe ningún tinte, lee como fill 100%
+  plano". Esta contradicción entre lo que el propio agente vio y lo que el revisor puntuó, sumada a
+  que craft BAJÓ 2 veces seguidas (pantalla principal 16→14→13, onboarding 14→10) pese a que los
+  cambios de código en esas rondas fueron correcciones puntuales sin tocar lo que supuestamente bajó
+  de puntaje, indica que el puntaje de craft en este nivel de detalle tiene demasiado ruido/varianza
+  entre corridas del revisor como para servir de señal confiable para seguir iterando a ciegas.
+- Patrón observado en las 8 rondas: cada vez que se corrige lo que el revisor pidió, el PUNTAJE
+  TOTAL no sube de forma sostenida — oscila entre 28-33/40 y 10-16/20 — porque cada pasada encuentra
+  defectos NUEVOS y además re-puntúa con variación el mismo contenido visual sin cambios. Esto NO
+  invalida los fixes aplicados (todos eran reales y se corrigieron), pero sí invalida "seguir
+  pidiendo rondas idénticas" como estrategia — no hay más señal útil que extraer así.
 - Pendiente real, no de craft sino de contenido (el agente no puede resolverlo solo): sumar ≥1
   prueba social real (testimonio de un cliente) cuando exista — hoy hay una leyenda honesta en su
   lugar ("Capturas reales, sin retocar"), válida pero con techo de puntaje.
