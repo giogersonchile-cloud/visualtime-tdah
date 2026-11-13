@@ -1,14 +1,19 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
-✅ CHECKPOINT — Google OAuth CONECTADO de punta a punta (2026-11-13): proyecto "visualtime-tdah"
-creado en Google Cloud, pantalla de consentimiento configurada (tipo Externos), cliente OAuth web
-creado con origen `https://www.visualtimetdah.com` y callback
+✅ CHECKPOINT — Google OAuth FUNCIONANDO de punta a punta en producción (2026-11-13): proyecto
+"visualtime-tdah" en Google Cloud, pantalla de consentimiento (tipo Externos), cliente OAuth web
+con origen `https://www.visualtimetdah.com` y callback
 `https://tspjibbqokwxztfiicok.supabase.co/auth/v1/callback`. Proveedor Google activado en Supabase
-(Authentication → Sign In / Providers → Google) con el Client ID y Secret pegados y guardados.
-Pendiente: probar el botón "Continuar con Google" en `www.visualtimetdah.com/login` para confirmar
-que entra de verdad (el código ya estaba listo desde antes, ver commit "feat: conecta el botón
-Continuar con Google").
+con Client ID + Secret. CONFIRMADO probando en vivo: la cuenta `giogerson.chile@gmail.com` quedó
+vinculada (mismo usuario, `providers: ["email","google"]`, `plan_status: "active"` intacto) y
+`/app` cargó con sesión válida. Bug encontrado y corregido en el camino: si el canje del código
+de Google fallaba (doble clic, código ya usado), la pantalla de login se quedaba congelada sin
+avisar nada — corregido en `app/login/page.tsx` para mostrar error y permitir reintentar.
+IMPORTANTE — se encontró que 19 commits llevaban un buen rato sin subirse al repo (`git push`
+pendiente); todo el trabajo de craft visual + seguridad + Google de esta sesión estaba solo en
+la computadora, no en producción, hasta que se hizo push manual. Revisar al cierre de cada sesión
+que no queden commits sin subir.
 
 ✅ CHECKPOINT — Auditoría de seguridad pre-venta (27-REVISION-SEGURIDAD.md) HECHA — ver SECURITY.md
 para el detalle completo. Resultado: sin hallazgos críticos. Se corrigió 1 hueco real (faltaban
