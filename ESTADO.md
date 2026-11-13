@@ -1,5 +1,14 @@
 # ESTADO — VisualTime TDAH
-Última actualización: 2026-11-12 | Sesión actual: 8
+Última actualización: 2026-11-13 | Sesión actual: 8
+
+✅ ACTUALIZACIÓN 2026-11-13: las 2 decisiones de contenido que bloqueaban el craft visual ya se
+resolvieron — FICHA-AVATAR.md APROBADA por el usuario (ya no hay que mostrársela de nuevo, es cosa
+juzgada igual que FICHA-ARTE.md); el usuario confirmó que NO tiene un testimonio real todavía, así
+que en vez de prueba social se agregó una leyenda honesta "Capturas reales de la app, sin retocar"
+bajo el título de "Así se ve por dentro" en la landing (components/landing/AppPorDentro.tsx) — cuenta
+como especificidad verificable sin inventar cifras. Pendiente: relanzar el revisor-visual de landing
+cuando se retome esta pantalla (no se hizo una 6ª ronda completa todavía, para no gastar de más en una
+sola corrección pequeña).
 
 ✅ CHECKPOINT — Sesión 8 (craft visual, 5 rondas de revisor) PAUSADA por decisión del agente —
 mejora real y medible en las 4, NINGUNA cruza el gate (≥36/40 usabilidad, ≥16/20 craft) todavía:

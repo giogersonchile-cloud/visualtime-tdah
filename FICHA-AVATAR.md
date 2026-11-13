@@ -1,6 +1,6 @@
 # FICHA DE AVATAR — VisualTime TDAH
 
-- Estado: BORRADOR (10 frases VoC con fuente "reseñas de apps competidoras, recopiladas por el usuario en su investigación" — falta aprobación explícita del usuario)
+- Estado: APROBADA (10 frases VoC con fuente "reseñas de apps competidoras, recopiladas por el usuario en su investigación") — aprobada por el usuario el 2026-11-13
 
 ## El avatar (cliente ideal — UNA persona concreta)
 - Nombre/arquetipo: "Cami", estudiante/profesional joven con TDAH · Edad: 18-35 · Situación: estudia o trabaja, ya probó varias apps de rutina y calendarios · País(es): Chile y resto de LATAM
@@ -69,4 +69,4 @@
 ## Cierre
 - INVENTARIO DE PRUEBA DÍA-1: N/A — no hay fundador/beta/demo todavía; el proyecto arranca desde cero
 - ¿Hubo entrevistas del 44?: NO — toda la evidencia es de reseñas de competidores y datos de mercado aportados por el usuario, no entrevistas directas
-- Fecha de cierre: pendiente · Aprobada por el usuario: NO (pendiente de mostrársela y pedir confirmación)
+- Fecha de cierre: 2026-11-13 · Aprobada por el usuario: SÍ

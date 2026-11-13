@@ -87,6 +87,13 @@ export function AppPorDentro({
           <h2 className="text-balance text-[30px] font-bold leading-[1.15] text-[var(--text-primary)] [font-family:var(--font-display)] md:text-[40px]">
             <MarkedCopy text={tituloMarked} />
           </h2>
+          {/* Especificidad real sin inventar prueba social (no hay testimonios
+              todavía — el SO prohíbe fabricar cifras/reseñas sin fuente): esta
+              leyenda honesta SÍ cuenta como especificidad porque es verificable
+              con solo mirar las capturas. */}
+          <p className="mt-2 text-[13px] text-[var(--text-secondary)]">
+            Capturas reales de la app, sin retocar
+          </p>
         </motion.div>
 
         {/* Pista con scroll-snap + fade en ambos bordes (mask-image) */}
