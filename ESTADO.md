@@ -1,6 +1,17 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
+✅ CHECKPOINT — Auditoría de seguridad pre-venta (27-REVISION-SEGURIDAD.md) HECHA — ver SECURITY.md
+para el detalle completo. Resultado: sin hallazgos críticos. Se corrigió 1 hueco real (faltaban
+cabeceras HTTP de seguridad — X-Content-Type-Options, X-Frame-Options, Referrer-Policy,
+Permissions-Policy — agregadas en `next.config.ts` y verificadas con `curl` contra el servidor
+real). Confirmado en verde: 0 vulnerabilidades en dependencias de producción, RLS deny-by-default,
+webhook de Hotmart con firma verificada en tiempo constante + idempotencia, `service_role` key solo
+en servidor, `.env` nunca commiteado, sin rutas de debug olvidadas, sin XSS, sin catch vacíos.
+Pendiente de decisión del usuario (no bloqueante): el mensaje de login revela si un correo compró
+o no (trade-off de UX consciente, documentado en SECURITY.md); CSP estricta pendiente de hacer con
+cuidado (nonce-based) cuando se pueda probar contra producción; sin Sentry todavía.
+
 ✅ CHECKPOINT — craft visual PAUSADO tras 8 rondas de revisor-visual (2026-11-13) — decisión firme
 del agente esta vez, con evidencia de que el ciclo ya no mide señal real:
 - Lo que SÍ se logró y quedó verificado: FICHA-AVATAR.md APROBADA por el usuario (cosa juzgada).
