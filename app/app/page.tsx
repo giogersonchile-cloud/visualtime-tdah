@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion, AnimatePresence } from 'motion/react';
-import { Check, Plus, Flame, X, Pencil, Trash2, Award, TrendingUp, GripVertical } from 'lucide-react';
+import { Check, Plus, Flame, X, Pencil, Trash2, Award, TrendingUp, MoveHorizontal } from 'lucide-react';
 import {
   obtenerRutina,
   bloquesDelDia,
@@ -505,10 +505,12 @@ export default function Hoy() {
                     </p>
                     <p className="text-[12px] text-[var(--text-secondary)]">{b.duracionMin} min</p>
                   </span>
-                  {/* Pista FIJA de que el bloque se puede deslizar — sin esto, el
-                      gesto solo se revela a mitad de camino y "si el usuario no
-                      sabe que existe, no existe" (veredicto del revisor). */}
-                  <GripVertical size={16} className="shrink-0 text-[var(--text-tertiary)] opacity-40" aria-hidden="true" />
+                  {/* Pista FIJA de que el bloque se puede deslizar. GripVertical
+                      se descartó: es la convención universal de "arrastrar para
+                      reordenar" y confundía (veredicto). MoveHorizontal no carga
+                      ese significado — comunica "esto se mueve" sin prometer
+                      reordenar la lista. */}
+                  <MoveHorizontal size={15} className="shrink-0 text-[var(--text-tertiary)] opacity-40" aria-hidden="true" />
                 </motion.button>
                 <button
                   type="button"

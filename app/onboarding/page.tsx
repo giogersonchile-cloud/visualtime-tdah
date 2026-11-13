@@ -381,7 +381,7 @@ export default function Onboarding() {
             (opacas, la tapaban por completo) — el revisor veía plano justo el
             hueco bajo la tarjeta de ayuda, donde SÍ hay canvas visible. */}
         <div
-          className="absolute -left-20 -bottom-24 size-[280px] rounded-full bg-[var(--accent-2)] opacity-60"
+          className="absolute -left-20 -bottom-24 size-[280px] rounded-full bg-[var(--accent)] opacity-60"
           style={{ filter: 'blur(22px)' }}
         />
       </div>

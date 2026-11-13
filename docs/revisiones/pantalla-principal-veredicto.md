@@ -1,14 +1,14 @@
 # VEREDICTO revisor-visual — pantalla-principal
 Fecha: 2026-11-13 00:00
 Screenshot: docs/revisiones/pantalla-principal-375.png
-Usabilidad: 31/40
-Craft: 16/20
+Usabilidad: 28/40
+Craft: 14/20
 Copy (si vende): N-A
 Fidelidad (si hubo referencia): N-A
 Veredicto: NO LISTA
 Top defectos:
-1. [Modal "Editar bloque" → Eliminar] La confirmación sigue siendo el MISMO botón en la MISMA posición (solo cambia borde/fondo) — para el usuario TDAH objetivo, impulsivo por diseño de la audiencia, dos taps rápidos en el mismo punto siguen siendo un borrado accidental plausible → mover el control de confirmación a una posición/tamaño distinto, o insertar un breve delay/ícono de advertencia antes de habilitarlo.
-2. [Header de la lista, botón "+ Agregar"] Sigue en `px-2` (8px) pese a señalarse en la ronda anterior — el área de tap mide 44px pero se SIGUE VIENDO angosta junto al resto de controles → subir a `px-3`/`px-4` como ya se pidió.
-3. [Lista de bloques, todo el cuerpo] El nuevo gesto de swipe-to-complete no tiene NINGÚN indicio visual de que existe (ni borde parcial, ni ícono de arrastre) hasta que el usuario lo descubre por accidente — viola la regla de "si el usuario no sabe que existe un gesto, no existe" → agregar una pista sutil permanente (p.ej. un borde curvo asimétrico o un ícono de grip de 2-3px) en el extremo del bloque.
-4. [Identidad visual] El dispositivo ownable (duotone de marca) sigue limitado al chip del insight y al badge de racha — el check de completado y los íconos de la nav inferior continúan siendo Lucide plano, sin tratamiento → extender el eco de marca al menos al check del bloque completado (defecto ya señalado en ronda anterior, sin cambios).
-5. [Lista de bloques] Con el drag activo, el botón "Editar" (lápiz) queda fijo al costado mientras el bloque se desplaza con el drag — no se verificó visualmente que el layout no se rompa a mitad de arrastre (el lápiz podría quedar visualmente "flotando" separado del bloque que se mueve) → confirmar en captura intermedia del gesto, no solo en reposo.
+1. [Lista de bloques, ícono de "agarre" al final de cada fila] GripVertical es la convención universal de "arrastrar para reordenar" — aquí se usa como pista de "deslizar para completar"; un usuario que reconoce el ícono esperará reordenar la lista y se confundirá cuando solo alterne el estado completado (rompe heurística 4, consistencia con estándares) → reemplazar por un ícono/affordance propio de swipe (flecha doble horizontal o borde con gradiente direccional), nunca el grip de reordenar.
+2. [Bloques completados (verdes), borde derecho] El borde/sombra teal del bloque completado se ve como una protuberancia oscura irregular en el extremo derecho, distinta del bloque pendiente (blanco, sin ese efecto) — el radio no "lee" igual entre los dos estados en el mismo screenshot → igualar tratamiento de sombra/borde entre completado y pendiente; revisar cómo se renderiza el radius-card con el fondo verde vs. blanco.
+3. [Fila de cada bloque] Con hora + círculo-check + título + duración + ícono de grip + botón de editar externo, la fila acumula 6 elementos visuales distintos en 375px — se siente apretada y debilita el principio "cada elemento se gana su lugar" (eje 8/minimalismo) → fusionar el grip dentro del botón de editar, o quitarlo si toda la tarjeta ya es arrastrable sin necesidad de un ícono dedicado.
+4. [Identidad visual / chip del insight] El dispositivo ownable (duotone de marca, EcoChip) sigue apareciendo en un único lugar de la pantalla (el ícono del insight) — defecto señalado en la ronda anterior, sin cambios desde entonces → extender el eco de marca al check de completado o al badge de racha para que se perciba como sistema, no como detalle aislado.
+5. [Header de lista: "+ Agregar" vs. botón "editar" (lápiz)] Ambas son acciones secundarias del mismo nivel jerárquico pero con tratamientos visuales muy distintos (texto+ícono sin fondo vs. botón cuadrado con borde) — rompe "mismo tipo de componente = misma apariencia en toda la pantalla" → unificar el estilo de las acciones secundarias (ambas chip, o ambas texto+ícono).

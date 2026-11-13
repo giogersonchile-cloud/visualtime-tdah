@@ -95,7 +95,7 @@ export default function Paywall() {
           style={{ filter: 'blur(22px)' }}
         />
         <div
-          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent-2)] opacity-60"
+          className="absolute -right-20 top-32 size-[260px] rounded-full bg-[var(--accent)] opacity-60"
           style={{ filter: 'blur(22px)' }}
         />
       </div>
