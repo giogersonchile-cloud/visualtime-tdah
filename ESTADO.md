@@ -1,14 +1,21 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
-✅ ACTUALIZACIÓN 2026-11-13: las 2 decisiones de contenido que bloqueaban el craft visual ya se
-resolvieron — FICHA-AVATAR.md APROBADA por el usuario (ya no hay que mostrársela de nuevo, es cosa
-juzgada igual que FICHA-ARTE.md); el usuario confirmó que NO tiene un testimonio real todavía, así
-que en vez de prueba social se agregó una leyenda honesta "Capturas reales de la app, sin retocar"
-bajo el título de "Así se ve por dentro" en la landing (components/landing/AppPorDentro.tsx) — cuenta
-como especificidad verificable sin inventar cifras. Pendiente: relanzar el revisor-visual de landing
-cuando se retome esta pantalla (no se hizo una 6ª ronda completa todavía, para no gastar de más en una
-sola corrección pequeña).
+✅ CHECKPOINT — 6ª ronda de revisor-visual completa (2026-11-13). FICHA-AVATAR.md ya APROBADA por
+el usuario (cosa juzgada, igual que FICHA-ARTE.md) y se agregó la leyenda honesta "Capturas reales
+de la app, sin retocar" en vez de un testimonio inventado. Con eso, el COPY ya pasa en las 3 pantallas
+que venden: landing 17/20, paywall 19/20 (ningún eje ≤2 en ninguna). El CRAFT ya pasa en pantalla
+principal (16/20) y casi en landing/paywall (15/14/20). Lo que sigue bloqueando el gate doble
+(≥36/40 usabilidad + ≥16/20 craft) en las 4 es, sobre todo, USABILIDAD (entre 30 y 33/40, faltan
+3-6 puntos) y en 3 de las 4 un mismo defecto de craft que se repite ronda tras ronda: el fondo con
+manchas de color (mesh) sigue leyéndose casi plano en el screenshot real pese a 3 subidas de
+opacidad — causa raíz AÚN no resuelta del todo (candidatos pendientes: revisar si el overflow-hidden
+del contenedor recorta el blob, o cambiar la técnica de blur por una textura). Último marcador
+(ronda 6, docs/revisiones/): landing 32/40·15/20·copy17/20 · onboarding 30/40·14/20 · paywall
+33/40·14/20·copy19/20 · pantalla principal 31/40·16/20.
+Decisión del agente: 6 rondas (~2M tokens de revisor en total) es un punto razonable para pausar y
+consultar con el usuario antes de seguir — ver sección de Problemas conocidos para el detalle fino
+pendiente por pantalla (para cuando se retome).
 
 ✅ CHECKPOINT — Sesión 8 (craft visual, 5 rondas de revisor) PAUSADA por decisión del agente —
 mejora real y medible en las 4, NINGUNA cruza el gate (≥36/40 usabilidad, ≥16/20 craft) todavía:

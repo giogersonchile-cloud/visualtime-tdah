@@ -67,17 +67,24 @@ export function Hero({
       />
 
       <div className="mx-auto w-full max-w-[1140px] px-5">
-        {/* Header 64px: marca a la izquierda, SOLO "Entrar" terciario a la derecha (19) */}
+        {/* Header 64px: marca a la izquierda. Se agregó "Ver precios" (ancla a
+            #oferta) junto a "Entrar" — antes no había forma rápida de saltar a
+            precios/FAQ sin bajar ~5000px de scroll (veredicto del revisor). */}
         <header className="flex h-16 items-center justify-between">
           <a href="/" className="flex items-center gap-2 text-[16px] font-semibold text-[var(--text-primary)]">
             {logo ?? <span aria-hidden="true" className="size-6 rounded-[8px] bg-[var(--accent)]" />}
             {appName}
           </a>
-          {loginHref && (
-            <a href={loginHref} className="px-2 py-3 text-[14px] font-medium text-[var(--text-tertiary)]">
-              {loginLabel}
+          <div className="flex items-center gap-1">
+            <a href="#oferta" className="px-2 py-3 text-[14px] font-medium text-[var(--text-secondary)]">
+              Ver precios
             </a>
-          )}
+            {loginHref && (
+              <a href={loginHref} className="px-2 py-3 text-[14px] font-medium text-[var(--text-tertiary)]">
+                {loginLabel}
+              </a>
+            )}
+          </div>
         </header>
 
         {/* Carga inmediata: fade simple 300ms — el LCP manda (55 T4) */}
