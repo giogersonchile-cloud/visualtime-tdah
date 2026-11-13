@@ -28,16 +28,28 @@ export default function Login() {
       // Bug real encontrado probando Google: si el canje fallaba (doble clic, el
       // código ya se había usado, etc.) la pantalla se quedaba congelada sin avisar
       // nada — ni error ni forma de reintentar. Ahora SIEMPRE reacciona.
-      supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
+      //
+      // Bug real #2, encontrado revisando los logs de Supabase: el canje puede
+      // completarse bien en el servidor (sesión creada de verdad) pero la promesa
+      // de exchangeCodeForSession igual reportar error en el navegador (p. ej. una
+      // carrera con el propio listener de abajo, que ya procesó el SIGNED_IN antes
+      // de que esta promesa resolviera). Antes de avisar "no se pudo", confirmamos
+      // con getSession() si de verdad no quedó ninguna sesión.
+      supabase.auth.exchangeCodeForSession(code).then(async ({ data, error }) => {
         if (!error && data.session) {
           router.replace('/app');
-        } else {
-          // Limpia el "?code=" de la URL (ya se consumió, reintentarlo con el mismo
-          // código siempre va a fallar) y deja al usuario volver a intentarlo.
-          window.history.replaceState({}, '', '/login');
-          setEstado('error');
-          setErrorMsg('No pudimos completar el inicio de sesión. Intenta de nuevo.');
+          return;
         }
+        const { data: sessionData } = await supabase.auth.getSession();
+        if (sessionData.session) {
+          router.replace('/app');
+          return;
+        }
+        // Limpia el "?code=" de la URL (ya se consumió, reintentarlo con el mismo
+        // código siempre va a fallar) y deja al usuario volver a intentarlo.
+        window.history.replaceState({}, '', '/login');
+        setEstado('error');
+        setErrorMsg('No pudimos completar el inicio de sesión. Intenta de nuevo.');
       });
       return;
     }

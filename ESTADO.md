@@ -1,15 +1,25 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-13 | Sesión actual: 8
 
-✅ CHECKPOINT — Google OAuth FUNCIONANDO de punta a punta en producción (2026-11-13): proyecto
-"visualtime-tdah" en Google Cloud, pantalla de consentimiento (tipo Externos), cliente OAuth web
-con origen `https://www.visualtimetdah.com` y callback
-`https://tspjibbqokwxztfiicok.supabase.co/auth/v1/callback`. Proveedor Google activado en Supabase
-con Client ID + Secret. CONFIRMADO probando en vivo: la cuenta `giogerson.chile@gmail.com` quedó
-vinculada (mismo usuario, `providers: ["email","google"]`, `plan_status: "active"` intacto) y
-`/app` cargó con sesión válida. Bug encontrado y corregido en el camino: si el canje del código
-de Google fallaba (doble clic, código ya usado), la pantalla de login se quedaba congelada sin
-avisar nada — corregido en `app/login/page.tsx` para mostrar error y permitir reintentar.
+⚠️ CHECKPOINT — Google OAuth: causa raíz encontrada y corregida, falta la prueba final limpia
+(2026-11-13): proyecto "visualtime-tdah" en Google Cloud, cliente OAuth web con origen
+`https://www.visualtimetdah.com` y callback `https://tspjibbqokwxztfiicok.supabase.co/auth/v1/callback`.
+Proveedor Google activado en Supabase con Client ID + Secret. Bug real #1 (ya corregido en
+producción, commit `8d31177`): si el canje del código fallaba, la pantalla se quedaba congelada
+sin avisar nada — ahora muestra error y permite reintentar (`app/login/page.tsx`).
+CAUSA RAÍZ DEL LOGIN QUE SEGUÍA FALLANDO (encontrada hoy): la app de Google estaba en modo
+"Prueba" con CERO usuarios de prueba autorizados — por eso fallaba con cualquier cuenta. Se
+completó "Información de la marca" (nombre, correo de soporte, dominios, página principal
+`https://www.visualtimetdah.com` y política de privacidad `https://www.visualtimetdah.com/privacidad`)
+y se le dio "Publicar app" → "Confirmar" (Google no pidió verificación porque la app usa permisos
+básicos, no sensibles). Estado de publicación ahora: Producción.
+PENDIENTE para la próxima sesión: falta la prueba final — el usuario recargó la página y le salió
+el mensaje de error, pero no quedó claro si era de un intento VIEJO (antes de publicar) o de uno
+NUEVO después de publicar y recargar. Primer paso al retomar: pedirle que recargue
+`https://www.visualtimetdah.com/login` y pruebe "Continuar con Google" una vez, limpio, y
+confirmar si ya funciona. Si sigue fallando después de esto, revisar: (a) si el dominio
+`visualtimetdah.com` quedó bien verificado en Google Search Console (lo pide la sección de
+"Dominios autorizados"), (b) logs de Supabase Auth para el error exacto del intercambio de código.
 IMPORTANTE — se encontró que 19 commits llevaban un buen rato sin subirse al repo (`git push`
 pendiente); todo el trabajo de craft visual + seguridad + Google de esta sesión estaba solo en
 la computadora, no en producción, hasta que se hizo push manual. Revisar al cierre de cada sesión
