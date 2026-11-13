@@ -6,9 +6,20 @@ import { motion, useReducedMotion } from 'motion/react';
 import { X, Lock, ShieldCheck, LifeBuoy } from 'lucide-react';
 import { leerRespuestas, type Respuestas } from '@/lib/onboarding';
 import { CheckCustom, Hairline } from '@/components/landing/ui';
-import { LogoMark } from '@/components/ui/Marca';
+import { LogoMark, EcoChip } from '@/components/ui/Marca';
 
 type PlanId = 'anual' | 'mensual';
+
+const KEY_PLAN = 'vt_plan_elegido';
+
+function leerPlanGuardado(): PlanId {
+  try {
+    const v = localStorage.getItem(KEY_PLAN);
+    return v === 'mensual' ? 'mensual' : 'anual';
+  } catch {
+    return 'anual';
+  }
+}
 
 /** Conteo animado del precio (baseline obligatorio: ningún número héroe estático —
  * 07/14). Cuenta de 0 al valor real en 500ms al montar. */
@@ -36,13 +47,25 @@ function PrecioAnimado({ valor, reducedMotion }: { valor: number; reducedMotion:
 export default function Paywall() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<Respuestas | null>(null);
-  const [plan, setPlan] = useState<PlanId>('anual');
+  const [plan, setPlanState] = useState<PlanId>('anual');
   const [restauro, setRestauro] = useState<'idle' | 'buscando' | 'sin-compra'>('idle');
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     setRespuestas(leerRespuestas());
+    setPlanState(leerPlanGuardado());
   }, []);
+
+  // h7/flexibilidad: recordar el plan elegido entre visitas (antes siempre
+  // reiniciaba en "Anual" aunque el usuario hubiera elegido Mensual antes).
+  const setPlan = (p: PlanId) => {
+    setPlanState(p);
+    try {
+      localStorage.setItem(KEY_PLAN, p);
+    } catch {
+      // sin persistencia disponible (modo privado/cuota) — el flujo sigue igual
+    }
+  };
 
   const rutina = respuestas?.p3 || 'rutina';
   const nRespuestas = respuestas ? Object.keys(respuestas).length : 4;
@@ -140,14 +163,14 @@ export default function Paywall() {
               ].map((f) => (
                 <div key={f} className="flex items-center gap-3">
                   <CheckCustom />
-                  <span className="text-[15px] text-[var(--text-primary)]">{f}</span>
+                  <span className="text-[14px] text-[var(--text-primary)]">{f}</span>
                 </div>
               ))}
             </div>
 
             {/* Especificidad real (sin inventar números): lo que SÍ podemos
                 prometer con certeza sobre la arquitectura 100% local del MVP. */}
-            <p className="mt-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pt-3 text-[13px] text-[var(--text-secondary)]">
+            <p className="mt-3 border-t border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] pt-3 text-[14px] text-[var(--text-secondary)]">
               Tus rutinas viven solo en tu teléfono — nunca se venden ni se comparten.
             </p>
 
@@ -175,8 +198,8 @@ export default function Paywall() {
                     {i < 2 && <span className="mt-1 w-[2px] flex-1 bg-[var(--accent)]" />}
                   </div>
                   <div className="pb-1">
-                    <p className="text-[15px] font-semibold text-[var(--text-primary)]">{n.titulo}</p>
-                    <p className="text-[13px] text-[var(--text-secondary)]">{n.sub}</p>
+                    <p className="text-[14px] font-semibold text-[var(--text-primary)]">{n.titulo}</p>
+                    <p className="text-[14px] text-[var(--text-secondary)]">{n.sub}</p>
                   </div>
                 </div>
               ))}
@@ -211,7 +234,7 @@ export default function Paywall() {
                 <span className="text-[13px] font-medium text-[var(--text-secondary)]">/mes</span>
               </span>
             </div>
-            <span className="mt-1 text-[13px] text-[var(--text-secondary)]">Se cobra $29.99/año · 2 meses gratis</span>
+            <span className="mt-1 text-[14px] text-[var(--text-secondary)]">Se cobra $29.99/año · 2 meses gratis</span>
           </motion.button>
 
           <motion.button
@@ -245,11 +268,18 @@ export default function Paywall() {
         >
           Empezar mis 7 días gratis
         </motion.button>
-        {/* Garantía nombrada CERCA del CTA (52 §4 / 50 C2-7): no solo al fondo de la pantalla. */}
-        <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-[13px] text-[var(--text-secondary)]">
-          <ShieldCheck size={14} aria-hidden="true" className="shrink-0" />
+        {/* Garantía nombrada CERCA del CTA (52 §4 / 50 C2-7): no solo al fondo de
+            la pantalla. EcoChip aquí da a esta pantalla su propio punto de
+            identidad ownable (antes solo vivía en el logo del header — veredicto
+            del revisor: "fuera del acento teal, sin dispositivo visual propio"). */}
+        <div className="mt-3 flex items-center justify-center gap-2 text-center text-[14px] text-[var(--text-secondary)]">
+          <EcoChip size={26} tone="muted">
+            <span className="flex size-[26px] items-center justify-center rounded-full bg-[var(--chip-bg)]">
+              <ShieldCheck size={13} color="var(--accent)" aria-hidden="true" />
+            </span>
+          </EcoChip>
           Cancela cuando quieras · Garantía de 15 días
-        </p>
+        </div>
 
         <div className="mt-4 flex items-center justify-center gap-4 text-[14px] font-medium text-[var(--text-secondary)]">
           <button type="button" onClick={() => router.push('/')} className="py-2">
@@ -268,12 +298,12 @@ export default function Paywall() {
             animate={{ opacity: 1 }}
             className="mt-2 flex flex-col items-center gap-2 text-center"
           >
-            <p className="text-[13px] text-[var(--text-secondary)]">
+            <p className="text-[14px] text-[var(--text-secondary)]">
               No encontramos una compra para este dispositivo todavía.
             </p>
             <a
               href="mailto:soporte@visualtimetdah.app"
-              className="flex items-center gap-1.5 text-[13px] font-semibold text-[var(--accent)]"
+              className="flex items-center gap-1.5 text-[14px] font-semibold text-[var(--accent)]"
             >
               <LifeBuoy size={14} aria-hidden="true" />
               Escribir a soporte

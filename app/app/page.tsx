@@ -279,6 +279,10 @@ export default function Hoy() {
   const [bloqueBorrado, setBloqueBorrado] = useState<Bloque | null>(null);
   const [celebracion, setCelebracion] = useState<number | null>(null);
   const rachaAnterior = useRef<number | null>(null);
+  // Suprime el onClick que Framer Motion sigue disparando al soltar un drag —
+  // sin esto, deslizar marcaba el bloque y el click que sigue lo desmarcaba
+  // de inmediato (bug encontrado al probar el gesto).
+  const huboArrastre = useRef(false);
   const reducedMotion = useReducedMotion();
   const hoy = new Date();
 
@@ -428,13 +432,38 @@ export default function Hoy() {
           {bloques.map((b) => {
             const hecho = estaCompletado(hoy, b.id);
             return (
-              <motion.li key={b.id} variants={variantesItem} className="flex items-stretch gap-2">
+              <motion.li key={b.id} variants={variantesItem} className="relative flex items-stretch gap-2">
+                {/* Pista de "swipe para completar" — aparece detrás del bloque,
+                    para el usuario frecuente que quiere marcar sin apuntar al
+                    tap (h7/flexibilidad: el tap sigue siendo el fallback principal). */}
+                <span
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-y-0 left-0 right-11 flex items-center justify-center rounded-[var(--radius-card)] bg-[var(--accent)] text-[13px] font-semibold text-[var(--bg)]"
+                >
+                  {hecho ? 'Desmarcar' : 'Completar'}
+                </span>
                 <motion.button
                   type="button"
+                  drag="x"
+                  dragConstraints={{ left: 0, right: 0 }}
+                  dragElastic={0.15}
+                  dragSnapToOrigin
+                  onDragStart={() => {
+                    huboArrastre.current = true;
+                  }}
+                  onDragEnd={(_e, info) => {
+                    if (Math.abs(info.offset.x) > 70) marcar(b.id);
+                    window.setTimeout(() => {
+                      huboArrastre.current = false;
+                    }, 0);
+                  }}
                   whileTap={{ scale: 0.98 }}
-                  onClick={() => marcar(b.id)}
+                  onClick={() => {
+                    if (huboArrastre.current) return;
+                    marcar(b.id);
+                  }}
                   aria-pressed={hecho}
-                  className={`flex flex-1 items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-8px_rgb(15_118_110_/_0.25)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
+                  className={`relative flex flex-1 items-center gap-3 rounded-[var(--radius-card)] border px-4 py-3 text-left shadow-[0_4px_16px_-8px_rgb(15_118_110_/_0.25)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] ${
                     hecho
                       ? 'border-[color-mix(in_oklab,var(--text-tertiary)_15%,transparent)] bg-[var(--surface-2)]'
                       : 'border-[color-mix(in_oklab,var(--text-tertiary)_20%,transparent)] bg-[var(--surface)]'

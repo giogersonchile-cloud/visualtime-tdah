@@ -82,6 +82,23 @@ function PantallaPregunta({
     window.setTimeout(() => onResponder(opcion), PAUSA_SELECCION_MS);
   };
 
+  // Atajo de teclado (h7/flexibilidad): teclas 1-4 eligen la opción
+  // correspondiente — antes solo el mouse/tap funcionaba para las opciones
+  // predefinidas (el input "Otra cosa" ya respondía a Enter).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (otraCosaAbierta) return;
+      const n = Number(e.key);
+      if (n >= 1 && n <= pregunta.opciones.length) {
+        e.preventDefault();
+        elegir(pregunta.opciones[n - 1]);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [otraCosaAbierta, seleccionada]);
+
   return (
     <motion.div
       key={pregunta.id}
@@ -215,7 +232,10 @@ function PantallaPregunta({
               <Sparkles size={17} strokeWidth={2} color="var(--accent)" aria-hidden="true" />
             </span>
           </EcoChip>
-          <p className="pt-1 text-[13px] leading-relaxed text-[var(--text-secondary)]">
+          {/* pt-3 (no pt-1): el EcoChip mide 44px total (36px + el eco offset de
+              8px) — pt-1 dejaba el ícono 2-3px más arriba que la primera línea
+              de texto (desalineado, veredicto del revisor). */}
+          <p className="pt-3 text-[13px] leading-relaxed text-[var(--text-secondary)]">
             <span className="font-semibold text-[var(--text-primary)]">Con tus respuestas</span> armamos tu
             línea de tiempo al instante — nada se comparte ni se publica sin que tú lo decidas.
           </p>
@@ -328,6 +348,7 @@ export default function Onboarding() {
   const router = useRouter();
   const [paso, setPaso] = useState<'pregunta' | 'loading'>('pregunta');
   const [indice, setIndice] = useState(0);
+  const [confirmarSalida, setConfirmarSalida] = useState(false);
   const respuestas = useRef<Partial<Respuestas>>({});
 
   const responder = (valor: string) => {
@@ -370,12 +391,16 @@ export default function Onboarding() {
             existía el logo-link del header, poco reconocible como "salir".
             Confirma si ya respondió algo: salir a mitad de camino borra esas
             respuestas (viven solo en un ref hasta terminar el recorrido) —
-            una acción destructiva disfrazada de neutra, ahora con aviso. */}
+            una acción destructiva disfrazada de neutra, ahora con aviso.
+            Modal propio con los tokens de marca, no window.confirm() nativo
+            (rompía el tono calmado de la ficha — veredicto del revisor). */}
         <button
           type="button"
           onClick={() => {
-            if (indice === 0 || window.confirm('¿Seguro que quieres salir? Vas a perder lo que ya respondiste.')) {
+            if (indice === 0) {
               router.push('/');
+            } else {
+              setConfirmarSalida(true);
             }
           }}
           className="flex size-11 items-center justify-center text-[var(--text-secondary)]"
@@ -406,6 +431,49 @@ export default function Onboarding() {
           )}
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {confirmarSalida && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-20 flex items-end justify-center bg-[rgb(15_23_21_/_0.35)] px-4 pb-4 sm:items-center"
+            onClick={() => setConfirmarSalida(false)}
+          >
+            <motion.div
+              initial={{ y: 24, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 24, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-[420px] rounded-[var(--radius-card)] border border-[color-mix(in_oklab,var(--text-tertiary)_18%,transparent)] bg-[var(--surface)] p-5 shadow-[0_12px_40px_-10px_rgb(15_118_110_/_0.35)]"
+            >
+              <h2 className="text-[18px] font-bold text-[var(--text-primary)] [font-family:var(--font-display)]">
+                ¿Seguro que quieres salir?
+              </h2>
+              <p className="mt-2 text-[14px] leading-relaxed text-[var(--text-secondary)]">
+                Vas a perder lo que ya respondiste.
+              </p>
+              <div className="mt-5 flex flex-col gap-3">
+                <button
+                  type="button"
+                  onClick={() => router.push('/')}
+                  className="flex h-12 items-center justify-center rounded-[var(--radius-button)] bg-[var(--error)] text-[15px] font-semibold text-[var(--bg)]"
+                >
+                  Sí, salir
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setConfirmarSalida(false)}
+                  className="flex h-12 items-center justify-center rounded-[var(--radius-button)] text-[15px] font-semibold text-[var(--text-primary)]"
+                >
+                  Seguir respondiendo
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
