@@ -1,5 +1,25 @@
 # ESTADO — VisualTime TDAH
-Última actualización: 2026-11-13 | Sesión actual: 8
+Última actualización: 2026-11-14 | Sesión actual: 8
+
+✅ CHECKPOINT — Auditoría legal hecha (47-LEGAL-FISCAL-Y-PRIVACIDAD.md), 2026-11-14. Responsable
+declarado: Giogerson, desde Chile. Huecos reales encontrados y corregidos:
+- Privacidad no nombraba a Supabase/Google/Vercel como terceros ni la transferencia
+  internacional de datos a EE.UU. (Supabase procesa en us-east-2) — agregado con nombres y función.
+- No existía ninguna página "cómo cancelar" in-app (obligatoria antes de vender recurrente) —
+  creada en `/cancelar` con pasos + link a app.hotmart.com, enlazada desde el perfil y desde
+  `/reembolsos`.
+- Términos no declaraba edad mínima (18+, coherente con FICHA-AVATAR 18-35), ley aplicable
+  (Chile) ni límite de responsabilidad.
+- El login no mostraba aviso de aceptación de Términos/Privacidad — agregado debajo del botón.
+Verificado: garantía de 15 días SÍ está configurada en el panel de Hotmart (confirmado por el
+usuario) — coincide con landing, FICHA-MERCADO y `/reembolsos`. Prueba 7 días también coincide
+en todos los lugares. No aplica: aviso de cookies (no hay analytics/píxeles de terceros en el
+código) ni disclaimer de IA (la app no usa IA en ningún punto).
+⚠️ PENDIENTE — solo un humano puede hacerlo: si el ingreso se vuelve recurrente de verdad,
+consultar a un contador chileno (declarar lo que paga Hotmart como renta propia) y, si el
+negocio crece, validar estas páginas con un abogado local — esta auditoría es de completitud,
+no asesoría legal colegiada.
+Commit: `3786e43`.
 
 ✅ CHECKPOINT — Google OAuth FUNCIONANDO de punta a punta, confirmado por el usuario (2026-11-13):
 proyecto "visualtime-tdah" en Google Cloud, cliente OAuth web con origen
