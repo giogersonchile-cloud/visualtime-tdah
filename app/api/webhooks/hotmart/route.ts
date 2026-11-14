@@ -109,10 +109,17 @@ export async function POST(req: NextRequest) {
 }
 
 async function buscarUsuarioPorEmail(admin: ReturnType<typeof crearClienteSupabaseAdmin>, email: string) {
-  // listUsers no filtra por email de forma nativa en todas las versiones; se pagina si hace falta.
-  const { data, error } = await admin.auth.admin.listUsers({ page: 1, perPage: 200 });
-  if (error) throw new Error(`listUsers falló: ${error.message}`);
-  return data.users.find((u) => u.email?.toLowerCase() === email) ?? null;
+  // listUsers no filtra por email de forma nativa en todas las versiones; se pagina hasta
+  // encontrarlo o agotar las páginas. Antes solo miraba los primeros 200 usuarios — pasado ese
+  // número, un cliente existente dejaba de encontrarse y el webhook intentaba crearlo de nuevo
+  // (encontrado en la certificación de pre-lanzamiento, 48-RIGOR-DE-ENTREGA.md, punto de Escala).
+  for (let page = 1; ; page++) {
+    const { data, error } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) throw new Error(`listUsers falló: ${error.message}`);
+    const encontrado = data.users.find((u) => u.email?.toLowerCase() === email);
+    if (encontrado) return encontrado;
+    if (data.users.length < 200) return null;
+  }
 }
 
 async function otorgarAcceso(admin: ReturnType<typeof crearClienteSupabaseAdmin>, email: string, nombre?: string) {
