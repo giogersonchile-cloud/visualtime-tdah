@@ -209,6 +209,18 @@ export default function Login() {
                 <Lock size={14} aria-hidden="true" />
                 Sin contraseñas: te llegará un enlace y un código de un solo uso
               </p>
+
+              <p className="mt-3 text-[12px] text-[var(--text-secondary)]">
+                Al continuar, aceptas los{' '}
+                <a href="/terminos" className="underline">
+                  Términos
+                </a>{' '}
+                y la{' '}
+                <a href="/privacidad" className="underline">
+                  Política de Privacidad
+                </a>
+                .
+              </p>
             </>
           ) : (
             <>

@@ -52,6 +52,20 @@ export default function Reembolsos() {
               reembolsar.
             </p>
           </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">
+              ¿Solo quieres cancelar, no pedir un reembolso?
+            </h2>
+            <p className="mt-2">
+              Puedes cancelar cuando quieras, sin esperar a cumplir los 15
+              días. Ve los pasos en{" "}
+              <a href="/cancelar" className="text-[var(--accent)] underline">
+                cómo cancelar tu suscripción
+              </a>
+              .
+            </p>
+          </section>
         </div>
       </div>
     </main>
