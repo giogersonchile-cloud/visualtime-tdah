@@ -1,6 +1,32 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-14 | Sesión actual: 8
 
+✅ CHECKPOINT — Recordatorio de trial (día 5-7) IMPLEMENTADO y CONFIRMADO funcionando en vivo
+(2026-11-14). Cumple la promesa que el paywall ya hacía ("te avisamos antes del día 7, siempre")
+— no existía ningún mecanismo real para eso (ver CERTIFICADO de abajo, punto FUNNEL).
+- `lib/resend.ts` — envío directo vía API REST de Resend (sin SDK), remitente
+  `acceso@mail.visualtimetdah.com`.
+- `app/api/cron/recordatorio-trial/route.ts` — recorre todos los usuarios de Supabase, filtra
+  `plan_status === 'active'`, sin `cancel_at_period_end`, sin `trial_reminder_sent`, con
+  `first_paid_at` entre 5 y 7 días atrás, y les manda el correo + marca `trial_reminder_sent`.
+  Protegido con `CRON_SECRET` (header `Authorization: Bearer`).
+- `vercel.json` — Vercel Cron diario a las 14:00 UTC (11:00 Chile).
+- Variables nuevas en Vercel (Production/Preview/Development): `RESEND_API_KEY` (clave nueva,
+  dedicada, "Sending access" — no se reutilizó la del SMTP de Supabase) y `CRON_SECRET`.
+- PROBADO EN VIVO llamando el endpoint a mano: respondió `200 {"ok":true,"revisados":3,"avisados":1}`
+  — encontró un usuario real en la ventana de aviso y le mandó el correo de verdad. El cron de
+  Vercel todavía no lo ha disparado solo (corre una vez al día) — la próxima vez que corra solo,
+  confirmar en Resend → Emails que salió, y que no vuelva a avisar al mismo usuario dos veces.
+Commit: `ef9b388`.
+
+🏆 CERTIFICACIÓN PRE-LANZAMIENTO — actualización post-fix (2026-11-14): el hueco de FUNNEL que
+hacía perder puntos por el "puente del trial D1-D7 inexistente" ya no aplica igual — el aviso
+pre-cobro (la pieza más importante de ese punto) SÍ existe y SÍ funciona. No se recalculó el
+certificado completo de nuevo (quedaría en un número ligeramente mejor que 69/100) — los pendientes
+reales que siguen abiertos son: analítica de funnel (RETENCIÓN), dunning/win-back real (RETENCIÓN),
+Lighthouse móvil completo (VELOCIDAD). El veredicto de fondo sigue siendo el mismo: puede vender
+HOY (el pago ya funciona), pero no cruza el umbral de 80/100 de "clase mundial" todavía.
+
 🏆 CERTIFICACIÓN PRE-LANZAMIENTO (48-RIGOR-DE-ENTREGA.md), 2026-11-14 — VEREDICTO: **NO APTO**
 (69/100). Ningún bloqueante duro queda abierto HOY — el único real (no se podía pagar) se encontró
 y se corrigió en esta misma sesión — pero el puntaje no cruza el umbral de 80 por falta de madurez
