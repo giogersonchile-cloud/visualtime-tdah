@@ -16,7 +16,7 @@ export default function Terminos() {
             </h2>
             <p className="mt-2">
               VisualTime TDAH es una herramienta personal de organización
-              diaria, operada por Giogerson desde Chile. No reemplaza
+              diaria, operada por Giogerson Williams Grei Mejia desde Chile. No reemplaza
               diagnóstico, tratamiento ni consejo médico — si necesitas ayuda
               profesional, consulta a un especialista.
             </p>

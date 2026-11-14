@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
-import { X, Lock, ShieldCheck, LifeBuoy, LoaderCircle } from 'lucide-react';
+import { X, Lock, ShieldCheck } from 'lucide-react';
 import { leerRespuestas, type Respuestas } from '@/lib/onboarding';
 import { CheckCustom, Hairline } from '@/components/landing/ui';
 import { LogoMark, EcoChip } from '@/components/ui/Marca';
@@ -11,6 +11,15 @@ import { LogoMark, EcoChip } from '@/components/ui/Marca';
 type PlanId = 'anual' | 'mensual';
 
 const KEY_PLAN = 'vt_plan_elegido';
+
+// Links de pago reales de Hotmart (panel del producto → Links de divulgación →
+// por plan → "Página de Pago"). Antes este botón solo empujaba a /login sin
+// pasar por un pago real — encontrado y corregido en la certificación de
+// pre-lanzamiento (48-RIGOR-DE-ENTREGA.md).
+const CHECKOUT_URL: Record<PlanId, string> = {
+  mensual: 'https://pay.hotmart.com/L108362205F?off=duufr1o0',
+  anual: 'https://pay.hotmart.com/L108362205F?off=kl1q8x7v',
+};
 
 function leerPlanGuardado(): PlanId {
   try {
@@ -48,7 +57,6 @@ export default function Paywall() {
   const router = useRouter();
   const [respuestas, setRespuestas] = useState<Respuestas | null>(null);
   const [plan, setPlanState] = useState<PlanId>('anual');
-  const [restauro, setRestauro] = useState<'idle' | 'buscando' | 'sin-compra'>('idle');
   const reducedMotion = useReducedMotion();
 
   useEffect(() => {
@@ -71,17 +79,16 @@ export default function Paywall() {
   const nRespuestas = respuestas ? Object.keys(respuestas).length : 4;
 
   const empezarPrueba = () => {
-    // El checkout real (Hotmart) se conecta en Sesión 6 — por ahora el flujo
-    // avanza con estado local, nunca simula un cobro real (50 → C3ter).
-    router.push('/login');
+    window.location.href = CHECKOUT_URL[plan];
   };
 
   const restaurarCompra = () => {
-    // Verificación real contra Hotmart/Supabase llega en Sesión 6 — por ahora
-    // el botón SÍ responde y SIEMPRE cierra con un resultado (nunca se queda
-    // "Buscando…" sin decir qué pasó — 50 → heurística de estado del sistema).
-    setRestauro('buscando');
-    window.setTimeout(() => setRestauro('sin-compra'), 1800);
+    // No hay forma de saber "este dispositivo ya pagó" sin pedir el correo —
+    // la verificación real YA vive en /login (gated por plan_status en el
+    // servidor, app/app/layout.tsx). Antes esto simulaba una búsqueda de 1.8s
+    // que SIEMPRE terminaba en "no encontramos tu compra", incluso para quien
+    // ya había pagado — mentía a clientes reales.
+    router.push('/login');
   };
 
   return (
@@ -302,38 +309,10 @@ export default function Paywall() {
             Ahora no
           </button>
           <span aria-hidden="true">·</span>
-          <button
-            type="button"
-            onClick={restaurarCompra}
-            disabled={restauro === 'buscando'}
-            className="flex items-center gap-1.5 py-2 disabled:opacity-60"
-          >
-            {restauro === 'buscando' && (
-              <LoaderCircle size={14} className="animate-spin" aria-hidden="true" />
-            )}
-            {restauro === 'buscando' ? 'Buscando tu compra…' : 'Restaurar compra'}
+          <button type="button" onClick={restaurarCompra} className="py-2">
+            Ya pagué, iniciar sesión
           </button>
         </div>
-        {restauro === 'sin-compra' && (
-          // h9 (ayuda a reconocer/diagnosticar/recuperarse del error): el mensaje
-          // ahora ofrece una acción de seguimiento, no solo informa que falló.
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="mt-2 flex flex-col items-center gap-2 text-center"
-          >
-            <p className="text-[14px] text-[var(--text-secondary)]">
-              No encontramos una compra para este dispositivo todavía.
-            </p>
-            <a
-              href="mailto:soporte@visualtimetdah.app"
-              className="flex items-center gap-1.5 text-[14px] font-semibold text-[var(--accent)]"
-            >
-              <LifeBuoy size={14} aria-hidden="true" />
-              Escribir a soporte
-            </a>
-          </motion.div>
-        )}
 
         <div className="mt-6 flex items-center justify-center gap-2 text-[12px] text-[var(--text-secondary)]">
           <Lock size={14} aria-hidden="true" />

@@ -15,7 +15,7 @@ export default function Privacidad() {
               Quién es el responsable de tus datos
             </h2>
             <p className="mt-2">
-              VisualTime TDAH es operado por Giogerson, desde Chile. Para
+              VisualTime TDAH es operado por Giogerson Williams Grei Mejia, desde Chile. Para
               cualquier duda o solicitud sobre tus datos, escribe a{" "}
               <a
                 href="mailto:soporte@visualtimetdah.app"
