@@ -73,6 +73,12 @@ Pendiente de decisión del usuario (no bloqueante): el mensaje de login revela s
 o no (trade-off de UX consciente, documentado en SECURITY.md); CSP estricta pendiente de hacer con
 cuidado (nonce-based) cuando se pueda probar contra producción; sin Sentry todavía.
 
+✅ CHECKPOINT — craft visual CERRADO para esta etapa (2026-11-14): el usuario eligió explícitamente
+la opción (a) de abajo — aceptar el nivel actual (copy aprueba, decenas de defectos reales ya
+corregidos en 8 rondas) y lanzar, puliendo después con feedback real de clientes en vez de seguir
+rondas de revisor-visual que ya habían dejado de encontrar mejoras reales. NO relanzar el ciclo de
+revisor-visual sin que el usuario lo pida explícitamente de nuevo.
+
 ✅ CHECKPOINT — craft visual PAUSADO tras 8 rondas de revisor-visual (2026-11-13) — decisión firme
 del agente esta vez, con evidencia de que el ciclo ya no mide señal real:
 - Lo que SÍ se logró y quedó verificado: FICHA-AVATAR.md APROBADA por el usuario (cosa juzgada).
