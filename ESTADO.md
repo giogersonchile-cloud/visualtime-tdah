@@ -1,6 +1,54 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-14 | Sesión actual: 8
 
+🏆 CERTIFICACIÓN PRE-LANZAMIENTO (48-RIGOR-DE-ENTREGA.md), 2026-11-14 — VEREDICTO: **NO APTO**
+(69/100). Ningún bloqueante duro queda abierto HOY — el único real (no se podía pagar) se encontró
+y se corrigió en esta misma sesión — pero el puntaje no cruza el umbral de 80 por falta de madurez
+en retención/medición, no por algo roto.
+BLOQUEANTE CRÍTICO ENCONTRADO Y CORREGIDO HOY: el botón "Empezar mis 7 días gratis" del paywall
+solo hacía `router.push('/login')` — NUNCA llevaba a pagar. Nadie podía comprar desde la app desde
+que se construyó. Se conectó a los links de pago reales de Hotmart (uno por plan, obtenidos del
+panel → Links de divulgación → por plan → "Página de Pago") y se probó en VIVO en producción:
+mensual → `pay.hotmart.com/L108362205F?off=duufr1o0` ($5.240/mes CLP) · anual →
+`...?off=kl1q8x7v` ($31.489/año CLP) — ambos con 7 días de prueba, confirmado en pantalla.
+También se corrigió "Restaurar compra", que simulaba una búsqueda de 1.8s y SIEMPRE terminaba en
+"no encontramos tu compra" (mentía a clientes reales) — ahora manda a `/login`, la única
+verificación real que existe. Commit `73d9b39`.
+OTRO BUG DE ESCALA ENCONTRADO Y CORREGIDO: `buscarUsuarioPorEmail` en el webhook solo miraba los
+primeros 200 usuarios de Supabase — pasado ese número, un comprador existente dejaba de
+encontrarse. Corregido para paginar hasta encontrarlo. Commit `b17e581`.
+Se crearon `MANUAL-DEL-DUENO.md` y `RUNBOOK.md` (no existía ninguno de los dos, pedidos por 48).
+CERTIFICADO /100:
+- VENTA 17/20 — landing: estructura canónica hecha, copy 17/20 (revisor), render 32/40·15/20
+  (bajo el gate de 36/40·16/20, decisión ya tomada de aceptar este nivel — ver checkpoint de
+  craft visual arriba).
+- FUNNEL 13/20 — onboarding render 29/40·10/20, paywall render 29/40·14/20·copy19/20; el
+  "puente del trial D1-D7" (aviso real antes del día 7 que la propia app promete en su copy)
+  NO existe — no hay ningún correo automático de Resend más allá del magic link de login.
+  Puntúa 0 en ese sub-ítem porque no se construyó, no porque fallara.
+- PRODUCTO 15/20 — pantalla principal render 28/40·13/20; loop de retención (racha/medallas/
+  insight) SÍ implementado; los 6 estados no se re-verificaron los seis en esta sesión (offline
+  específicamente sin probar hoy).
+- CONFIANZA 13/15 — seguridad en verde (SECURITY.md), legal corregido y completo, pago E2E
+  confirmado HOY. Deducción menor: CSP estricta pendiente, ledger económico inmaduro.
+- VELOCIDAD 6/10 — FCP cálido 280ms, frío ~2.6s (primera visita tras rato sin tráfico); NO se
+  corrió un Lighthouse móvil completo contra el budget de `38-PERFORMANCE-BUDGET.md` — puntúa
+  parcial porque no se midió del todo, no porque esté mal.
+- RETENCIÓN 5/15 — el loop (24) SÍ existe; analítica de eventos/funnel (36) NO existe (sin
+  gtag/posthog/ningún tracking); dunning/win-back (58) NO existe (el webhook cambia
+  `plan_status` en refund/chargeback, pero no hay email de recuperación ni reactivación).
+PUNCH LIST para cruzar 80 (en orden de impacto, ninguno bloquea vender HOY):
+1. Montar el puente de correos del trial (día 1, día 5, día 6 — avisar ANTES del cobro, como ya
+   promete el copy) — sube FUNNEL y cumple una promesa que hoy no se cumple.
+2. Instrumentar analítica básica (visita→onboarding→paywall→pago) — sin esto no sabes dónde se
+   cae la gente. Sube RETENCIÓN.
+3. Dunning básico (reintento de cobro fallido + 1 email de recuperación) — sube RETENCIÓN.
+4. Lighthouse móvil real contra el budget del 38 — confirma o corrige VELOCIDAD.
+5. Si el usuario quiere, retomar craft visual de las 4 pantallas núcleo (ya decidido que NO por
+   ahora — ver checkpoint arriba).
+⚠️ Nada de esto bloquea empezar a vender: el pago YA funciona de punta a punta. Es la diferencia
+entre "puede vender" (sí, hoy) y "certificado ≥80, clase mundial" (no todavía).
+
 ✅ CHECKPOINT — Sentry (vigilancia de errores) CONECTADO y confirmado enviando eventos (2026-11-14).
 Cuenta/organización "visualtime-tdah" en sentry.io, proyecto Next.js. `@sentry/nextjs` instalado
 a mano (sin wizard): captura errores del navegador (`instrumentation-client.ts`), del servidor y
