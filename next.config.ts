@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs/config";
 
 const nextConfig: NextConfig = {
   /* config options here */
@@ -32,4 +33,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// withSentryConfig solo sube source maps y crea "releases" si existen las variables
+// SENTRY_ORG/SENTRY_PROJECT/SENTRY_AUTH_TOKEN (se agregan después, en Vercel, cuando
+// se quiera ver el código fuente real del error — sin ellas, Sentry sigue funcionando
+// igual, solo sin el detalle de línea exacta del código fuente).
+export default withSentryConfig(nextConfig, {
+  silent: true,
+  widenClientFileUpload: true,
+});
