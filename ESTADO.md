@@ -1,6 +1,24 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-14 | Sesión actual: 8
 
+⚠️ CHECKPOINT — Sentry (vigilancia de errores) conectado, falta confirmar que el error de prueba
+llegó (2026-11-14). Se creó la cuenta/organización "visualtime-tdah" en sentry.io (proyecto
+Next.js) y se instaló `@sentry/nextjs` a mano (sin el wizard automático): captura errores del
+navegador (`instrumentation-client.ts`), del servidor y edge (`instrumentation.ts`, incluido el
+webhook de Hotmart), y una pantalla honesta en vez de la pantalla blanca si algo revienta del
+todo (`app/global-error.tsx`). Se agregó `/api/health` (confirma que Supabase responde) para
+un futuro vigilante externo tipo UptimeRobot. La clave (`NEXT_PUBLIC_SENTRY_DSN`) ya está
+guardada en `.env.local` y en Vercel (Production/Preview/Development) — commit `87ef50d`,
+publicado y con build verificado.
+PENDIENTE para retomar: se disparó un error de prueba en el sitio en vivo
+(`myUndefinedFunction()` en /, vía setTimeout para que fuera un error real no atrapado) pero el
+usuario tuvo que salir antes de confirmar si apareció en `https://visualtime-tdah.sentry.io/issues/`.
+Primer paso al retomar: pedirle que revise esa página; si no aparece nada, revisar que el
+redeploy de Vercel con la variable nueva ya haya terminado (pudo no estar listo todavía) y
+repetir la prueba.
+Pendiente, no urgente: falta el vigilante de actividad externo (UptimeRobot/BetterStack) sobre
+la URL de producción + `/api/health` — Sentry no avisa si la app está caída y nadie la visita.
+
 ✅ CHECKPOINT — Auditoría legal hecha (47-LEGAL-FISCAL-Y-PRIVACIDAD.md), 2026-11-14. Responsable
 declarado: Giogerson, desde Chile. Huecos reales encontrados y corregidos:
 - Privacidad no nombraba a Supabase/Google/Vercel como terceros ni la transferencia
