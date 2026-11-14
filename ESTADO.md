@@ -1,21 +1,21 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-14 | Sesión actual: 8
 
-⚠️ CHECKPOINT — Sentry (vigilancia de errores) conectado, falta confirmar que el error de prueba
-llegó (2026-11-14). Se creó la cuenta/organización "visualtime-tdah" en sentry.io (proyecto
-Next.js) y se instaló `@sentry/nextjs` a mano (sin el wizard automático): captura errores del
-navegador (`instrumentation-client.ts`), del servidor y edge (`instrumentation.ts`, incluido el
-webhook de Hotmart), y una pantalla honesta en vez de la pantalla blanca si algo revienta del
-todo (`app/global-error.tsx`). Se agregó `/api/health` (confirma que Supabase responde) para
-un futuro vigilante externo tipo UptimeRobot. La clave (`NEXT_PUBLIC_SENTRY_DSN`) ya está
-guardada en `.env.local` y en Vercel (Production/Preview/Development) — commit `87ef50d`,
-publicado y con build verificado.
-PENDIENTE para retomar: se disparó un error de prueba en el sitio en vivo
-(`myUndefinedFunction()` en /, vía setTimeout para que fuera un error real no atrapado) pero el
-usuario tuvo que salir antes de confirmar si apareció en `https://visualtime-tdah.sentry.io/issues/`.
-Primer paso al retomar: pedirle que revise esa página; si no aparece nada, revisar que el
-redeploy de Vercel con la variable nueva ya haya terminado (pudo no estar listo todavía) y
-repetir la prueba.
+✅ CHECKPOINT — Sentry (vigilancia de errores) CONECTADO y confirmado enviando eventos (2026-11-14).
+Cuenta/organización "visualtime-tdah" en sentry.io, proyecto Next.js. `@sentry/nextjs` instalado
+a mano (sin wizard): captura errores del navegador (`instrumentation-client.ts`), del servidor y
+edge (`instrumentation.ts`, incluido el webhook de Hotmart), y una pantalla honesta en vez de la
+pantalla blanca si algo revienta del todo (`app/global-error.tsx`). Se agregó `/api/health`
+(confirma que Supabase responde) para un futuro vigilante externo tipo UptimeRobot.
+BUG REAL ENCONTRADO: el primer "Redeploy" rápido desde el toast de Vercel NO horneó la variable
+`NEXT_PUBLIC_SENTRY_DSN` en el código publicado (se confirmó inspeccionando el bundle en vivo:
+Sentry.init corría pero sin dsn). Se corrigió forzando un build nuevo con un commit vacío
+(`facc260`) — con ese sí quedó embebida. Lección: tras agregar/cambiar una variable
+`NEXT_PUBLIC_*` en Vercel, un "Redeploy" rápido no siempre basta — verificar con una prueba real,
+no solo con que el botón diga "Ready".
+CONFIRMADO con `client.captureException()` + `client.flush()` devolviendo `true` (envío real
+completado) — pendiente que el usuario confirme visualmente el evento en
+`https://visualtime-tdah.sentry.io/issues/`.
 Pendiente, no urgente: falta el vigilante de actividad externo (UptimeRobot/BetterStack) sobre
 la URL de producción + `/api/health` — Sentry no avisa si la app está caída y nadie la visita.
 
