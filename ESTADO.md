@@ -5,34 +5,32 @@
 60-OPERACION-DE-CONVERSION.md), 2026-11-15. Auditoría confirmó: no existía NINGUNA analítica
 (ni PostHog, ni GA4, ni nada) — el embudo se medía a ciegas. Se creó la cuenta/proyecto
 "VisualTime TDAH" en PostHog (región US, host `us.i.posthog.com`).
-Código ya escrito (sin commitear todavía, build local corriendo para verificar):
-- `lib/analytics.ts` — wrapper único cliente (track/identificarUsuario/resetAnalytics), QA
-  (`?qa=1`), sesión comercial de 30 min, atribución de origen (primer toque gana), y
-  consentimiento (no inicializa PostHog sin aceptar cookies).
-- `lib/posthog-server.ts` — cliente server-side para los eventos de pago (nunca dependen del
-  navegador del comprador).
-- `components/ui/CookieConsent.tsx` — banner Aceptar/Rechazar del MISMO tamaño (47-LEGAL),
-  montado en `app/layout.tsx`.
-- Instrumentado el embudo completo SIN colapsar etapas: `landing_vista` (app/page.tsx) →
-  `onboarding_iniciado`/`onboarding_paso_completado`/`onboarding_completado` (app/onboarding) →
-  `resultado_visto`/`paywall_renderizado`/`paywall_visto` (IntersectionObserver real, no el
-  montaje) /`paywall_plan_elegido`/`checkout_iniciado` (app/paywall, con `sck` agregado a la URL
-  de Hotmart) → `trial_iniciado`/`primer_cobro_confirmado`/`trial_cancelado` SERVER-SIDE desde
-  el webhook (`app/api/webhooks/hotmart/route.ts`, distinguiendo usuario nuevo=trial vs
-  usuario existente=cobro real) → `app_abierta`/`sesion_iniciada`/`aha_alcanzado`/
-  `bloque_completado` (app/app/page.tsx, la pantalla "Hoy"). `identificarUsuario()` en el login
-  (los 3 puntos de entrada: canje de código, sesión ya activa, listener), `resetAnalytics()` en
-  logout (perfil).
-- `app/privacidad/page.tsx` actualizada: se agregó PostHog a la lista de terceros y la sección
-  de cookies de medición — la política anterior decía explícitamente "no hay analítica de
-  terceros", ya no es cierto, se corrigió para seguir siendo honesta.
-- Variables nuevas: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`, `POSTHOG_KEY`,
-  `POSTHOG_HOST` — ya en `.env.local`, TODAVÍA NO en Vercel.
-PENDIENTE para continuar (en este orden): (1) confirmar que el build/tsc en background terminó
-sin errores, (2) probar el embudo completo en local y confirmar que PostHog recibe los eventos,
-(3) pedirle al usuario que agregue las 4 variables en Vercel, (4) publicar con un commit
-normal (NUNCA commit vacío esta vez — confirmar `git status` antes), (5) probar en producción,
-(6) actualizar este checkpoint a ✅ con la confirmación.
+CÓDIGO HECHO, VERIFICADO Y PUBLICADO (commits `65db840` + `435c63b`, build local en verde,
+embudo probado de punta a punta en `localhost` con eventos confirmados llegando a PostHog —
+landing_vista → onboarding_iniciado/paso_completado×4/completado → resultado_visto/
+paywall_renderizado/paywall_visto → checkout_iniciado, los 13 eventos aparecieron en
+`us.posthog.com/project/739396/activity/events`):
+- `lib/analytics.ts` — wrapper único cliente, QA (`?qa=1`), sesión comercial de 30 min,
+  atribución de origen, consentimiento (no inicializa sin aceptar cookies).
+- `lib/posthog-server.ts` — cliente server-side para trial/cobro (nunca depende del navegador).
+- `components/ui/CookieConsent.tsx` — banner Aceptar/Rechazar del mismo tamaño, en `app/layout.tsx`.
+- Embudo completo instrumentado sin colapsar etapas (ver código en app/page.tsx, app/onboarding,
+  app/paywall, app/api/webhooks/hotmart/route.ts, app/app/page.tsx, app/login, app/app/perfil).
+- `app/privacidad/page.tsx` actualizada (PostHog + cookies de medición) para seguir siendo honesta.
+PENDIENTE PARA MAÑANA (lo único que falta — todo lo demás ya está hecho y verificado):
+1. El usuario debe agregar 4 variables en Vercel (Production/Preview/Development):
+   `NEXT_PUBLIC_POSTHOG_KEY` = `phc_m9jsk2xPETLTZMk9d6fMX7WxG6igRdcFAfwK7sWa7WQA` (Config)
+   `NEXT_PUBLIC_POSTHOG_HOST` = `https://us.i.posthog.com` (Config)
+   `POSTHOG_KEY` = `phc_m9jsk2xPETLTZMk9d6fMX7WxG6igRdcFAfwK7sWa7WQA` (Secret)
+   `POSTHOG_HOST` = `https://us.i.posthog.com` (Secret)
+2. Tras guardarlas, Vercel republica solo (o forzar con un commit si no lo hace) — recordar la
+   lección de Sentry: verificar con una prueba REAL en producción, no solo que el deploy diga Ready.
+3. Probar el embudo en `https://www.visualtimetdah.com` y confirmar en PostHog que los eventos
+   de producción llegan (buscar `library: web` con URL de producción, no `localhost`).
+4. Actualizar este checkpoint a ✅ con la confirmación de producción.
+Nota sin verificar: el campo `sck` que el webhook lee de `body.data.purchase.sckId` es un
+supuesto razonable pero SIN CONFIRMAR contra un payload real de Hotmart — revisar cuando haya
+una compra real con ese parámetro.
 Nota para el futuro: el campo `sck` que el webhook intenta leer de
 `body.data.purchase.sckId` es un supuesto razonable pero SIN VERIFICAR contra un payload real
 de Hotmart — si al revisar `webhook_log`/eventos reales el campo no trae nada, buscar el nombre
