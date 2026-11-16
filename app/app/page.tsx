@@ -19,6 +19,34 @@ import {
   type Bloque,
 } from '@/lib/rutina';
 import { EcoChip } from '@/components/ui/Marca';
+import { track } from '@/lib/analytics';
+
+const KEY_APP_ABIERTA = 'vt_app_abierta_alguna_vez';
+const KEY_AHA = 'vt_aha_alcanzado';
+const KEY_SESION_DIA = 'vt_sesion_dia';
+
+/** app_abierta: una sola vez en la vida del usuario (36-ANALITICA-Y-EVENTOS.md). */
+function trackAppAbierta() {
+  try {
+    if (localStorage.getItem(KEY_APP_ABIERTA)) return;
+    localStorage.setItem(KEY_APP_ABIERTA, '1');
+    track('app_abierta', { plan: 'pro' });
+  } catch {
+    // sin storage — no se puede deduplicar, se omite para no inflar el numerador
+  }
+}
+
+/** sesion_iniciada: una vez por día activo, deduplicado — base de las cohortes D1/D7/D30. */
+function trackSesionDiaria() {
+  try {
+    const hoy = new Date().toISOString().slice(0, 10);
+    if (localStorage.getItem(KEY_SESION_DIA) === hoy) return;
+    localStorage.setItem(KEY_SESION_DIA, hoy);
+    track('sesion_iniciada', { plan: 'pro' });
+  } catch {
+    // sin storage — se omite, no se puede deduplicar
+  }
+}
 
 /** Diferencia la causa real del fallo (50/15 h9) — nunca el mismo mensaje genérico
  * para todo: localStorage puede fallar por cuota llena o por modo privado/bloqueado. */
@@ -312,6 +340,11 @@ export default function Hoy() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 
+  useEffect(() => {
+    trackAppAbierta();
+    trackSesionDiaria();
+  }, []);
+
   if (cargando) {
     return (
       <div className="flex flex-col gap-4" aria-busy="true" aria-live="polite">
@@ -358,6 +391,19 @@ export default function Hoy() {
     if (!resultado.ok) {
       setToast(mensajeDeError());
       return;
+    }
+    // Solo se registra al MARCAR, no al desmarcar — "completado" es algo que ocurrió,
+    // no un estado que se alterna (36-ANALITICA-Y-EVENTOS.md: verbo en pasado real).
+    if (resultado.completados.includes(id)) {
+      track('bloque_completado', { plan: 'pro' });
+      try {
+        if (!localStorage.getItem(KEY_AHA)) {
+          localStorage.setItem(KEY_AHA, '1');
+          track('aha_alcanzado', { plan: 'pro' });
+        }
+      } catch {
+        // sin storage — no se puede marcar como visto, se omite el evento
+      }
     }
     setVersion((v) => v + 1);
     const nuevaRacha = calcularRacha(rutina, hoy);

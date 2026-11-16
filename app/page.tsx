@@ -5,7 +5,9 @@
 // Todo el copy sale de docs/copy/landing.md (marcado, trazado a FICHA-AVATAR.md).
 // Tokens visuales: components/landing/tokens.css, tematizado con FICHA-ARTE.md (Opción B).
 
+import { useEffect } from 'react';
 import { Lock, BellOff, Smartphone, RefreshCcw } from 'lucide-react';
+import { track } from '@/lib/analytics';
 import { LogoMark } from '@/components/ui/Marca';
 import { Hero } from '@/components/landing/Hero';
 import { Problema } from '@/components/landing/Problema';
@@ -25,6 +27,10 @@ const CTA_HREF = '/onboarding';
 const CTA_LABEL = 'Empezar gratis 7 días';
 
 export default function LandingVisualTimeTDAH() {
+  useEffect(() => {
+    track('landing_vista');
+  }, []);
+
   return (
     <div className="min-h-dvh bg-[var(--bg)] text-[var(--text-primary)] [font-family:var(--font-body)]">
       {/* 1. HERO */}

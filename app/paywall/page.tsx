@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, useReducedMotion } from 'motion/react';
 import { X, Lock, ShieldCheck } from 'lucide-react';
 import { leerRespuestas, type Respuestas } from '@/lib/onboarding';
 import { CheckCustom, Hairline } from '@/components/landing/ui';
 import { LogoMark, EcoChip } from '@/components/ui/Marca';
+import { track, leerOrigen } from '@/lib/analytics';
 
 type PlanId = 'anual' | 'mensual';
 
@@ -58,16 +59,37 @@ export default function Paywall() {
   const [respuestas, setRespuestas] = useState<Respuestas | null>(null);
   const [plan, setPlanState] = useState<PlanId>('anual');
   const reducedMotion = useReducedMotion();
+  const ofertaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setRespuestas(leerRespuestas());
     setPlanState(leerPlanGuardado());
+    track('resultado_visto');
+    track('paywall_renderizado');
   }, []);
+
+  // paywall_visto: exposición REAL (>=35% del bloque de precio+CTA en viewport), no el montaje
+  // del componente — 60-OPERACION-DE-CONVERSION.md. Se emite una sola vez por sesión.
+  useEffect(() => {
+    const node = ofertaRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        track('paywall_visto', { plan });
+        observer.disconnect();
+      },
+      { threshold: 0.35 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [plan]);
 
   // h7/flexibilidad: recordar el plan elegido entre visitas (antes siempre
   // reiniciaba en "Anual" aunque el usuario hubiera elegido Mensual antes).
   const setPlan = (p: PlanId) => {
     setPlanState(p);
+    track('paywall_plan_elegido', { plan_elegido: p });
     try {
       localStorage.setItem(KEY_PLAN, p);
     } catch {
@@ -79,7 +101,11 @@ export default function Paywall() {
   const nRespuestas = respuestas ? Object.keys(respuestas).length : 4;
 
   const empezarPrueba = () => {
-    window.location.href = CHECKOUT_URL[plan];
+    track('checkout_iniciado', { plan_elegido: plan });
+    const origen = leerOrigen();
+    const url = new URL(CHECKOUT_URL[plan]);
+    url.searchParams.set('sck', origen);
+    window.location.href = url.toString();
   };
 
   const restaurarCompra = () => {
@@ -230,8 +256,9 @@ export default function Paywall() {
           </Hairline>
         </motion.div>
 
-        {/* Plan cards */}
+        {/* Plan cards — ref de medición: aquí viven precio, renovación y el plan elegible */}
         <motion.div
+          ref={ofertaRef}
           initial={reducedMotion ? { opacity: 0 } : { opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: reducedMotion ? 0 : 0.24 }}

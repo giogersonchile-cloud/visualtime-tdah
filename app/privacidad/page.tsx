@@ -72,7 +72,25 @@ export default function Privacidad() {
                 <strong className="text-[var(--text-primary)]">Vercel</strong> — aloja la
                 app en internet.
               </li>
+              <li>
+                <strong className="text-[var(--text-primary)]">PostHog</strong> — nos ayuda a
+                entender qué pantallas se usan y dónde se traban los clientes, para mejorar la
+                app. Solo si aceptaste las cookies de medición (ver abajo). No le mandamos tu
+                nombre, correo ni ninguna rutina — solo un identificador anónimo y qué botones
+                tocaste.
+              </li>
             </ul>
+          </section>
+
+          <section>
+            <h2 className="text-lg font-bold text-[var(--text-primary)]">
+              Cookies de medición
+            </h2>
+            <p className="mt-2">
+              Al entrar por primera vez te preguntamos si aceptas que midamos cómo usas la app
+              (qué pantallas ves, en qué botón te detienes). Si rechazas, no se carga nada de
+              esto — puedes cambiar tu decisión borrando los datos del sitio en tu navegador.
+            </p>
           </section>
 
           <section>

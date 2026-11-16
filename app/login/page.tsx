@@ -6,6 +6,13 @@ import { motion, useReducedMotion } from 'motion/react';
 import { Lock } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { LogoMark } from '@/components/ui/Marca';
+import { identificarUsuario, leerOrigen } from '@/lib/analytics';
+import type { Session } from '@supabase/supabase-js';
+
+function irAApp(router: ReturnType<typeof useRouter>, session: Session) {
+  identificarUsuario(session.user.id, 'pro', leerOrigen());
+  router.replace('/app');
+}
 
 type Estado = 'idle' | 'enviando' | 'enviado' | 'verificando' | 'error';
 
@@ -37,12 +44,12 @@ export default function Login() {
       // con getSession() si de verdad no quedó ninguna sesión.
       supabase.auth.exchangeCodeForSession(code).then(async ({ data, error }) => {
         if (!error && data.session) {
-          router.replace('/app');
+          irAApp(router, data.session);
           return;
         }
         const { data: sessionData } = await supabase.auth.getSession();
         if (sessionData.session) {
-          router.replace('/app');
+          irAApp(router, sessionData.session);
           return;
         }
         // Limpia el "?code=" de la URL (ya se consumió, reintentarlo con el mismo
@@ -54,10 +61,10 @@ export default function Login() {
       return;
     }
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) router.replace('/app');
+      if (data.session) irAApp(router, data.session);
     });
     const { data: sub } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) router.replace('/app');
+      if (session) irAApp(router, session);
     });
     return () => sub.subscription.unsubscribe();
   }, [router]);

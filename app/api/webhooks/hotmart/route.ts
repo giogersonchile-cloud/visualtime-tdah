@@ -4,6 +4,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { verifyHotmart, isFresh } from '@/lib/hotmart-verify';
 import { crearClienteSupabaseAdmin } from '@/lib/supabase/admin';
+import { trackServidor } from '@/lib/posthog-server';
 
 type EventoHotmart = {
   id?: string;
@@ -12,7 +13,8 @@ type EventoHotmart = {
   creation_date?: number;
   data?: {
     buyer?: { email?: string; name?: string };
-    purchase?: { transaction?: string; status?: string };
+    purchase?: { transaction?: string; status?: string; price?: { value?: number }; sckId?: string };
+    subscription?: { plan?: { name?: string } };
   };
 };
 
@@ -81,7 +83,26 @@ export async function POST(req: NextRequest) {
     switch (body.event) {
       case 'PURCHASE_APPROVED':
       case 'PURCHASE_COMPLETE': {
-        await otorgarAcceso(admin, email, body.data?.buyer?.name);
+        const { userId, esNuevo } = await otorgarAcceso(admin, email, body.data?.buyer?.name);
+        // 36-ANALITICA-Y-EVENTOS.md: trial_iniciado y primer_cobro_confirmado se capturan
+        // SERVER-SIDE (no dependen de que el navegador del comprador tenga el SDK activo).
+        // Un usuario NUEVO = empieza su prueba; una APROBACIÓN sobre un usuario YA existente =
+        // casi siempre el cobro real tras los 7 días (Hotmart no distingue el evento, lo
+        // distinguimos nosotros por si el comprador ya tenía cuenta).
+        const sck = body.data?.purchase?.sckId;
+        if (esNuevo) {
+          await trackServidor(userId, 'trial_iniciado', {
+            plan: body.data?.subscription?.plan?.name ?? 'desconocido',
+            capturado: 'server',
+            ...(sck ? { source: sck } : {}),
+          });
+        } else {
+          await trackServidor(userId, 'primer_cobro_confirmado', {
+            plan: body.data?.subscription?.plan?.name ?? 'desconocido',
+            monto: body.data?.purchase?.price?.value ?? null,
+            capturado: 'server',
+          });
+        }
         break;
       }
       case 'PURCHASE_REFUNDED':
@@ -122,32 +143,38 @@ async function buscarUsuarioPorEmail(admin: ReturnType<typeof crearClienteSupaba
   }
 }
 
-async function otorgarAcceso(admin: ReturnType<typeof crearClienteSupabaseAdmin>, email: string, nombre?: string) {
+async function otorgarAcceso(
+  admin: ReturnType<typeof crearClienteSupabaseAdmin>,
+  email: string,
+  nombre?: string,
+): Promise<{ userId: string; esNuevo: boolean }> {
   const existente = await buscarUsuarioPorEmail(admin, email);
   const appMetadata = { plan_status: 'active', first_paid_at: new Date().toISOString() };
   if (existente) {
     const { error } = await admin.auth.admin.updateUserById(existente.id, { app_metadata: appMetadata });
     if (error) throw new Error(`updateUserById falló: ${error.message}`);
-  } else {
-    const { error } = await admin.auth.admin.createUser({
-      email,
-      email_confirm: true,
-      user_metadata: nombre ? { nombre } : undefined,
+    return { userId: existente.id, esNuevo: false };
+  }
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    email_confirm: true,
+    user_metadata: nombre ? { nombre } : undefined,
+    app_metadata: appMetadata,
+  });
+  if (error) {
+    // Carrera de milisegundos: Hotmart puede mandar dos eventos casi a la vez (p.ej.
+    // PURCHASE_APPROVED y PURCHASE_COMPLETE) y ambos intentan crear el mismo usuario.
+    // Si ya existe (lo creó el otro evento mientras este corría), se actualiza en vez
+    // de fallar — solo se relanza el error si de verdad no hay usuario con ese correo.
+    const creadoPorOtroEvento = await buscarUsuarioPorEmail(admin, email);
+    if (!creadoPorOtroEvento) throw new Error(`createUser falló: ${error.message}`);
+    const { error: errorUpdate } = await admin.auth.admin.updateUserById(creadoPorOtroEvento.id, {
       app_metadata: appMetadata,
     });
-    if (error) {
-      // Carrera de milisegundos: Hotmart puede mandar dos eventos casi a la vez (p.ej.
-      // PURCHASE_APPROVED y PURCHASE_COMPLETE) y ambos intentan crear el mismo usuario.
-      // Si ya existe (lo creó el otro evento mientras este corría), se actualiza en vez
-      // de fallar — solo se relanza el error si de verdad no hay usuario con ese correo.
-      const creadoPorOtroEvento = await buscarUsuarioPorEmail(admin, email);
-      if (!creadoPorOtroEvento) throw new Error(`createUser falló: ${error.message}`);
-      const { error: errorUpdate } = await admin.auth.admin.updateUserById(creadoPorOtroEvento.id, {
-        app_metadata: appMetadata,
-      });
-      if (errorUpdate) throw new Error(`updateUserById (tras carrera) falló: ${errorUpdate.message}`);
-    }
+    if (errorUpdate) throw new Error(`updateUserById (tras carrera) falló: ${errorUpdate.message}`);
+    return { userId: creadoPorOtroEvento.id, esNuevo: true };
   }
+  return { userId: data.user.id, esNuevo: true };
 }
 
 async function revocarAcceso(
@@ -172,4 +199,12 @@ async function marcarCancelado(admin: ReturnType<typeof crearClienteSupabaseAdmi
     app_metadata: { plan_status: 'active', cancel_at_period_end: true },
   });
   if (error) throw new Error(`updateUserById falló: ${error.message}`);
+
+  const metaExistente = existente.app_metadata as { first_paid_at?: string };
+  const diasDeAlta = metaExistente.first_paid_at
+    ? (Date.now() - new Date(metaExistente.first_paid_at).getTime()) / 86_400_000
+    : null;
+  if (diasDeAlta !== null && diasDeAlta < 7) {
+    await trackServidor(existente.id, 'trial_cancelado', { dia_trial: Math.floor(diasDeAlta), capturado: 'server' });
+  }
 }

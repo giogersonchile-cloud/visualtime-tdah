@@ -9,6 +9,7 @@ import { rutinaDesdeRespuesta, guardarRutina } from '@/lib/rutina';
 import { Hairline } from '@/components/landing/ui';
 import { LogoMark, EcoChip } from '@/components/ui/Marca';
 import { Sparkles } from 'lucide-react';
+import { track } from '@/lib/analytics';
 
 const PAUSA_SELECCION_MS = 320;
 const DURACION_LOADING_MS = 5200;
@@ -351,14 +352,20 @@ export default function Onboarding() {
   const [confirmarSalida, setConfirmarSalida] = useState(false);
   const respuestas = useRef<Partial<Respuestas>>({});
 
+  useEffect(() => {
+    track('onboarding_iniciado');
+  }, []);
+
   const responder = (valor: string) => {
     const id = PREGUNTAS[indice].id;
     respuestas.current = { ...respuestas.current, [id]: valor };
+    track('onboarding_paso_completado', { paso: indice + 1, total_pasos: PREGUNTAS.length });
     if (indice + 1 < PREGUNTAS.length) {
       setIndice(indice + 1);
     } else {
       guardarRespuestas(respuestas.current as Respuestas);
       guardarRutina(rutinaDesdeRespuesta(respuestas.current.p3));
+      track('onboarding_completado', { pasos_saltados: 0 });
       setPaso('loading');
     }
   };

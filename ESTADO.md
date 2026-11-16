@@ -1,5 +1,42 @@
 # ESTADO — VisualTime TDAH
-Última actualización: 2026-11-14 | Sesión actual: 8
+Última actualización: 2026-11-15 | Sesión actual: 9 (en curso)
+
+⏳ EN PROGRESO — Instrumentación de analítica con PostHog (36-ANALITICA-Y-EVENTOS.md +
+60-OPERACION-DE-CONVERSION.md), 2026-11-15. Auditoría confirmó: no existía NINGUNA analítica
+(ni PostHog, ni GA4, ni nada) — el embudo se medía a ciegas. Se creó la cuenta/proyecto
+"VisualTime TDAH" en PostHog (región US, host `us.i.posthog.com`).
+Código ya escrito (sin commitear todavía, build local corriendo para verificar):
+- `lib/analytics.ts` — wrapper único cliente (track/identificarUsuario/resetAnalytics), QA
+  (`?qa=1`), sesión comercial de 30 min, atribución de origen (primer toque gana), y
+  consentimiento (no inicializa PostHog sin aceptar cookies).
+- `lib/posthog-server.ts` — cliente server-side para los eventos de pago (nunca dependen del
+  navegador del comprador).
+- `components/ui/CookieConsent.tsx` — banner Aceptar/Rechazar del MISMO tamaño (47-LEGAL),
+  montado en `app/layout.tsx`.
+- Instrumentado el embudo completo SIN colapsar etapas: `landing_vista` (app/page.tsx) →
+  `onboarding_iniciado`/`onboarding_paso_completado`/`onboarding_completado` (app/onboarding) →
+  `resultado_visto`/`paywall_renderizado`/`paywall_visto` (IntersectionObserver real, no el
+  montaje) /`paywall_plan_elegido`/`checkout_iniciado` (app/paywall, con `sck` agregado a la URL
+  de Hotmart) → `trial_iniciado`/`primer_cobro_confirmado`/`trial_cancelado` SERVER-SIDE desde
+  el webhook (`app/api/webhooks/hotmart/route.ts`, distinguiendo usuario nuevo=trial vs
+  usuario existente=cobro real) → `app_abierta`/`sesion_iniciada`/`aha_alcanzado`/
+  `bloque_completado` (app/app/page.tsx, la pantalla "Hoy"). `identificarUsuario()` en el login
+  (los 3 puntos de entrada: canje de código, sesión ya activa, listener), `resetAnalytics()` en
+  logout (perfil).
+- `app/privacidad/page.tsx` actualizada: se agregó PostHog a la lista de terceros y la sección
+  de cookies de medición — la política anterior decía explícitamente "no hay analítica de
+  terceros", ya no es cierto, se corrigió para seguir siendo honesta.
+- Variables nuevas: `NEXT_PUBLIC_POSTHOG_KEY`, `NEXT_PUBLIC_POSTHOG_HOST`, `POSTHOG_KEY`,
+  `POSTHOG_HOST` — ya en `.env.local`, TODAVÍA NO en Vercel.
+PENDIENTE para continuar (en este orden): (1) confirmar que el build/tsc en background terminó
+sin errores, (2) probar el embudo completo en local y confirmar que PostHog recibe los eventos,
+(3) pedirle al usuario que agregue las 4 variables en Vercel, (4) publicar con un commit
+normal (NUNCA commit vacío esta vez — confirmar `git status` antes), (5) probar en producción,
+(6) actualizar este checkpoint a ✅ con la confirmación.
+Nota para el futuro: el campo `sck` que el webhook intenta leer de
+`body.data.purchase.sckId` es un supuesto razonable pero SIN VERIFICAR contra un payload real
+de Hotmart — si al revisar `webhook_log`/eventos reales el campo no trae nada, buscar el nombre
+correcto en la documentación de Hotmart o en un payload de prueba real.
 
 ✅ CHECKPOINT — Recordatorio de trial (día 5-7) IMPLEMENTADO y CONFIRMADO funcionando en vivo
 (2026-11-14). Cumple la promesa que el paywall ya hacía ("te avisamos antes del día 7, siempre")

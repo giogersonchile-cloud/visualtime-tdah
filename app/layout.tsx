@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Gantari, Atkinson_Hyperlegible } from "next/font/google";
 import "./globals.css";
+import { CookieConsent } from "@/components/ui/CookieConsent";
 
 const gantari = Gantari({
   variable: "--font-gantari",
@@ -26,7 +27,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="es"
       className={`${gantari.variable} ${atkinson.variable} h-full antialiased`}
     >
-      <body className="min-h-dvh flex flex-col">{children}</body>
+      <body className="min-h-dvh flex flex-col">
+        {children}
+        <CookieConsent />
+      </body>
     </html>
   );
 }
