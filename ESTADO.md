@@ -305,7 +305,18 @@ Planificador visual diario (línea de tiempo vertical de 24h), minimalista, 100%
 - Pendiente de madurez de cobros (18-VENTA-HOTMART.md, no bloquea el primer lanzamiento): ledger económico completo (`payment_transactions`) y reconciliación semanal de suscripciones contra Hotmart — por ahora solo existe el dedupe técnico (`processed_events`/`webhook_log`)
 
 ## Problemas conocidos ⚠️
-- Las 4 pantallas que decidían el dinero (landing, onboarding, paywall, pantalla principal) pasan la auditoría técnica automática pero el revisor-visual las marca NO LISTA por craft visual (12-16/20, bajo el umbral de 16/20) — en todos los casos la causa de fondo es la misma: falta un dispositivo visual ownable (duotone/textura/ilustración de marca) lo bastante fuerte para diferenciarse de cualquier app genérica del nicho, y en la pantalla principal además faltan gestos/atajos (heurística de eficiencia h7). Se corrigieron 2-3 rondas de defectos reales en cada pantalla (ver commits de Sesión 3/4/5) — lo que queda es craft de identidad visual, no funcionalidad rota. Decisión del agente: no seguir iterando a ciegas sesión tras sesión — se agrupan las 4 como un pendiente de pulido visual único, a retomar con criterio nuevo (posiblemente un dispositivo ownable diseñado una sola vez y aplicado a las 4).
+- veredicto landing / veredicto onboarding — NO LISTA, DECISIÓN TOMADA Y CERRADA (2026-11-14, ver
+  checkpoint "craft visual CERRADO para esta etapa" arriba): las 4 pantallas que deciden el dinero
+  (landing, onboarding, paywall, pantalla principal) pasan la auditoría técnica automática pero el
+  revisor-visual las marca NO LISTA por craft visual (12-16/20, bajo el umbral de 16/20) — en
+  todos los casos la causa de fondo es la misma: falta un dispositivo visual ownable
+  (duotone/textura/ilustración de marca) lo bastante fuerte para diferenciarse de cualquier app
+  genérica del nicho, y en la pantalla principal además faltan gestos/atajos (heurística de
+  eficiencia h7). Se corrigieron 2-3 rondas de defectos reales en cada pantalla (ver commits de
+  Sesión 3/4/5) — lo que queda es craft de identidad visual, no funcionalidad rota. El USUARIO
+  eligió explícitamente aceptar este nivel y lanzar, sin relanzar el revisor-visual — NO
+  re-litigar esto ni bloquear el lanzamiento por este punto. Se retoma solo si el usuario lo pide
+  de nuevo, posiblemente con un dispositivo ownable diseñado una sola vez y aplicado a las 4.
 - Botón "Continuar con Google" del login: YA CONECTADO en código (signInWithOAuth, reutiliza el
   canje PKCE existente) — falta que el usuario active el proveedor de Google en Supabase
   (Authentication → Providers → Google) con credenciales de su propia cuenta de Google Cloud; sin
