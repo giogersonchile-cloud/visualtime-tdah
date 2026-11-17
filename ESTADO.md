@@ -17,14 +17,19 @@ paywall_renderizado/paywall_visto → checkout_iniciado, los 13 eventos aparecie
 - Embudo completo instrumentado sin colapsar etapas (ver código en app/page.tsx, app/onboarding,
   app/paywall, app/api/webhooks/hotmart/route.ts, app/app/page.tsx, app/login, app/app/perfil).
 - `app/privacidad/page.tsx` actualizada (PostHog + cookies de medición) para seguir siendo honesta.
-PENDIENTE PARA MAÑANA (lo único que falta — todo lo demás ya está hecho y verificado):
-1. El usuario debe agregar 4 variables en Vercel (Production/Preview/Development):
-   `NEXT_PUBLIC_POSTHOG_KEY` = `phc_m9jsk2xPETLTZMk9d6fMX7WxG6igRdcFAfwK7sWa7WQA` (Config)
-   `NEXT_PUBLIC_POSTHOG_HOST` = `https://us.i.posthog.com` (Config)
-   `POSTHOG_KEY` = `phc_m9jsk2xPETLTZMk9d6fMX7WxG6igRdcFAfwK7sWa7WQA` (Secret)
-   `POSTHOG_HOST` = `https://us.i.posthog.com` (Secret)
-2. Tras guardarlas, Vercel republica solo (o forzar con un commit si no lo hace) — recordar la
-   lección de Sentry: verificar con una prueba REAL en producción, no solo que el deploy diga Ready.
+PENDIENTE PARA LA PRÓXIMA SESIÓN (todo lo demás ya está hecho y verificado):
+1. Las 4 variables YA se agregaron en Vercel con sus valores correctos, PERO por defecto Vercel
+   las guardó marcadas SOLO para "Production" (no Preview/Development) — hay que editar cada una
+   y marcar los 3 ambientes. Estado al cortar la sesión:
+   - `POSTHOG_KEY` → YA corregida, dice "All Environments" ✓
+   - `POSTHOG_HOST` → el usuario estaba editándola (el panel de edición quedó abierto, sin
+     guardar) — falta bajar hasta "Environments", marcar Preview+Development, y Save.
+   - `NEXT_PUBLIC_POSTHOG_KEY` → todavía dice solo "Production", falta corregirla.
+   - `NEXT_PUBLIC_POSTHOG_HOST` → todavía dice solo "Production", falta corregirla.
+   Primer paso al retomar: terminar estas 3 (mismo procedimiento: clic en la variable → bajar a
+   "Environments" → clic en el recuadro "Production" → marcar Preview y Development → Save).
+2. Tras guardarlas todas, Vercel republica solo (o forzar con un commit si no lo hace) — recordar
+   la lección de Sentry: verificar con una prueba REAL en producción, no solo que el deploy diga Ready.
 3. Probar el embudo en `https://www.visualtimetdah.com` y confirmar en PostHog que los eventos
    de producción llegan (buscar `library: web` con URL de producción, no `localhost`).
 4. Actualizar este checkpoint a ✅ con la confirmación de producción.
