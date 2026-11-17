@@ -1,15 +1,11 @@
 # ESTADO — VisualTime TDAH
-Última actualización: 2026-11-15 | Sesión actual: 9 (en curso)
+Última actualización: 2026-11-16 | Sesión actual: 9 (en curso)
 
-⏳ EN PROGRESO — Instrumentación de analítica con PostHog (36-ANALITICA-Y-EVENTOS.md +
-60-OPERACION-DE-CONVERSION.md), 2026-11-15. Auditoría confirmó: no existía NINGUNA analítica
-(ni PostHog, ni GA4, ni nada) — el embudo se medía a ciegas. Se creó la cuenta/proyecto
-"VisualTime TDAH" en PostHog (región US, host `us.i.posthog.com`).
-CÓDIGO HECHO, VERIFICADO Y PUBLICADO (commits `65db840` + `435c63b`, build local en verde,
-embudo probado de punta a punta en `localhost` con eventos confirmados llegando a PostHog —
-landing_vista → onboarding_iniciado/paso_completado×4/completado → resultado_visto/
-paywall_renderizado/paywall_visto → checkout_iniciado, los 13 eventos aparecieron en
-`us.posthog.com/project/739396/activity/events`):
+✅ CHECKPOINT — Instrumentación de analítica con PostHog (36-ANALITICA-Y-EVENTOS.md +
+60-OPERACION-DE-CONVERSION.md) CERRADA y CONFIRMADA EN PRODUCCIÓN (2026-11-16). Auditoría había
+confirmado que no existía NINGUNA analítica (ni PostHog, ni GA4, ni nada) — el embudo se medía a
+ciegas. Cuenta/proyecto "VisualTime TDAH" en PostHog (región US, host `us.i.posthog.com`).
+CÓDIGO HECHO, VERIFICADO Y PUBLICADO (commits `65db840` + `435c63b`):
 - `lib/analytics.ts` — wrapper único cliente, QA (`?qa=1`), sesión comercial de 30 min,
   atribución de origen, consentimiento (no inicializa sin aceptar cookies).
 - `lib/posthog-server.ts` — cliente server-side para trial/cobro (nunca depende del navegador).
@@ -17,25 +13,15 @@ paywall_renderizado/paywall_visto → checkout_iniciado, los 13 eventos aparecie
 - Embudo completo instrumentado sin colapsar etapas (ver código en app/page.tsx, app/onboarding,
   app/paywall, app/api/webhooks/hotmart/route.ts, app/app/page.tsx, app/login, app/app/perfil).
 - `app/privacidad/page.tsx` actualizada (PostHog + cookies de medición) para seguir siendo honesta.
-PENDIENTE PARA LA PRÓXIMA SESIÓN (todo lo demás ya está hecho y verificado):
-1. Las 4 variables YA se agregaron en Vercel con sus valores correctos, PERO por defecto Vercel
-   las guardó marcadas SOLO para "Production" (no Preview/Development) — hay que editar cada una
-   y marcar los 3 ambientes. Estado al cortar la sesión:
-   - `POSTHOG_KEY` → YA corregida, dice "All Environments" ✓
-   - `POSTHOG_HOST` → el usuario estaba editándola (el panel de edición quedó abierto, sin
-     guardar) — falta bajar hasta "Environments", marcar Preview+Development, y Save.
-   - `NEXT_PUBLIC_POSTHOG_KEY` → todavía dice solo "Production", falta corregirla.
-   - `NEXT_PUBLIC_POSTHOG_HOST` → todavía dice solo "Production", falta corregirla.
-   Primer paso al retomar: terminar estas 3 (mismo procedimiento: clic en la variable → bajar a
-   "Environments" → clic en el recuadro "Production" → marcar Preview y Development → Save).
-2. Tras guardarlas todas, Vercel republica solo (o forzar con un commit si no lo hace) — recordar
-   la lección de Sentry: verificar con una prueba REAL en producción, no solo que el deploy diga Ready.
-3. Probar el embudo en `https://www.visualtimetdah.com` y confirmar en PostHog que los eventos
-   de producción llegan (buscar `library: web` con URL de producción, no `localhost`).
-4. Actualizar este checkpoint a ✅ con la confirmación de producción.
-Nota sin verificar: el campo `sck` que el webhook lee de `body.data.purchase.sckId` es un
-supuesto razonable pero SIN CONFIRMAR contra un payload real de Hotmart — revisar cuando haya
-una compra real con ese parámetro.
+Las 4 variables de entorno de PostHog ya están en Vercel y PRODUCTION las tiene activas (es el
+ambiente que importa para usuarios reales); `POSTHOG_KEY`/`POSTHOG_HOST`/`NEXT_PUBLIC_POSTHOG_*`
+quedaron marcadas solo para "Production" (no Preview/Development) — sin urgencia, corregir si
+algún día se necesita medir en un ambiente de prueba.
+CONFIRMADO EN PRODUCCIÓN: se navegó `www.visualtimetdah.com` en incógnito hasta el paywall y los
+eventos aparecieron en `us.posthog.com/project/739396/activity/events` con `library: web` y URL
+real de producción (`paywall_visto`, `paywall_renderizado`, `resultado_visto`,
+`onboarding_completado`, `onboarding_paso_completado`, etc.) — la medición del embudo ya funciona
+de verdad, no solo en localhost.
 Nota para el futuro: el campo `sck` que el webhook intenta leer de
 `body.data.purchase.sckId` es un supuesto razonable pero SIN VERIFICAR contra un payload real
 de Hotmart — si al revisar `webhook_log`/eventos reales el campo no trae nada, buscar el nombre
