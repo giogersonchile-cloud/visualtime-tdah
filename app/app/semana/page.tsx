@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Check } from 'lucide-react';
-import { obtenerRutina, bloquesDelDia, estaCompletado, type Rutina } from '@/lib/rutina';
+import { obtenerRutina, bloquesDelDia, estaCompletado, alternarCompletado, type Rutina } from '@/lib/rutina';
 
 const DIAS_CORTOS = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
@@ -18,11 +18,20 @@ export default function Semana() {
   const [rutina, setRutina] = useState<Rutina | null>(null);
   const [cargando, setCargando] = useState(true);
   const [offsetSemana, setOffsetSemana] = useState(0);
+  const [version, setVersion] = useState(0);
 
   useEffect(() => {
     setRutina(obtenerRutina());
     setCargando(false);
   }, []);
+
+  // Encontrado por el usuario: los círculos se veían como checkboxes pero no hacían
+  // nada al tocarlos — regla 11 de CLAUDE.md, nunca dejar un elemento con apariencia
+  // interactiva sin respuesta. Reutiliza la misma función que la pantalla "Hoy".
+  const marcar = (dia: Date, bloqueId: string) => {
+    alternarCompletado(dia, bloqueId);
+    setVersion((v) => v + 1);
+  };
 
   if (cargando) {
     return <div className="h-40 animate-pulse rounded-[var(--radius-card)] bg-[var(--surface-2)]" aria-busy="true" />;
@@ -87,21 +96,28 @@ export default function Semana() {
               {bloques.length === 0 ? (
                 <p className="mt-1 text-[13px] text-[var(--text-secondary)]">Sin bloques</p>
               ) : (
-                <ul className="mt-2 flex flex-col gap-1.5">
+                <ul className="mt-2 flex flex-col gap-0.5">
                   {bloques.map((b) => {
                     const hecho = estaCompletado(d, b.id);
                     return (
-                      <li key={b.id} className="flex items-center gap-2 text-[13px]">
-                        <span
-                          className={`flex size-4 shrink-0 items-center justify-center rounded-full ${
-                            hecho ? 'bg-[var(--accent)]' : 'border border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)]'
-                          }`}
+                      <li key={b.id}>
+                        <button
+                          type="button"
+                          onClick={() => marcar(d, b.id)}
+                          aria-pressed={hecho}
+                          className="-mx-2 flex min-h-11 w-[calc(100%+16px)] items-center gap-2 rounded-[var(--radius-button)] px-2 text-left text-[13px] active:bg-[var(--chip-bg)]"
                         >
-                          {hecho && <Check size={9} strokeWidth={3.5} color="var(--surface)" aria-hidden="true" />}
-                        </span>
-                        <span className={hecho ? 'text-[var(--text-secondary)] line-through' : 'text-[var(--text-primary)]'}>
-                          {b.hora} · {b.titulo}
-                        </span>
+                          <span
+                            className={`flex size-4 shrink-0 items-center justify-center rounded-full ${
+                              hecho ? 'bg-[var(--accent)]' : 'border border-[color-mix(in_oklab,var(--text-tertiary)_40%,transparent)]'
+                            }`}
+                          >
+                            {hecho && <Check size={9} strokeWidth={3.5} color="var(--surface)" aria-hidden="true" />}
+                          </span>
+                          <span className={hecho ? 'text-[var(--text-secondary)] line-through' : 'text-[var(--text-primary)]'}>
+                            {b.hora} · {b.titulo}
+                          </span>
+                        </button>
                       </li>
                     );
                   })}
