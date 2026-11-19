@@ -37,7 +37,7 @@ export default function LandingVisualTimeTDAH() {
       <Hero
         appName="VisualTime TDAH"
         logo={<LogoMark size={24} />}
-        loginHref="/entrar"
+        loginHref="/login"
         h1Marked="La agenda que te [acento]regala[/acento] repetir tus rutinas"
         subtitleMarked="Tu día en una [b]línea de tiempo[/b] clara, sin pagar de más."
         ctaLabel={CTA_LABEL}
