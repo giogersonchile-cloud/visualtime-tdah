@@ -69,7 +69,7 @@ Big Idea / mecanismo bautizado: **Rutina Regalada** — tus bloques recurrentes 
 
 1. "¿Me van a cobrar después de que me acostumbre?" → "No. Te avisamos antes del día 7, y puedes cancelar en un toque antes del cobro."
 2. "¿Para qué pagar si el calendario del teléfono es gratis?" → "El calendario no motiva ni regala tus rutinas. Nosotros sí, desde el plan más básico."
-3. "¿Las alarmas suenan de verdad?" → "Sí — notificaciones nativas del teléfono, sin depender de que la app esté abierta."
+3. "¿Me va a avisar cuando toque algo?" → "Hoy no mandamos notificaciones automáticas al teléfono. Tu línea de tiempo es tan simple que revisarla toma segundos — te la recomendamos como atajo en tu pantalla de inicio." (corregido 2026-11-19: la app prometía "alarmas nativas" sin tenerlas construidas — hallazgo del usuario probando en su teléfono)
 4. "¿Pierdo todo si cambio de teléfono?" → "Hoy el respaldo es manual; lo decimos honesto, sin prometer de más."
 5. "¿Voy a poder cancelar fácil?" → "Sí, desde la app, sin llamadas ni formularios."
 

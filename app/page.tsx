@@ -127,7 +127,7 @@ export default function LandingVisualTimeTDAH() {
           features: [
             'Línea de tiempo visual de tu día',
             'Rutinas recurrentes incluidas, sin límite',
-            'Alarmas nativas de tu teléfono',
+            'Tus rutinas viven en tu teléfono, no se comparten',
             'Racha, medallas y % de progreso',
           ],
         }}
@@ -139,7 +139,7 @@ export default function LandingVisualTimeTDAH() {
           features: [
             'Línea de tiempo visual de tu día',
             'Rutinas recurrentes incluidas, sin límite',
-            'Alarmas nativas de tu teléfono',
+            'Tus rutinas viven en tu teléfono, no se comparten',
             'Cancelas cuando quieras',
           ],
         }}
@@ -166,9 +166,9 @@ export default function LandingVisualTimeTDAH() {
               'El calendario no motiva ni regala tus rutinas. Nosotros sí, [b]desde el plan más básico[/b].',
           },
           {
-            pregunta: '¿Las alarmas suenan de verdad?',
+            pregunta: '¿Me va a avisar cuando toque algo?',
             respuestaMarked:
-              'Sí — notificaciones nativas de tu teléfono, sin depender de que la app esté abierta.',
+              'Hoy no mandamos notificaciones automáticas al teléfono. Tu línea de tiempo es tan simple que revisarla toma segundos — [b]te la recomendamos como atajo en tu pantalla de inicio[/b].',
           },
           {
             pregunta: '¿Pierdo todo si cambio de teléfono?',

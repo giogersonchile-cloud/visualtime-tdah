@@ -192,7 +192,7 @@ export default function Paywall() {
               {[
                 'Línea de tiempo visual de tu día',
                 'Rutinas recurrentes incluidas, sin límite',
-                'Alarmas nativas de tu teléfono',
+                'Tus rutinas viven en tu teléfono, no se comparten',
               ].map((f) => (
                 <div key={f} className="flex items-center gap-3">
                   <CheckCustom />
