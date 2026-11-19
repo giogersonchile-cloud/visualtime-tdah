@@ -6,7 +6,7 @@ export default function Privacidad() {
           Política de Privacidad
         </h1>
         <p className="mt-2 text-sm text-[var(--text-secondary)]">
-          Última actualización: 14 de noviembre de 2026
+          Última actualización: 19 de noviembre de 2026
         </p>
 
         <div className="mt-8 flex flex-col gap-6 text-base leading-relaxed text-[var(--text-secondary)]">
@@ -36,8 +36,18 @@ export default function Privacidad() {
               <strong className="text-[var(--text-primary)]">
                 directamente en tu teléfono
               </strong>
-              , no en nuestros servidores. No tenemos acceso a tus tareas,
-              horarios ni notas personales.
+              . No guardamos qué marcaste como hecho ni ninguna nota personal.
+            </p>
+            <p className="mt-2">
+              <strong className="text-[var(--text-primary)]">
+                Si activas las notificaciones/alarmas
+              </strong>{" "}
+              (en Perfil → Notificaciones), guardamos en el servidor solo la
+              hora, el título y los días de cada bloque de tu rutina —
+              lo mínimo necesario para poder avisarte aunque tengas la app
+              cerrada. Esto nunca incluye si la tarea ya la hiciste o no, y
+              si desactivas las notificaciones, se elimina. Si no activas
+              esta función, no se guarda nada de tu horario en el servidor.
             </p>
             <p className="mt-2">
               Para que puedas entrar a tu cuenta guardamos, en un servicio

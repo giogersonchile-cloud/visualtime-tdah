@@ -20,6 +20,7 @@ import {
 } from '@/lib/rutina';
 import { EcoChip } from '@/components/ui/Marca';
 import { track } from '@/lib/analytics';
+import { sincronizarRutinaServidor } from '@/lib/push';
 
 const KEY_APP_ABIERTA = 'vt_app_abierta_alguna_vez';
 const KEY_AHA = 'vt_aha_alcanzado';
@@ -335,8 +336,13 @@ export default function Hoy() {
   const hoy = new Date();
 
   useEffect(() => {
-    setRutina(obtenerRutina());
+    const r = obtenerRutina();
+    setRutina(r);
     setCargando(false);
+    // Mantiene al día el espejo mínimo del horario en el servidor (solo si el usuario activó
+    // las alarmas — sincronizarRutinaServidor no hace nada si no). Sin esto, agregar/editar/
+    // borrar un bloque no actualizaría cuándo te avisa.
+    if (r) sincronizarRutinaServidor(r);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [version]);
 

@@ -1,7 +1,9 @@
-// Modelo de datos de la app interna — 100% local (localStorage), sin backend (ESTADO.md:
-// "Stack: Next.js + almacenamiento local... sin Supabase para datos en el MVP").
+// Modelo de datos de la app interna — 100% local (localStorage). Los "completados" nunca salen
+// del teléfono; desde 2026-11-19 solo un espejo MÍNIMO del horario (hora/título/días, ver
+// lib/push.ts + supabase/schema.sql) se sincroniza al servidor para poder avisar con el teléfono
+// cerrado — decisión explícita del usuario, documentada en ESTADO.md.
 // Loop de retención (24-GAMIFICACION / Regla de Oro 6):
-//   GATILLO: la hora del bloque (alarma nativa, fuera de alcance del MVP web) o abrir la app.
+//   GATILLO: la hora del bloque (alarma push real, ver lib/push.ts) o abrir la app.
 //   ACCIÓN:  marcar un bloque de la rutina como hecho (1 tap).
 //   RECOMPENSA: el check visual + el avance del anillo de hoy + el insight del patrón.
 //   INVERSIÓN: cada bloque marcado alimenta la racha y el insight de mañana — si se borra
@@ -42,7 +44,7 @@ export const PLANTILLAS: Record<string, Rutina> = {
   'Rutina de estudio o trabajo': {
     nombre: 'Rutina de estudio o trabajo',
     bloques: [
-      { id: 'b1', hora: '09:00', titulo: 'Bloque de foco (sin notificaciones)', duracionMin: 50, dias: DIAS_HABILES },
+      { id: 'b1', hora: '09:00', titulo: 'Bloque de foco', duracionMin: 50, dias: DIAS_HABILES },
       { id: 'b2', hora: '11:00', titulo: 'Revisar pendientes del día', duracionMin: 15, dias: DIAS_HABILES },
       { id: 'b3', hora: '15:00', titulo: 'Segundo bloque de foco', duracionMin: 50, dias: DIAS_HABILES },
     ],

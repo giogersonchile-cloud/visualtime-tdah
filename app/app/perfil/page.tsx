@@ -1,15 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Shield, FileText, XCircle, LogOut, ChevronRight } from 'lucide-react';
+import { Bell, Shield, FileText, XCircle, LogOut, ChevronRight } from 'lucide-react';
 import { crearClienteSupabase } from '@/lib/supabase/client';
 import { resetAnalytics } from '@/lib/analytics';
 
-// "Notificaciones y alarmas" se quitó de aquí: no existe ninguna función real detrás —
-// la app no manda notificaciones nativas (ver corrección del 2026-11-19 en la landing/paywall,
-// que prometían esto sin tenerlo construido). Un botón que no hace nada rompe la confianza
-// (regla 11 de CLAUDE.md) — mejor no mostrarlo que dejarlo muerto.
+// "Notificaciones y alarmas" ahora SÍ tiene una función real detrás (ver app/app/notificaciones
+// y lib/push.ts) — se había quitado el 2026-11-19 por ser un botón muerto; se restaura con
+// las alarmas de verdad construidas esa misma sesión.
 const OPCIONES = [
+  { icon: Bell, label: 'Notificaciones y alarmas', href: '/app/notificaciones' },
   { icon: Shield, label: 'Privacidad y datos', href: '/privacidad' },
   { icon: FileText, label: 'Términos y condiciones', href: '/terminos' },
   { icon: XCircle, label: 'Cómo cancelar tu suscripción', href: '/cancelar' },
