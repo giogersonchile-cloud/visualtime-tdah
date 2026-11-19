@@ -11,6 +11,21 @@
    publicada. Actualización menor sin cambios de API, verificado con tsc + build + render en
    navegador, todo en verde. Commits `c459f04` (link roto) y `a6d855c` (Next.js).
 
+✅ CHECKPOINT — Promesa falsa de "alarmas nativas" corregida (2026-11-19). El usuario encontró
+que el botón "Notificaciones y alarmas" del perfil no hacía nada (`href="#"`) — al investigar por
+qué, se confirmó que la app NUNCA implementó alarmas/notificaciones nativas (está documentado en
+`lib/rutina.ts` como "fuera de alcance del MVP web"), pero la landing, el paywall y el FAQ SÍ lo
+prometían explícitamente como si funcionara ("Sí — notificaciones nativas de tu teléfono, sin
+depender de que la app esté abierta"). Se le preguntó al usuario si quería construirlas de verdad
+o corregir el texto — ELIGIÓ corregir el texto ahora (opción honesta y rápida).
+Corregido: landing + paywall ("Alarmas nativas de tu teléfono" → "Tus rutinas viven en tu
+teléfono, no se comparten"), FAQ reescrito con honestidad, `docs/copy/landing.md` actualizado, y
+el botón muerto del perfil ELIMINADO (regla 11 de CLAUDE.md: no dejar un elemento interactivo sin
+respuesta — mejor no mostrarlo que dejarlo roto). Commit `85fcbb4`.
+Pendiente REAL si el usuario algún día quiere construirlas de verdad: notificaciones nativas en
+una PWA tienen limitaciones serias en iPhone/Safari — sería una tarea de varias horas (Web Push +
+service worker), no un ajuste rápido.
+
 ✅ CHECKPOINT — Instrumentación de analítica con PostHog (36-ANALITICA-Y-EVENTOS.md +
 60-OPERACION-DE-CONVERSION.md) CERRADA y CONFIRMADA EN PRODUCCIÓN (2026-11-16). Auditoría había
 confirmado que no existía NINGUNA analítica (ni PostHog, ni GA4, ni nada) — el embudo se medía a
