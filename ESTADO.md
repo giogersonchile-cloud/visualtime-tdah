@@ -4,12 +4,23 @@
 ⏳ CHECKPOINT EN CURSO — Alarmas/notificaciones push REALES (2026-11-19). El usuario, tras el
 checkpoint de abajo (corregir solo el texto), CAMBIÓ DE OPINIÓN y pidió construirlas de verdad.
 CÓDIGO COMPLETO Y VERIFICADO (tsc+build limpios), commit `acf3bdc`, AÚN NO FUNCIONA EN PRODUCCIÓN
-— faltan 3 pasos de configuración que le pedí al usuario y todavía no confirma:
-1. Correr en Supabase SQL Editor el script que crea `push_subscriptions`, `rutinas_notificaciones`
-   y `notificaciones_enviadas` (con RLS) — se lo di ya armado, esperando que diga "Success".
-2. Agregar en Vercel `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (pública) y `VAPID_PRIVATE_KEY` (secreta) — ya
-   generadas, guardadas solo en `.env.local` (nunca mostradas en el chat).
-3. Crear cuenta gratis en cron-job.org y configurar que llame
+— faltan pasos de configuración, guiando al usuario en vivo paso a paso (no es técnico, cuesta
+encontrar los menús correctos de Supabase/Vercel):
+1. ✅ HECHO — Supabase SQL Editor: corrió el script que crea `push_subscriptions`,
+   `rutinas_notificaciones` y `notificaciones_enviadas` (con RLS). Confirmó "Success. No rows
+   returned".
+2. ⏳ A MEDIAS — Vercel → Settings → Environment Variables (URL directa que funcionó:
+   `vercel.com/giogersonchile-cloud/visualtime-tdah/settings/environment-variables`):
+   - ✅ `NEXT_PUBLIC_VAPID_PUBLIC_KEY` ya agregada (tipo Config, no Secret — es pública), con el
+     valor `BB56Lx7Nkp8G9wNkyFxd4M1ZF4KLI_aPH4ZGcHMIWHiTF_ySFK-1qIGViVOEAGU5YMA7adtHAp5RxbFiJElp2xk`.
+   - ⬜ PENDIENTE `VAPID_PRIVATE_KEY` (tipo Secret) — el usuario no encontraba el archivo
+     `.env.local` en `C:\Users\lenovo\Music\claude\app 1\.env.local` (donde sí está, con el valor
+     real) para copiar el valor él mismo — sesión pausada ahí, se retoma la próxima sesión
+     ayudándolo a localizar el archivo (puede que los archivos ocultos/con punto estén ocultos en
+     su Explorador de Windows).
+   - Falta además: NO se hizo todavía el "Redeploy" en Vercel (el usuario le dio "Dismiss" al
+     aviso la primera vez, correcto — hay que esperar a tener las 2 variables antes de redesplegar).
+3. ⬜ PENDIENTE — crear cuenta gratis en cron-job.org y configurar que llame
    `GET https://www.visualtimetdah.com/api/cron/enviar-alarmas` cada ~5 min con header
    `Authorization: Bearer <CRON_SECRET>` (se puede reusar el CRON_SECRET que ya existe en Vercel
    del cron de recordatorio-trial).
