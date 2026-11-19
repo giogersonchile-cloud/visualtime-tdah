@@ -1,6 +1,34 @@
 # ESTADO — VisualTime TDAH
 Última actualización: 2026-11-19 | Sesión actual: 9 (en curso)
 
+⏳ CHECKPOINT EN CURSO — Alarmas/notificaciones push REALES (2026-11-19). El usuario, tras el
+checkpoint de abajo (corregir solo el texto), CAMBIÓ DE OPINIÓN y pidió construirlas de verdad.
+CÓDIGO COMPLETO Y VERIFICADO (tsc+build limpios), commit `acf3bdc`, AÚN NO FUNCIONA EN PRODUCCIÓN
+— faltan 3 pasos de configuración que le pedí al usuario y todavía no confirma:
+1. Correr en Supabase SQL Editor el script que crea `push_subscriptions`, `rutinas_notificaciones`
+   y `notificaciones_enviadas` (con RLS) — se lo di ya armado, esperando que diga "Success".
+2. Agregar en Vercel `NEXT_PUBLIC_VAPID_PUBLIC_KEY` (pública) y `VAPID_PRIVATE_KEY` (secreta) — ya
+   generadas, guardadas solo en `.env.local` (nunca mostradas en el chat).
+3. Crear cuenta gratis en cron-job.org y configurar que llame
+   `GET https://www.visualtimetdah.com/api/cron/enviar-alarmas` cada ~5 min con header
+   `Authorization: Bearer <CRON_SECRET>` (se puede reusar el CRON_SECRET que ya existe en Vercel
+   del cron de recordatorio-trial).
+Decisiones de arquitectura YA TOMADAS por el usuario (vía AskUserQuestion, no redecidir):
+- Guardar en el servidor un espejo MÍNIMO del horario (hora/título/días de cada bloque — NUNCA
+  "completado", eso sigue 100% local) — rompe a propósito la promesa anterior de "100% local",
+  ya actualizada en `app/privacidad/page.tsx` con la nueva política.
+- Cron EXTERNO (cron-job.org, gratis) en vez de Vercel Cron — el plan gratis de Vercel solo
+  corre cron 1 vez al día, insuficiente para avisar a la hora exacta (confirmado con WebSearch).
+- iPhone: solo funciona si el usuario agrega la app a su pantalla de inicio (limitación real de
+  Safari/iOS, no un bug — ya explicado así en la pantalla `/app/notificaciones`).
+PENDIENTE DE RECONCILIAR una vez el feature esté confirmado funcionando en vivo: la landing, el
+paywall y el FAQ fueron corregidos ESTA MISMA SESIÓN (checkpoint de abajo) para DEJAR DE prometer
+alarmas — ahora que sí se están construyendo de verdad, hay que volver a esos textos y re-prometerlas,
+pero NO antes de confirmar que de verdad llega la notificación al teléfono real del usuario.
+Próximo paso inmediato: esperar/seguir la confirmación del usuario de los 3 pasos de arriba, y
+luego probar de punta a punta (activar en su teléfono real, confirmar que llega un push a la hora
+programada) antes de declarar el feature listo.
+
 ✅ CHECKPOINT — Dos correcciones rápidas (2026-11-19):
 1. El botón "Entrar" de la landing (header, `Hero.tsx`) apuntaba a `/entrar` (404) en vez de
    `/login` — encontrado por el usuario probando en su teléfono. Corregido en `app/page.tsx`.
