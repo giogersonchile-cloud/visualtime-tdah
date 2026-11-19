@@ -1,5 +1,15 @@
 # ESTADO — VisualTime TDAH
-Última actualización: 2026-11-16 | Sesión actual: 9 (en curso)
+Última actualización: 2026-11-19 | Sesión actual: 9 (en curso)
+
+✅ CHECKPOINT — Dos correcciones rápidas (2026-11-19):
+1. El botón "Entrar" de la landing (header, `Hero.tsx`) apuntaba a `/entrar` (404) en vez de
+   `/login` — encontrado por el usuario probando en su teléfono. Corregido en `app/page.tsx`.
+   Comportamiento aparte confirmado NORMAL (no bug): si el usuario ya había iniciado sesión antes
+   en ese mismo teléfono, `/login` lo manda directo a `/app` sin pedir código de nuevo — la
+   sesión persiste, como Gmail o WhatsApp Web.
+2. Next.js actualizado 16.4.4 → 16.4.6 — el build avisó de una vulnerabilidad de seguridad
+   publicada. Actualización menor sin cambios de API, verificado con tsc + build + render en
+   navegador, todo en verde. Commits `c459f04` (link roto) y `a6d855c` (Next.js).
 
 ✅ CHECKPOINT — Instrumentación de analítica con PostHog (36-ANALITICA-Y-EVENTOS.md +
 60-OPERACION-DE-CONVERSION.md) CERRADA y CONFIRMADA EN PRODUCCIÓN (2026-11-16). Auditoría había
